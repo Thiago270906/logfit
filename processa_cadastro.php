@@ -1,87 +1,96 @@
 <?php
-session_start(); // Inicia a sessão para armazenar mensagens e dados temporários
-require_once 'conexao.php'; // Inclui o arquivo que estabelece a conexão com o banco de dados
+session_start();
+require_once 'conexao.php'; // Conexão PDO
 
-// Função responsável por validar os dados do formulário de cadastro
+// Função para validar os dados
 function validarDados($dados) {
-    $erros = []; // Array para armazenar mensagens de erro
-    
-    // Verifica se o nome tem pelo menos 3 caracteres
-    if (strlen($dados['nome']) < 3) {
-        $erros[] = "Nome deve ter no mínimo 3 caracteres";
+    $erros = [];
+
+    // Nome com no mínimo 3 caracteres
+    if (strlen(trim($dados['nome'])) < 3) {
+        $erros[] = "Nome deve ter no mínimo 3 caracteres.";
     }
-    
-    // Valida se o email está em formato válido
+
+    // E-mail válido
     if (!filter_var($dados['email'], FILTER_VALIDATE_EMAIL)) {
-        $erros[] = "E-mail inválido";
+        $erros[] = "E-mail inválido.";
     }
-    
-    // Verifica se a senha tem pelo menos 8 caracteres
+
+    // Senha com no mínimo 8 caracteres
     if (strlen($dados['senha']) < 8) {
-        $erros[] = "Senha deve ter no mínimo 8 caracteres";
+        $erros[] = "Senha deve ter no mínimo 8 caracteres.";
     }
-    
-    // Confirma se a senha e sua confirmação são iguais
+
+    // Confirmação de senha
     if ($dados['senha'] !== $dados['confirma_senha']) {
-        $erros[] = "As senhas não conferem";
+        $erros[] = "As senhas não conferem.";
     }
-    
-    // Retorna o array de erros (vazio se não houverem)
+
+    // Idade válida (opcional)
+    if (!empty($dados['idade']) && (!is_numeric($dados['idade']) || $dados['idade'] < 0 || $dados['idade'] > 150)) {
+        $erros[] = "Idade inválida.";
+    }
+
+    // Peso inicial válido (opcional)
+    if (!empty($dados['peso_inicial']) && (!is_numeric($dados['peso_inicial']) || $dados['peso_inicial'] <= 0)) {
+        $erros[] = "Peso inicial inválido.";
+    }
+
+    // Altura válida (opcional)
+    if (!empty($dados['altura_cm']) && (!is_numeric($dados['altura_cm']) || $dados['altura_cm'] <= 0)) {
+        $erros[] = "Altura inválida.";
+    }
+
     return $erros;
 }
 
-// Verifica se o formulário foi submetido via método POST (envio de dados)
+// Executa apenas se for método POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    
-    // Verifica se o token CSRF enviado no formulário corresponde ao da sessão para evitar ataques CSRF
-    if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
-        die("Erro de validação do formulário"); // Interrompe a execução caso o token seja inválido
-    }
-    
-    // Chama a função de validação dos dados recebidos
     $erros = validarDados($_POST);
-    
-    // Se não houver erros na validação dos dados
+
     if (empty($erros)) {
         try {
-            // Prepara uma consulta para verificar se o email já está cadastrado no banco
-            $stmt = $pdo->prepare("SELECT id FROM usuarios WHERE email = ?");
-            $stmt->execute([$_POST['email']]);
-            
-            // Se já existir algum registro com o email informado
+            // Verifica se o e-mail já está cadastrado
+            $stmt = $pdo->prepare("SELECT idusuario FROM usuarios WHERE email = ?");
+            $stmt->execute([trim($_POST['email'])]);
+
             if ($stmt->rowCount() > 0) {
-                $_SESSION['erro_cadastro'] = "Este e-mail já está cadastrado"; // Mensagem de erro na sessão
-                header('Location: cadastro.php'); // Redireciona de volta para o formulário de cadastro
+                $_SESSION['erro_cadastro'] = "Este e-mail já está cadastrado.";
+                header('Location: cadastro.php');
                 exit;
             }
-            
-            // Prepara os dados para inserção, removendo espaços extras
-            $nome = trim($_POST['nome']);
-            $email = trim($_POST['email']);
-            // Criptografa a senha para armazenamento seguro no banco de dados
-            $senha = password_hash($_POST['senha'], PASSWORD_DEFAULT);
-            
-            // Insere o novo usuário na base de dados
-            $sql = "INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)";
+
+            // Insere o usuário
+            $sql = "INSERT INTO usuarios (nome, email, senha, idade, peso_inicial, altura_cm)
+                    VALUES (:nome, :email, :senha, :idade, :peso_inicial, :altura_cm)";
             $stmt = $pdo->prepare($sql);
-            $stmt->execute([$nome, $email, $senha]);
-            
-            // Caso o cadastro tenha sido bem-sucedido, seta mensagem de sucesso na sessão
+
+            $stmt->bindValue(':nome', trim($_POST['nome']));
+            $stmt->bindValue(':email', trim($_POST['email']));
+            $stmt->bindValue(':senha', password_hash($_POST['senha'], PASSWORD_DEFAULT));
+            $stmt->bindValue(':idade', !empty($_POST['idade']) ? (int)$_POST['idade'] : null, PDO::PARAM_INT);
+            $stmt->bindValue(':peso_inicial', !empty($_POST['peso_inicial']) ? (float)$_POST['peso_inicial'] : null);
+            $stmt->bindValue(':altura_cm', !empty($_POST['altura_cm']) ? (int)$_POST['altura_cm'] : null, PDO::PARAM_INT);
+
+            $stmt->execute();
+
             $_SESSION['sucesso_cadastro'] = "Cadastro realizado com sucesso!";
-            header('Location: login.php'); // Redireciona para a página de login
+            header('Location: index.php');
             exit;
-            
+
         } catch (PDOException $e) {
-            // Em caso de erro na comunicação com o banco ou na inserção
-            $_SESSION['erro_cadastro'] = "Erro ao realizar cadastro";
-            header('Location: cadastro.php'); // Volta para o formulário de cadastro com erro
+            $_SESSION['erro_cadastro'] = "Erro ao cadastrar: " . $e->getMessage();
+            header('Location: cadastro.php');
             exit;
         }
     } else {
-        // Se houver erros de validação, os junta em uma string e coloca na sessão para exibir ao usuário
-        $_SESSION['erro_cadastro'] = implode("
-", $erros);
-        header('Location: cadastro.php'); // Redireciona para o formulário de cadastro
+        // Se houver erros de validação
+        $_SESSION['erro_cadastro'] = implode("<br>", $erros);
+        header('Location: cadastro.php');
         exit;
     }
+} else {
+    header('Location: cadastro.php');
+    exit;
 }
+    
