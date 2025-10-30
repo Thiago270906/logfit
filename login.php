@@ -51,12 +51,12 @@ if (empty($_SESSION['csrf_token'])) {
       <?php endif; ?>
 
     <button type="submit"
-            class="w-full bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white font-semibold py-3 rounded-md shadow-md transition duration-300">
+            class="w-full bg-gradient-to-r bg-sky-500 hover:from-indigo-700 hover:to-indigo-600 text-white font-semibold py-3 rounded-md shadow-md transition duration-300">
       Entrar
     </button>
 
     <div class="flex justify-between items-center text-sm">
-      <a href="esqueci_senha.php" class="text-indigo-600 hover:text-indigo-800">Esqueci minha senha</a>
+      <a href="esqueci-senha.php" class="text-indigo-600 hover:text-indigo-800">Esqueci minha senha</a>
       <a href="cadastro.php" class="text-green-600 hover:text-green-800 font-semibold">Cadastrar</a>
     </div>
   </form>
