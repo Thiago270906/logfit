@@ -20,7 +20,7 @@ if (empty($_SESSION['csrf_token'])) {
 <header class="bg-gray-900 py-2 px-4">
   <div class="max-w-7xl mx-auto flex items-center justify-between">
     <img src="image/logo-logfit.png" alt="logo" class="h-20 max-w-xs object-contain" />
-    <a href="index.php" 
+    <a href="login.php" 
        class="px-4 py-2 bg-sky-500 hover:bg-sky-700 text-white font-semibold rounded-md transition-colors">
        Voltar para Login
     </a>
