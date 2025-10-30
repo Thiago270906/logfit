@@ -44,16 +44,23 @@ CREATE TABLE detalhes_sessao (
     FOREIGN KEY (exercicio_id) REFERENCES exercicios(idexercicio) ON DELETE RESTRICT 
 ) ENGINE=InnoDB;
 
--- 5. Tabela de Log Diário de Nutrição
-CREATE TABLE log_nutricao (
-    idlog_nutricao INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+-- 5. Tabela de Dietas
+CREATE TABLE dietas (
+    iddieta INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT UNSIGNED NOT NULL,
-    data DATE NOT NULL,
-    descricao_dieta TEXT NOT NULL,
-    kcal_total INT UNSIGNED,
-    agua_ml INT UNSIGNED,
+    nome_dieta VARCHAR(100) NOT NULL,
+    kcal_total INT UNSIGNED NOT NULL,
+    agua_ml INT UNSIGNED NOT NULL,
+    cafe_manha TEXT,
+    lanche_manha TEXT,
+    almoco TEXT,
+    lanche_tarde TEXT,
+    janta TEXT,
+    ceia TEXT,
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(idusuario) ON DELETE CASCADE
 ) ENGINE=InnoDB;
+
 
 -- 6. Tabela de Alarmes
 CREATE TABLE alarmes (

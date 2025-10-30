@@ -37,7 +37,7 @@ $nomeUsuario = $_SESSION['usuario']['nome'] ?? 'Usuário';
             </a>
         </div>
     </div>
-</header>
+    </header>
 
 
 <main class="flex-1 p-6 max-w-7xl mx-auto">
@@ -46,22 +46,22 @@ $nomeUsuario = $_SESSION['usuario']['nome'] ?? 'Usuário';
 
     <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
         <!-- Bloco Nutrição -->
-        <div class="bg-white rounded-lg shadow p-6 text-center">
-            <h2 class="text-xl font-semibold mb-2">Nutrição</h2>
+        <a href="dieta.php" class="block bg-white rounded-lg shadow p-6 text-center hover:bg-gray-100 transition">
+            <h2 class="text-xl font-semibold mb-2">Dieta</h2>
             <p class="text-gray-600">Controle sua dieta e alimentação para melhores resultados.</p>
-        </div>
+        </a>
 
         <!-- Bloco Treino -->
-        <div class="bg-white rounded-lg shadow p-6 text-center">
+        <a href="treino.php" class="block bg-white rounded-lg shadow p-6 text-center hover:bg-gray-100 transition">
             <h2 class="text-xl font-semibold mb-2">Treino</h2>
             <p class="text-gray-600">Acompanhe seus treinos e progrida com segurança.</p>
-        </div>
+        </a>
 
         <!-- Bloco Acompanhamento -->
-        <div class="bg-white rounded-lg shadow p-6 text-center">
+        <a href="acompanhamento.php" class="block bg-white rounded-lg shadow p-6 text-center hover:bg-gray-100 transition">
             <h2 class="text-xl font-semibold mb-2">Acompanhamento</h2>
             <p class="text-gray-600">Monitore seus resultados e hábitos ao longo do tempo.</p>
-        </div>
+        </a>
     </div>
     <div class="mt-10 bg-white p-6 rounded-lg shadow">
     <h2 class="text-xl font-semibold mb-4 text-center">Progresso Mensal</h2>
