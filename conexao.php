@@ -33,11 +33,9 @@ require_once 'conexao.php';
 try {
     # Tenta executar uma query simples
     $stmt = $pdo->query('SELECT 1');
-    echo "Conexão estabelecida com sucesso!";
     
     # Versão do servidor
     $versao = $pdo->getAttribute(PDO::ATTR_SERVER_VERSION);
-    echo "\nVersão do MySQL: " . $versao;
     
 } catch (PDOException $e) {
     die("Erro no teste de conexão: " . $e->getMessage());
