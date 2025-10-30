@@ -33,26 +33,26 @@ if (isset($_POST['email'], $_POST['password'])) {
             'nome' => $usuario['nome']
             ];
             // Redireciona o usuário para a página principal após login bem-sucedido
-            header('Location: index.php');
+            header('Location: login.php');
             exit;
         } else {
             // Caso a senha ou email estejam incorretos, seta mensagem de erro na sessão
             $_SESSION['erro_login'] = "Email ou senha inválidos";
             // Redireciona para a página de login para nova tentativa
-            header('Location: index.php');
+            header('Location: login.php');
             exit;
         }
     } catch (PDOException $e) {
         // Caso ocorra algum erro no banco de dados, seta a mensagem genérica de erro
         $_SESSION['erro_login'] = "Erro ao processar login";
         // Redireciona para a página de login
-        header('Location: index.php');
+        header('Location: login.php');
         exit;
     }
 } else {
     // Se algum dos campos não foi preenchido, seta mensagem de erro na sessão
     $_SESSION['erro_login'] = "Por favor, preencha todos os campos";
     // Redireciona para a página de login
-    header('Location: index.php');
+    header('Location: login.php');
     exit;
 }

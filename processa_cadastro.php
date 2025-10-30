@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute();
 
             $_SESSION['sucesso_cadastro'] = "Cadastro realizado com sucesso!";
-            header('Location: index.php');
+            header('Location: login.php');
             exit;
 
         } catch (PDOException $e) {

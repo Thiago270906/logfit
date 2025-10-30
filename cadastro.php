@@ -21,7 +21,7 @@ if (empty($_SESSION['csrf_token'])) {
   <div class="max-w-7xl mx-auto flex items-center justify-between">
     <img src="image/logo-logfit.png" alt="logo" class="h-20 max-w-xs object-contain" />
     <a href="index.php" 
-       class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-md transition-colors">
+       class="px-4 py-2 bg-sky-500 hover:bg-sky-700 text-white font-semibold rounded-md transition-colors">
        Voltar para Login
     </a>
   </div>
@@ -97,7 +97,7 @@ if (empty($_SESSION['csrf_token'])) {
     </div>
 
     <button type="submit"
-            class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-md transition-colors duration-200">
+            class="w-full bg-sky-500 hover:bg-sky-700 text-white font-semibold py-2 rounded-md transition-colors duration-200">
       Cadastrar
     </button>
   </form>
