@@ -126,7 +126,7 @@ $usuario_id = $_SESSION['usuario']['id'];
             <div>
                 <button type="submit"
                         class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-md transition">
-                    ✅ Salvar Dieta
+                        Salvar Dieta
                 </button>
             </div>
 

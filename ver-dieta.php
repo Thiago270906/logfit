@@ -108,7 +108,9 @@ try {
                 "Ceia" => $dieta['ceia']
             ];
 
-            foreach ($refeicoes as $titulo => $conteudo): ?>
+            foreach ($refeicoes as $titulo => $conteudo): 
+                if (empty(trim($conteudo))) continue; // Se estiver vazio, pula essa refeição
+            ?>
                 <div class="border border-gray-200 rounded-lg p-3 bg-gray-50">
                     <h3 class="font-semibold text-gray-700 mb-1"><?= $titulo ?></h3>
                     <p class="text-gray-700 whitespace-pre-line">
@@ -116,6 +118,7 @@ try {
                     </p>
                 </div>
             <?php endforeach; ?>
+
         </div>
 
     </div>
