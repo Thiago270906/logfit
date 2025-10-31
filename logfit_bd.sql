@@ -58,20 +58,7 @@ CREATE TABLE rotina_exercicios (
     FOREIGN KEY (exercicio_id) REFERENCES exercicios(idexercicio) ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
-
--- 6. Tabela de Exercícios feitos no Dia
-CREATE TABLE detalhes_treino (
-    iddetalhe INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    treino_id INT UNSIGNED NOT NULL,
-    nome_exercicio VARCHAR(100) NOT NULL,
-    series SMALLINT UNSIGNED,
-    repeticoes VARCHAR(20),
-    carga_kg DECIMAL(6,2),
-    descanso_seg SMALLINT UNSIGNED,
-    FOREIGN KEY (treino_id) REFERENCES treinos_realizados(idtreino) ON DELETE CASCADE
-) ENGINE=InnoDB;
-
--- 7. Tabela de Treinos Realizados (Histórico)
+-- 6. Tabela de Treinos Realizados (Histórico)
 CREATE TABLE treinos_realizados (
     idtreino INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT UNSIGNED NOT NULL,
@@ -82,6 +69,17 @@ CREATE TABLE treinos_realizados (
     FOREIGN KEY (rotina_id) REFERENCES rotinas_treino(idrotina) ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
+-- 7. Tabela de Exercícios feitos no Dia
+CREATE TABLE detalhes_treino (
+    iddetalhe INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    treino_id INT UNSIGNED NOT NULL,
+    nome_exercicio VARCHAR(100) NOT NULL,
+    series SMALLINT UNSIGNED,
+    repeticoes VARCHAR(20),
+    carga_kg DECIMAL(6,2),
+    descanso_seg SMALLINT UNSIGNED,
+    FOREIGN KEY (treino_id) REFERENCES treinos_realizados(idtreino) ON DELETE CASCADE
+) ENGINE=InnoDB;
 
 -- 8. Tabela de Dietas
 CREATE TABLE dietas (
