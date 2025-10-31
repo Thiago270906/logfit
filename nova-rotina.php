@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ];
 
     // Redireciona para a próxima página
-    header('Location: novo-treino-exercicios.php');
+    header('Location: nova-rotina-exercicios.php');
     exit;
 }
 ?>

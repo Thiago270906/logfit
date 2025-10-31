@@ -91,7 +91,7 @@ $treino = $stmt->fetch(PDO::FETCH_ASSOC);
 
             <div class="bg-white shadow-lg p-6 text-center rounded-lg">
                 <p class="text-gray-600 mb-4">Você ainda não possui um treino ativo.</p>
-                <a href="novo-treino.php" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg">
+                <a href="nova-rotina.php" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg">
                     Criar Novo Treino
                 </a>
             </div>

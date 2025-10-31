@@ -11,7 +11,7 @@ if (empty($_SESSION['usuario_logado']) || $_SESSION['usuario_logado'] !== true) 
 // Verifica se o treino foi iniciado
 $novoTreino = $_SESSION['novo_treino'] ?? null;
 if (!$novoTreino) {
-    header('Location: novo-treino.php');
+    header('Location: nova-rotina.php');
     exit;
 }
 
@@ -40,7 +40,7 @@ $exercicios = $pdo->query("SELECT * FROM exercicios ORDER BY nome")->fetchAll(PD
 
     <!-- Botão Voltar no canto máximo à esquerda -->
     <div class="w-full mb-6">
-        <a href="novo-treino.php" 
+        <a href="nova-rotina.php" 
            class="flex items-center gap-2 px-4 py-2 font-medium rounded-md transition">
             <img src="image/seta-esquerda.png" class="w-5 h-5" alt="Voltar">
             Voltar
@@ -53,7 +53,7 @@ $exercicios = $pdo->query("SELECT * FROM exercicios ORDER BY nome")->fetchAll(PD
             Adicionar Exercícios à Rotina "<?= htmlspecialchars($novoTreino['nome']) ?>"
         </h2>
 
-        <form action="processa-novo-treino.php" method="POST" class="space-y-4 text-left">
+        <form action="processa-nova-rotina.php" method="POST" class="space-y-4 text-left">
             <!-- Guardar dados do treino temporário em hidden inputs -->
             <input type="hidden" name="nome" value="<?= htmlspecialchars($novoTreino['nome']) ?>">
             <input type="hidden" name="dias_semana" value="<?= htmlspecialchars($novoTreino['dias_semana']) ?>">

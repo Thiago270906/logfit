@@ -7,7 +7,7 @@ $idusuario = $_SESSION['usuario']['id'] ?? null;
 $novoTreino = $_SESSION['novo_treino'] ?? null;
 
 if (!$idusuario || !$novoTreino) {
-    header('Location: novo-treino.php');
+    header('Location: nova-rotina.php');
     exit;
 }
 
