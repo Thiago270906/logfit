@@ -56,12 +56,18 @@ try {
 <main class="flex-1 p-6">
 
     <!-- Barra superior com botões afastados -->
-    <div class="flex justify-between mb-6">
-        <a href="index.php" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold rounded-md transition">
-            ◀ Voltar
+    <div class="flex justify-between items-center mb-6">
+
+        <!-- Botão voltar -->
+        <a href="index.php" 
+           class="flex items-center justify-center"
+           title="Voltar">
+            <img src="image/seta-esquerda.png" alt="Voltar" class="w-12 h-12">
         </a>
 
-        <a href="nova-dieta.php" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-md transition">
+        <!-- Botão criar dieta -->
+        <a href="nova-dieta.php" 
+           class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-md transition">
             Criar Dieta
         </a>
     </div>
