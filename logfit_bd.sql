@@ -118,3 +118,90 @@ CREATE TABLE progresso (
     UNIQUE KEY uk_data_usuario (usuario_id, data),
     FOREIGN KEY (usuario_id) REFERENCES usuarios(idusuario) ON DELETE CASCADE
 ) ENGINE=InnoDB;
+
+INSERT INTO exercicios (nome, grupo_muscular) VALUES
+-- PEITO (8)
+('Supino Reto com Barra', 'Peito'),
+('Supino Declinado com Barra', 'Peito'),
+('Supino Máquina', 'Peito'),
+('Crucifixo com Máquina', 'Peito'),
+('Cross Over na Polia', 'Peito'),
+('Supino com Halteres', 'Peito'),
+('Supino Inclinado com Halteres', 'Peito'),
+('Flexão de Braço', 'Peito'),
+
+-- COSTAS (15)
+('Barra Fixa', 'Costas'),
+('Puxada na Frente (Pulley)', 'Costas'),
+('Remada Baixa', 'Costas'),
+('Remada Curvada com Barra', 'Costas'),
+('Remada com Haltere Unilateral', 'Costas'),
+('Remada Cavalinho Máquina', 'Costas'),
+('Remada Unilateral Máquina', 'Costas'),
+('Levantamento Terra', 'Costas'),
+('Puldow na Polia', 'Costas'),
+('Puxada Neutra', 'Costas'),
+('Remada Alta na Polia', 'Costas'),
+('Face Pull', 'Costas'),
+
+-- PERNAS
+-- Quadríceps (8)
+('Agachamento Livre', 'Quadríceps'),
+('Leg Press', 'Quadríceps'),
+('Cadeira Extensora', 'Quadríceps'),
+('Agachamento no Smith', 'Quadríceps'),
+('Agachamento Búlgaro', 'Quadríceps'),
+('Avanço (Lunge)', 'Quadríceps'),
+('Hack Machine', 'Quadríceps'),
+('Adutor de Quadril na Máquina', 'Quadríceps'),
+
+-- Posterior (8)
+('Stiff com Barra', 'Posterior'),
+('Stiff com Halteres', 'Posterior'),
+('Mesa Flexora', 'Posterior'),
+('Cadeira Flexora', 'Posterior'),
+('Levantamento Terra Romeno', 'Posterior'),
+
+-- Glúteos (4)
+('Elevação Pélvica (Glúteo)', 'Glúteos'),
+('Glúteo no Cabo', 'Glúteos'),
+('Agachamento Sumô com Halteres', 'Glúteos'),
+('Abdução de Quadril na Máquina', 'Glúteos'),
+
+-- Panturrilha (3)
+('Panturrilha no Leg', 'Panturrilha'),
+('Panturrilha em Pé', 'Panturrilha'),
+('Panturrilha Sentado', 'Panturrilha'),
+
+-- OMBROS (8)
+('Desenvolvimento com Halteres', 'Ombros'),
+('Desenvolvimento Máquina', 'Ombros'),
+('Elevação Lateral', 'Ombros'),
+('Elevação Lateral no Cabo', 'Ombros'),
+('Elevação Frontal', 'Ombros'),
+('Elevação Frontal no Cabo', 'Ombros'),
+('Posterior no Cabo', 'Ombros'),
+('Crucifixo Invertido', 'Ombros'),
+
+-- BÍCEPS (7)
+('Rosca Direta', 'Bíceps'),
+('Rosca Alternada', 'Bíceps'),
+('Rosca Martelo', 'Bíceps'),
+('Rosca Concentrada', 'Bíceps'),
+('Rosca Scott', 'Bíceps'),
+('Rosca Inclinada com Halteres', 'Bíceps'),
+('Rosca no Cabo', 'Bíceps'),
+
+-- TRÍCEPS (7)
+('Tríceps Pulley', 'Tríceps'),
+('Tríceps Corda', 'Tríceps'),
+('Tríceps Testa', 'Tríceps'),
+('Tríceps Francês', 'Tríceps'),
+('Tríceps Testa no Cabo', 'Tríceps'),
+('Tríceps Francês no Cabo', 'Tríceps'),
+('Mergulho em Paralelas', 'Tríceps'),
+
+-- ABDOME (3)
+('Crunch Abdominal', 'Abdômen'),
+('Prancha', 'Abdômen'),
+('Elevação de Pernas Infra', 'Abdômen');
