@@ -15,6 +15,7 @@ $usuario_id = $_SESSION['usuario']['id'];
 <head>
 <meta charset="UTF-8">
 <title>Criar Dieta - LogFit</title>
+<link rel="icon" type="image/png" href="image/logo-logfit.png">
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
@@ -35,8 +36,9 @@ $usuario_id = $_SESSION['usuario']['id'];
     <!-- Botão Voltar alinhado à esquerda -->
     <div class="w-full mb-5">
         <a href="dieta.php" 
-           class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold rounded-md transition">
-           ◀ Voltar
+           class="flex items-center gap-2 px-4 py-2 font-medium rounded-md transition">
+            <img src="image/seta-esquerda.png" class="w-5 h-5" alt="Voltar">
+            Voltar
         </a>
     </div>
 

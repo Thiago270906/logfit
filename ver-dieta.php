@@ -44,6 +44,7 @@ try {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ver Dieta - <?= htmlspecialchars($dieta['nome_dieta']); ?></title>
+<link rel="icon" type="image/png" href="image/logo-logfit.png">
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
@@ -70,8 +71,9 @@ try {
     <!-- Botão Voltar no canto -->
     <div class="mb-4">
         <a href="dieta.php" 
-           class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-lg transition">
-           ◀ Voltar
+           class ="flex items-center gap-2 px-4 py-2 text-gray-800 font-medium rounded-md transition">
+            <img src="image/seta-esquerda.png" class="w-5 h-5" alt="Voltar">
+            Voltar
         </a>
     </div>
 

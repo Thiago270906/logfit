@@ -14,16 +14,13 @@ if (empty($_SESSION['csrf_token'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://cdn.tailwindcss.com"></script>
     <title>Cadastro - LogFit</title>
+    <link rel="icon" type="image/png" href="image/logo-logfit.png">
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
 
 <header class="bg-gray-900 py-2 px-4">
   <div class="max-w-7xl mx-auto flex items-center justify-between">
     <img src="image/logo-logfit.png" alt="logo" class="h-20 max-w-xs object-contain" />
-    <a href="login.php" 
-       class="px-4 py-2 bg-sky-500 hover:bg-sky-700 text-white font-semibold rounded-md transition-colors">
-       Voltar para Login
-    </a>
   </div>
 </header>
 
@@ -100,6 +97,14 @@ if (empty($_SESSION['csrf_token'])) {
             class="w-full bg-sky-500 hover:bg-sky-700 text-white font-semibold py-2 rounded-md transition-colors duration-200">
       Cadastrar
     </button>
+    <div class="text-sm text-center pt-2">
+            <p class="text-gray-600">
+                Já tem uma conta? 
+                <a href="login.php" class="text-sky-600 hover:text-sky-800 font-semibold transition duration-150">
+                    Faça Login
+                </a>
+            </p>
+        </div>
   </form>
 </main>
 
