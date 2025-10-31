@@ -25,22 +25,22 @@ CREATE TABLE exercicios (
 CREATE TABLE rotinas_treino (
     idrotina INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT UNSIGNED NOT NULL,
-    nome VARCHAR(100) NOT NULL,  -- Ex: ABC2x, Full Body, Push Pull Legs
-    dias_semana TINYINT UNSIGNED NOT NULL, -- Quantos dias treina na semana
-    duracao_semanas TINYINT UNSIGNED NOT NULL, -- Ex: 8 semanas
+    nome VARCHAR(100) NOT NULL,
+    dias_semana TINYINT UNSIGNED NOT NULL,
+    duracao_semanas TINYINT UNSIGNED NOT NULL,
     data_inicio DATE NOT NULL,
     data_fim DATE,
     ativa TINYINT(1) DEFAULT 1, -- Rotina ativa no momento
     FOREIGN KEY (usuario_id) REFERENCES usuarios(idusuario) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- 4 Tabela de Dias de Treino dentro da Rotina
+-- 4. Tabela de Dias de Treino dentro da Rotina
 CREATE TABLE rotina_dias (
     iddia INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     rotina_id INT UNSIGNED NOT NULL,
-    ordem_dia TINYINT UNSIGNED NOT NULL, -- Dia 1, Dia 2, Dia 3 ...
+    ordem_dia TINYINT UNSIGNED NOT NULL,
     dia_semana ENUM('Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo') NULL,
-    foco VARCHAR(100) NOT NULL, -- Ex: Peito/Tríceps
+    foco VARCHAR(100) NOT NULL,
     FOREIGN KEY (rotina_id) REFERENCES rotinas_treino(idrotina) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
@@ -49,10 +49,10 @@ CREATE TABLE rotina_dias (
 CREATE TABLE rotina_exercicios (
     idrotina_ex INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     dia_id INT UNSIGNED NOT NULL,
-    exercicio_id INT UNSIGNED NULL, -- pode ser nulo se o usuário escrever manualmente
-    nome_exercicio VARCHAR(100) NOT NULL, -- o usuário pode digitar
+    exercicio_id INT UNSIGNED NULL,
+    nome_exercicio VARCHAR(100) NOT NULL,
     series SMALLINT UNSIGNED,
-    repeticoes VARCHAR(20), -- "10-12", "6-8", "AMRAP"
+    repeticoes VARCHAR(20),
     descanso_seg SMALLINT UNSIGNED,
     FOREIGN KEY (dia_id) REFERENCES rotina_dias(iddia) ON DELETE CASCADE,
     FOREIGN KEY (exercicio_id) REFERENCES exercicios(idexercicio) ON DELETE SET NULL
