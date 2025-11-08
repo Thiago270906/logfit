@@ -35,60 +35,63 @@ CREATE TABLE rotinas_treino (
 ) ENGINE=InnoDB;
 
 -- 4. Tabela de Dias de Treino dentro da Rotina
-CREATE TABLE rotina_dias (
-    iddia INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    rotina_id INT UNSIGNED NOT NULL,
-    ordem_dia TINYINT UNSIGNED NOT NULL,
+CREATE TABLE treinos (
+    idtreino INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT UNSIGNED NOT NULL,
+    nome VARCHAR(100) NOT NULL,
     dia_semana ENUM('Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo') NULL,
-    foco VARCHAR(100) NOT NULL,
-    FOREIGN KEY (rotina_id) REFERENCES rotinas_treino(idrotina) ON DELETE CASCADE
+    descanso_padrao_seg SMALLINT UNSIGNED DEFAULT 60,
+    data_criacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(idusuario) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 
 -- 5. Tabela de Exercícios da Rotina
-CREATE TABLE rotina_exercicios (
-    idrotina_ex INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    dia_id INT UNSIGNED NOT NULL,
-    exercicio_id INT UNSIGNED NULL,
-    nome_exercicio VARCHAR(100) NOT NULL,
-    series SMALLINT UNSIGNED,
-    repeticoes VARCHAR(20),
-    descanso_seg SMALLINT UNSIGNED,
-    FOREIGN KEY (dia_id) REFERENCES rotina_dias(iddia) ON DELETE CASCADE,
-    FOREIGN KEY (exercicio_id) REFERENCES exercicios(idexercicio) ON DELETE SET NULL
-) ENGINE=InnoDB;
-
--- 6. Tabela de Treinos dentro de uma Rotina
-CREATE TABLE treinos (
-    idtreino INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    rotina_id INT UNSIGNED NOT NULL,
-    ordem_dia TINYINT UNSIGNED NOT NULL,  -- Qual dia da rotina (1, 2, 3...)
-    foco VARCHAR(100) NOT NULL,           -- Grupo muscular ou foco do treino
-    FOREIGN KEY (rotina_id) REFERENCES rotinas_treino(idrotina) ON DELETE CASCADE
-) ENGINE=InnoDB;
-
-
--- 7. Tabela de Treinos Realizados (Histórico)
-CREATE TABLE treinos_realizados (
-    idtreino INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    usuario_id INT UNSIGNED NOT NULL,
-    rotina_id INT UNSIGNED NULL,
-    data DATE NOT NULL,
-    observacoes VARCHAR(350),
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(idusuario) ON DELETE CASCADE,
-    FOREIGN KEY (rotina_id) REFERENCES rotinas_treino(idrotina) ON DELETE SET NULL
-) ENGINE=InnoDB;
-
--- 8. Tabela de Exercícios feitos no Dia
-CREATE TABLE detalhes_treino (
-    iddetalhe INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE treino_exercicios (
+    idtreino_ex INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     treino_id INT UNSIGNED NOT NULL,
+    exercicio_id INT UNSIGNED NULL,
     nome_exercicio VARCHAR(100) NOT NULL,
     series SMALLINT UNSIGNED,
     repeticoes VARCHAR(20),
     carga_kg DECIMAL(6,2),
     descanso_seg SMALLINT UNSIGNED,
-    FOREIGN KEY (treino_id) REFERENCES treinos_realizados(idtreino) ON DELETE CASCADE
+    FOREIGN KEY (treino_id) REFERENCES treinos(idtreino) ON DELETE CASCADE,
+    FOREIGN KEY (exercicio_id) REFERENCES exercicios(idexercicio) ON DELETE SET NULL
+) ENGINE=InnoDB;
+
+-- 6. Tabela de Treinos dentro de uma Rotina
+CREATE TABLE rotina_treinos (
+    idrotina_treino INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    rotina_id INT UNSIGNED NOT NULL,
+    treino_id INT UNSIGNED NOT NULL,
+    ordem_dia TINYINT UNSIGNED NOT NULL,
+    FOREIGN KEY (rotina_id) REFERENCES rotinas_treino(idrotina) ON DELETE CASCADE,
+    FOREIGN KEY (treino_id) REFERENCES treinos(idtreino) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+
+-- 7. Tabela de Treinos Realizados (Histórico)
+CREATE TABLE treinos_realizados (
+    idtreino_real INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT UNSIGNED NOT NULL,
+    treino_id INT UNSIGNED NULL,
+    data DATE NOT NULL,
+    observacoes VARCHAR(350),
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(idusuario) ON DELETE CASCADE,
+    FOREIGN KEY (treino_id) REFERENCES treinos(idtreino) ON DELETE SET NULL
+) ENGINE=InnoDB;
+
+-- 8. Tabela de Exercícios feitos no Dia
+CREATE TABLE detalhes_treino (
+    iddetalhe INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    treino_real_id INT UNSIGNED NOT NULL,
+    nome_exercicio VARCHAR(100) NOT NULL,
+    series SMALLINT UNSIGNED,
+    repeticoes VARCHAR(20),
+    carga_kg DECIMAL(6,2),
+    descanso_seg SMALLINT UNSIGNED,
+    FOREIGN KEY (treino_real_id) REFERENCES treinos_realizados(idtreino_real) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 -- 9. Tabela de Dietas

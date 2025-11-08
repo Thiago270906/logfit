@@ -1,8 +1,5 @@
 <?php
 session_start();
-$titulo_pagina = "Login - Minha Loja";
-$nome_desenvolvedor = "Seu Nome";
-$ano_direitos = date("Y");
 
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));

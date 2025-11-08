@@ -62,6 +62,18 @@ $treinos = $_SESSION['treinos_rotina'] ?? [];
             <p><strong>Duração:</strong> <?= htmlspecialchars($novaRotina['duracao_semanas']) ?> semanas</p>
             <p><strong>Início:</strong> <?= htmlspecialchars($novaRotina['data_inicio']) ?></p>
         </div>
+        
+
+        <?php if ($treinos): ?>
+        <div class="text-left bg-gray-50 border rounded-lg p-4 mb-6">
+            <h3 class="text-xl font-bold mb-4">Treinos adicionados:</h3>
+        <ul class="list-disc list-inside space-y-2">
+            <?php foreach ($treinos as $t): ?>
+            <li><?= htmlspecialchars($t['nome']) ?> (<?= htmlspecialchars($t['dia_semana']) ?> dias/semana)</li>
+            <?php endforeach; ?>
+        </ul>
+        </div>
+        <?php endif; ?>
 
         <!-- Botão para selecionar treinos existentes -->
         <a href="selecionar-treino.php"
@@ -77,18 +89,6 @@ $treinos = $_SESSION['treinos_rotina'] ?? [];
             </button>
         </form>
     </div>
-
-    <!-- Lista de treinos adicionados -->
-    <?php if ($treinos): ?>
-    <div class="bg-white shadow-lg p-6 rounded-lg w-full max-w-lg">
-        <h3 class="text-xl font-bold mb-4">Treinos adicionados:</h3>
-        <ul class="list-disc list-inside space-y-2">
-            <?php foreach ($treinos as $t): ?>
-            <li><?= htmlspecialchars($t['nome']) ?> (<?= htmlspecialchars($t['dias_semana']) ?> dias/semana)</li>
-            <?php endforeach; ?>
-        </ul>
-    </div>
-    <?php endif; ?>
 
 </main>
 </body>
