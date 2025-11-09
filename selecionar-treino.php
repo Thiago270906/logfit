@@ -8,7 +8,7 @@ if (empty($_SESSION['usuario_logado']) || $_SESSION['usuario_logado'] !== true) 
     exit;
 }
 
-$idUsuario = $_SESSION['usuario']['id'] ?? $_SESSION['usuario_id'] ?? null;
+$idUsuario = $_SESSION['usuario']['id'] ?? $_SESSION['usuario_id'] ?? $_SESSION['idusuario'] ?? null;
 if (!$idUsuario) {
     echo "<p style='color:red;'>Erro: usuário não identificado na sessão. Faça login novamente.</p>";
     exit;
@@ -21,7 +21,7 @@ if (!$novaRotina) {
     exit;
 }
 
-// Recebe treinos já adicionados temporariamente à rotina
+// Treinos já adicionados à rotina (sessão temporária)
 $treinosRotina = $_SESSION['treinos_rotina'] ?? [];
 
 // ======================
@@ -31,20 +31,24 @@ $stmt = $pdo->prepare("SELECT idtreino, nome, dia_semana FROM treinos WHERE usua
 $stmt->execute([$idUsuario]);
 $treinos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Processar seleção de treinos
+// ======================
+// Processar seleção
+// ======================
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['treinos'])) {
-    foreach ($_POST['treinos'] as $idTreinoSelecionado) {
-        // Evitar duplicatas
-        $alreadyAdded = false;
+    $treinosSelecionados = array_map('intval', $_POST['treinos']);
+
+    foreach ($treinosSelecionados as $idTreinoSelecionado) {
+        // Evita duplicatas
+        $jaAdicionado = false;
         foreach ($treinosRotina as $t) {
             if ($t['idtreino'] == $idTreinoSelecionado) {
-                $alreadyAdded = true;
+                $jaAdicionado = true;
                 break;
             }
         }
 
-        if (!$alreadyAdded) {
-            // Buscar treino do banco
+        // Adiciona se ainda não estiver na lista
+        if (!$jaAdicionado) {
             foreach ($treinos as $t) {
                 if ($t['idtreino'] == $idTreinoSelecionado) {
                     $treinosRotina[] = $t;
@@ -54,7 +58,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['treinos'])) {
         }
     }
 
+    // Atualiza sessão
     $_SESSION['treinos_rotina'] = $treinosRotina;
+
     header('Location: nova-rotina-treino.php');
     exit;
 }
@@ -93,62 +99,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['treinos'])) {
         </a>
     </div>
 
-    <!-- Card de seleção -->
-    <div class="bg-white shadow-lg p-8 rounded-lg w-full max-w-lg mb-6">
-        <h2 class="text-2xl font-bold mb-4 text-center">Selecionar Treinos para a Rotina</h2>
+    <!-- Card principal -->
+    <div class="bg-white shadow-lg p-8 rounded-lg w-full max-w-lg">
+        <h2 class="text-2xl font-bold mb-6 text-center">Selecionar Treinos para a Rotina</h2>
 
         <?php if ($treinos): ?>
         <form method="POST">
-            <div class="max-h-[400px] overflow-y-auto space-y-3 mb-4">
+            <div class="max-h-[400px] overflow-y-auto space-y-3 mb-6">
                 <?php foreach ($treinos as $t): ?>
-                    <label class="group relative block border p-4 rounded-lg cursor-pointer transition 
-                                hover:bg-green-50 hover:shadow-md text-center">
-                        
-                        <!-- Checkbox invisível mas funcional -->
-                        <input type="checkbox" 
-                            name="treinos[]" 
-                            value="<?= htmlspecialchars($t['idtreino']) ?>" 
-                            class="absolute inset-0 opacity-0 cursor-pointer peer">
-                        
-                        <!-- Conteúdo centralizado -->
-                        <div class="flex flex-col items-center justify-center space-y-1">
-                            <span class="text-lg font-semibold text-gray-900">
-                                <?= htmlspecialchars($t['nome']) ?>
-                            </span>
-                            <span class="text-sm text-gray-500">
-                                <?= htmlspecialchars($t['dia_semana']) ?> dias/semana
-                            </span>
-                        </div>
+                <label class="flex items-center justify-between border border-gray-300 rounded-lg p-4 cursor-pointer hover:bg-gray-50 transition peer-checked:border-green-600">
+                    <div class="flex flex-col flex-1 text-left">
+                        <span class="text-lg font-semibold text-gray-900">
+                            <?= htmlspecialchars($t['nome']) ?>
+                        </span>
+                        <span class="text-sm text-gray-500">
+                            <?= htmlspecialchars($t['dia_semana'] ?: 'Dia não definido') ?>
+                        </span>
+                    </div>
 
-                        <!-- Check visual -->
-                        <div class="absolute top-2 right-2 w-5 h-5 border-2 border-gray-400 rounded-md 
-                                    flex items-center justify-center peer-checked:border-green-600">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" 
-                                fill="currentColor" class="w-4 h-4 text-green-600 hidden peer-checked:block">
-                                <path fill-rule="evenodd" 
-                                    d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 10-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z" 
-                                    clip-rule="evenodd" />
-                            </svg>
-                        </div>
+                    <!-- Checkbox padrão -->
+                    <input type="checkbox" 
+                        name="treinos[]" 
+                        value="<?= htmlspecialchars($t['idtreino']) ?>" 
+                        class="w-6 h-6 accent-green-600 border-gray-400 rounded-md focus:ring-green-500 cursor-pointer transition">
 
-                        <!-- Fundo de destaque quando selecionado -->
-                        <div class="absolute inset-0 rounded-lg bg-green-100 opacity-0 peer-checked:opacity-100 transition"></div>
-                    </label>
+                </label>
                 <?php endforeach; ?>
             </div>
 
             <button type="submit" 
                     class="w-full py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition">
-                Adicionar Selecionados
+                Confirmar Selecionados
             </button>
         </form>
-
-
         <?php else: ?>
             <p class="text-gray-600 text-center mb-4">Você ainda não possui treinos criados.</p>
         <?php endif; ?>
     </div>
-
 </main>
+<footer class="bg-gray-900 p-4 text-center text-white">
+    &copy; <?php echo date('Y'); ?> LogFit. Todos os direitos reservados.
+</footer>
 </body>
 </html>

@@ -185,6 +185,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </form>
   </div>
 </main>
-
+<footer class="bg-gray-900 p-4 text-center text-white">
+    &copy; <?php echo date('Y'); ?> LogFit. Todos os direitos reservados.
+</footer>
 </body>
 </html>

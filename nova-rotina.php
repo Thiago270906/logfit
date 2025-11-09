@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <!-- Botão voltar -->
     <div class="w-full mb-6">
-        <a href="index.php" 
+        <a href="treino.php" 
            class="flex items-center gap-2 px-4 py-2 font-medium rounded-md transition">
             <img src="image/seta-esquerda.png" class="w-5 h-5" alt="Voltar">
             Voltar
@@ -92,5 +92,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
     </div>
 </main>
+<footer class="bg-gray-900 p-4 text-center text-white">
+    &copy; <?php echo date('Y'); ?> LogFit. Todos os direitos reservados.
+</footer>
 </body>
 </html>

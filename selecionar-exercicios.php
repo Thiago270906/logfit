@@ -72,8 +72,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <div class="flex justify-between mt-6">
-                <a href="nova-rotina-treino.php"
-                   class="px-4 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded-lg transition">
+                <a href="nova-rotina.php" 
+                class="flex items-center gap-2 px-4 py-2 font-medium rounded-md transition">
+                    <img src="image/seta-esquerda.png" class="w-5 h-5" alt="Voltar">
                     Voltar
                 </a>
 
@@ -88,5 +89,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
     </div>
 </main>
+<footer class="bg-gray-900 p-4 text-center text-white">
+    &copy; <?php echo date('Y'); ?> LogFit. Todos os direitos reservados.
+</footer>
 </body>
 </html>

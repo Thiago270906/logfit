@@ -1,0 +1,148 @@
+<?php
+session_start();
+require_once 'conexao.php';
+
+// Verificação de login
+if (!isset($_SESSION['usuario_logado']) || $_SESSION['usuario_logado'] !== true) {
+    header('Location: login.php');
+    exit;
+}
+
+$usuario_id = $_SESSION['usuario']['id'];
+
+// Buscar o treino ativo
+$stmt = $pdo->prepare("
+    SELECT idrotina, nome, dias_semana, data_inicio, data_fim 
+    FROM rotinas_treino 
+    WHERE usuario_id = ? AND ativa = 1 
+    LIMIT 1
+");
+$stmt->execute([$usuario_id]);
+$treinoAtivo = $stmt->fetch(PDO::FETCH_ASSOC);
+
+// Buscar outros treinos disponíveis
+$stmt = $pdo->prepare("
+    SELECT idrotina, nome, dias_semana, data_inicio, data_fim 
+    FROM rotinas_treino 
+    WHERE usuario_id = ? AND ativa = 0
+    ORDER BY data_inicio DESC
+");
+$stmt->execute([$usuario_id]);
+$outrosTreinos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Desativar treino atual
+if (isset($_POST['acao']) && $_POST['acao'] === 'desativar') {
+    $pdo->prepare("UPDATE rotinas_treino SET ativa = 0 WHERE usuario_id = ?")->execute([$usuario_id]);
+    $_SESSION['msg_sucesso'] = "Treino desativado com sucesso.";
+    header("Location: treino.php");
+    exit;
+}
+
+// Ativar um treino já existente
+if (isset($_POST['acao']) && $_POST['acao'] === 'ativar' && isset($_POST['treino_id'])) {
+    $pdo->prepare("UPDATE rotinas_treino SET ativa = 0 WHERE usuario_id = ?")->execute([$usuario_id]);
+    $pdo->prepare("UPDATE rotinas_treino SET ativa = 1 WHERE idrotina = ? AND usuario_id = ?")
+        ->execute([$_POST['treino_id'], $usuario_id]);
+
+    $_SESSION['msg_sucesso'] = "Novo treino ativado com sucesso.";
+    header("Location: treino.php");
+    exit;
+}
+?>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alterar Treino - LogFit</title>
+<link rel="icon" type="image/png" href="image/logo-logfit.png">
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+<header class="bg-gray-900 py-2 px-4">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+        <img src="image/logo-logfit.png" class="h-20" />
+        <div class="flex gap-3">
+            <a href="config.php" class="px-4 py-2 bg-blue-600 text-white rounded-md">Configurações</a>
+            <a href="logout.php" class="px-4 py-2 bg-red-600 text-white rounded-md">Sair</a>
+        </div>
+    </div>
+</header>
+
+<main class="flex-1 p-6">
+
+    <!-- Voltar -->
+    <a href="treino.php" class="flex items-center gap-2 px-4 py-2 font-medium mb-4">
+        <img src="image/seta-esquerda.png" class="w-5 h-5">
+        Voltar
+    </a>
+
+    <div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-lg">
+
+        <h2 class="text-2xl font-semibold mb-6 text-center">Alterar Treino</h2>
+
+        <?php if ($treinoAtivo): ?>
+            <div class="border p-4 rounded-lg mb-6 bg-gray-50">
+                <h3 class="text-lg font-bold text-gray-800 mb-1"><?= htmlspecialchars($treinoAtivo['nome']) ?></h3>
+                <p class="text-gray-600 mb-1">Dias por semana: <?= htmlspecialchars($treinoAtivo['dias_semana']) ?></p>
+                <p class="text-gray-500 text-sm mb-1">
+                    Início: <?= date('d/m/Y', strtotime($treinoAtivo['data_inicio'])) ?>
+                    <?php if ($treinoAtivo['data_fim']): ?>
+                        - Fim: <?= date('d/m/Y', strtotime($treinoAtivo['data_fim'])) ?>
+                    <?php endif; ?>
+                </p>
+
+                <form method="POST" class="mt-3">
+                    <input type="hidden" name="acao" value="desativar">
+                    <button type="submit"
+                        class="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-md transition">
+                        Desativar Treino Atual
+                    </button>
+                </form>
+            </div>
+        <?php else: ?>
+            <p class="text-center text-gray-600 mb-6">Você não possui um treino ativo no momento.</p>
+        <?php endif; ?>
+
+        <h3 class="text-lg font-semibold mb-4 text-gray-800">Outros Treinos</h3>
+
+        <?php if ($outrosTreinos): ?>
+            <form method="POST" class="space-y-3">
+                <?php foreach ($outrosTreinos as $t): ?>
+                    <label class="flex justify-between items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50">
+                        <div>
+                            <p class="font-semibold text-gray-800"><?= htmlspecialchars($t['nome']) ?></p>
+                            <p class="text-sm text-gray-500">
+                                <?= htmlspecialchars($t['dias_semana']) ?> dias — 
+                                Início: <?= date('d/m/Y', strtotime($t['data_inicio'])) ?>
+                            </p>
+                        </div>
+                        <input type="radio" name="treino_id" value="<?= $t['idrotina'] ?>" class="w-5 h-5">
+                    </label>
+                <?php endforeach; ?>
+
+                <input type="hidden" name="acao" value="ativar">
+                <button type="submit"
+                    class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-md transition">
+                    Ativar Treino Selecionado
+                </button>
+            </form>
+        <?php else: ?>
+            <p class="text-gray-600 mb-6">Nenhum outro treino salvo encontrado.</p>
+        <?php endif; ?>
+
+        <div class="mt-8 text-center">
+            <a href="nova-rotina.php" class="px-6 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded-md">
+                Criar Novo Treino
+            </a>
+        </div>
+    </div>
+</main>
+
+<footer class="bg-gray-900 p-4 text-center text-white">
+    &copy; <?php echo date('Y'); ?> LogFit. Todos os direitos reservados.
+</footer>
+
+</body>
+</html>
