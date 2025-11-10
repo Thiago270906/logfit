@@ -22,7 +22,7 @@ CREATE TABLE exercicios (
 ) ENGINE=InnoDB;
 
 -- 3. Tabela de Rotina de Treino
-CREATE TABLE rotinas_treino (
+CREATE TABLE rotinas (
     idrotina INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT UNSIGNED NOT NULL,
     nome VARCHAR(100) NOT NULL,

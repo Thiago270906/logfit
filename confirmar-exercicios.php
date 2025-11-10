@@ -179,7 +179,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
 
       <div class="flex justify-between items-center">
-        <a href="selecionar-exercicios.php" class="px-4 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded-lg">Voltar</a>
+          <a href="selecionar-exercicios.php" class="flex items-center gap-2 px-4 py-2 font-medium rounded-md transition">
+            <img src="image/seta-esquerda.png" class="w-5 h-5" alt="Voltar">
+              Voltar
+          </a>
+
         <button type="submit" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold">Criar Treino</button>
       </div>
     </form>

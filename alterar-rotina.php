@@ -117,16 +117,30 @@ if (isset($_POST['acao']) && $_POST['acao'] === 'ativar' && isset($_POST['treino
         <?php if ($outrosTreinos): ?>
             <form method="POST" class="space-y-3">
                 <?php foreach ($outrosTreinos as $t): ?>
-                    <label class="flex justify-between items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50">
+                    <div class="flex justify-between items-center p-4 border rounded-lg bg-gray-50 hover:bg-gray-100">
                         <div>
                             <p class="font-semibold text-gray-800"><?= htmlspecialchars($t['nome']) ?></p>
                             <p class="text-sm text-gray-500">
-                                <?= htmlspecialchars($t['dias_semana']) ?> dias — 
+                                <?= htmlspecialchars($t['dias_semana']) ?> dias —
                                 Início: <?= date('d/m/Y', strtotime($t['data_inicio'])) ?>
                             </p>
                         </div>
-                        <input type="radio" name="treino_id" value="<?= $t['idrotina'] ?>" class="w-5 h-5">
-                    </label>
+                        <div class="flex gap-3 items-center">
+                            <!-- Radio -->
+                            <input 
+                                type="radio" 
+                                name="treino_id" 
+                                value="<?= $t['idrotina'] ?>" 
+                                class="w-5 h-5 accent-green-600 cursor-pointer"
+                            >
+
+                            <!-- Botão Editar -->
+                            <a href="editar-rotina.php?id=<?= $t['idrotina'] ?>" 
+                            class="flex items-center justify-center text-white rounded-md p-2 transition duration-200">
+                                <img src="image/botao-editar.png" alt="Editar" class="w-5 h-5">
+                            </a>
+                        </div>
+                    </div>
                 <?php endforeach; ?>
 
                 <input type="hidden" name="acao" value="ativar">
