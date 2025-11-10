@@ -1,10 +1,4 @@
 <?php
-try {
-    $pdo = new PDO("mysql:host=localhost;dbname=logfit_db", "root", "");
-} catch(PDOException $e) {
-    die("Erro de conexão: " . $e->getMessage());
-}
-
 // Configurações do banco de dados
 $host = 'localhost';     // Servidor do banco
 $db   = 'logfit_db';    // Nome do banco
@@ -26,18 +20,5 @@ try {
     $pdo = new PDO($dsn, $user, $pass, $options);
 } catch (PDOException $e) {
     die("Erro na conexão com o banco de dados: " . $e->getMessage());
-}
-
-require_once 'conexao.php';
-
-try {
-    # Tenta executar uma query simples
-    $stmt = $pdo->query('SELECT 1');
-    
-    # Versão do servidor
-    $versao = $pdo->getAttribute(PDO::ATTR_SERVER_VERSION);
-    
-} catch (PDOException $e) {
-    die("Erro no teste de conexão: " . $e->getMessage());
 }
 ?>
