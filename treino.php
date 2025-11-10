@@ -12,7 +12,7 @@ $nomeUsuario = $_SESSION['usuario']['nome'] ?? 'Usuário';
 
 // Buscar Rotina Ativa
 $stmt = $pdo->prepare("
-    SELECT idrotina, nome, dias_semana, data_inicio, data_fim 
+    SELECT idrotina, nome, dias_semana, data_inicio, data_fim, data_ativacao 
     FROM rotinas_treino 
     WHERE usuario_id = ? AND ativa = 1 
     LIMIT 1
@@ -86,7 +86,7 @@ if ($rotina) {
 
                 <div class="text-center text-gray-600 mb-4">
                     <p><strong>Dias/semana:</strong> <?= $rotina['dias_semana'] ?></p>
-                    <p><strong>Início:</strong> <?= date('d/m/Y', strtotime($rotina['data_inicio'])) ?></p>
+                    <p><strong>Início:</strong> <?= date('d/m/Y', strtotime($rotina['data_ativacao'])) ?></p>
                     <?php if ($rotina['data_fim']): ?>
                         <p><strong>Término previsto:</strong> <?= date('d/m/Y', strtotime($rotina['data_fim'])) ?></p>
                     <?php endif; ?>

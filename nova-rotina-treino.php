@@ -30,16 +30,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Criar rotina
         $stmt = $pdo->prepare("
-            INSERT INTO rotinas_treino (usuario_id, nome, dias_semana, duracao_semanas, data_inicio, data_fim, ativa)
-            VALUES (?, ?, ?, ?, ?, DATE_ADD(?, INTERVAL ? WEEK), 1)
+            INSERT INTO rotinas_treino (
+                usuario_id, nome, dias_semana, duracao_semanas, 
+                data_inicio, data_fim, data_ativacao, ativa
+            ) VALUES (
+                ?, ?, ?, ?, NOW(), DATE_ADD(NOW(), INTERVAL ? WEEK), NOW(), 1
+            )
         ");
         $stmt->execute([
             $idUsuario,
             $novaRotina['nome'],
             $novaRotina['dias_semana'],
-            $novaRotina['duracao_semanas'],
-            $novaRotina['data_inicio'],
-            $novaRotina['data_inicio'],
             $novaRotina['duracao_semanas']
         ]);
         $idRotina = $pdo->lastInsertId();

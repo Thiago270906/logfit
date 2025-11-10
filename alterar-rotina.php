@@ -39,10 +39,17 @@ if (isset($_POST['acao']) && $_POST['acao'] === 'desativar') {
 }
 
 // Ativar um treino já existente
+// Ativar um treino já existente
 if (isset($_POST['acao']) && $_POST['acao'] === 'ativar' && isset($_POST['treino_id'])) {
+    // Desativa qualquer rotina ativa do usuário
     $pdo->prepare("UPDATE rotinas_treino SET ativa = 0 WHERE usuario_id = ?")->execute([$usuario_id]);
-    $pdo->prepare("UPDATE rotinas_treino SET ativa = 1 WHERE idrotina = ? AND usuario_id = ?")
-        ->execute([$_POST['treino_id'], $usuario_id]);
+
+    // Ativa a nova rotina e atualiza a data_ativacao para o momento atual
+    $pdo->prepare("
+        UPDATE rotinas_treino 
+        SET ativa = 1, data_ativacao = NOW() 
+        WHERE idrotina = ? AND usuario_id = ?
+    ")->execute([$_POST['treino_id'], $usuario_id]);
 
     $_SESSION['msg_sucesso'] = "Novo treino ativado com sucesso.";
     header("Location: treino.php");

@@ -30,6 +30,7 @@ CREATE TABLE rotinas_treino (
     duracao_semanas TINYINT UNSIGNED NOT NULL,
     data_inicio DATE NOT NULL,
     data_fim DATE,
+    data_ativacao DATETIME,
     ativa TINYINT(1) DEFAULT 1, -- Rotina ativa no momento
     FOREIGN KEY (usuario_id) REFERENCES usuarios(idusuario) ON DELETE CASCADE
 ) ENGINE=InnoDB;
