@@ -34,6 +34,15 @@ if (!$treino) {
     exit;
 }
 
+// Excluir exercício
+if (isset($_GET['excluir']) && is_numeric($_GET['excluir'])) {
+    $idExcluir = (int)$_GET['excluir'];
+    $stmtDel = $pdo->prepare("DELETE FROM treino_exercicios WHERE idtreino_ex = ? AND treino_id = ?");
+    $stmtDel->execute([$idExcluir, $idTreino]);
+    header("Location: editar-exercicios.php?idtreino=$idTreino&idrotina=" . urlencode($idRotina));
+    exit;
+}
+
 // Atualização dos exercícios
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
@@ -68,7 +77,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $pdo->commit();
 
-        // Redireciona corretamente de volta para a rotina
         $_SESSION['msg_sucesso'] = "Treino atualizado com sucesso!";
         header("Location: editar-rotina-treino.php?idrotina=" . urlencode($idRotina));
         exit;
@@ -97,6 +105,13 @@ $exercicios = $stmtEx->fetchAll(PDO::FETCH_ASSOC);
 <title>Editar Exercícios</title>
 <link rel="icon" type="image/png" href="image/logo-logfit.png">
 <script src="https://cdn.tailwindcss.com"></script>
+<script>
+function confirmarExclusao(idEx, idTreino, idRotina) {
+    if (confirm("Deseja realmente remover este exercício do treino?")) {
+        window.location.href = `editar-exercicios.php?idtreino=${idTreino}&idrotina=${idRotina}&excluir=${idEx}`;
+    }
+}
+</script>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
 
@@ -136,11 +151,18 @@ $exercicios = $stmtEx->fetchAll(PDO::FETCH_ASSOC);
                min="10" max="600" class="w-40 px-3 py-2 border rounded-lg">
       </div>
 
+      <!-- Lista de Exercícios -->
       <div class="border rounded-lg p-4 max-h-[480px] overflow-y-auto">
         <?php foreach ($exercicios as $ex): $exId = $ex['idtreino_ex']; ?>
           <input type="hidden" name="exercicio_id[]" value="<?= $exId ?>">
-          <div class="mb-4 border-b pb-3">
-            <p class="font-semibold text-gray-800"><?= htmlspecialchars($ex['nome_exercicio']) ?></p>
+          <div class="mb-4 border-b pb-3 relative">
+            <div class="flex justify-between items-start">
+              <p class="font-semibold text-gray-800"><?= htmlspecialchars($ex['nome_exercicio']) ?></p>
+              <button type="button" onclick="confirmarExclusao(<?= $exId ?>, <?= $idTreino ?>, '<?= $idRotina ?>')" 
+                      class="text-red-500 hover:scale-110 transition">
+                <img src="image/lixeira.png" alt="Excluir" class="w-5 h-5">
+              </button>
+            </div>
 
             <div class="mt-3 grid grid-cols-1 md:grid-cols-4 gap-3">
               <div>
@@ -170,16 +192,26 @@ $exercicios = $stmtEx->fetchAll(PDO::FETCH_ASSOC);
           </div>
         <?php endforeach; ?>
       </div> 
-      
-      <div class="flex justify-between items-center">
-            <a href="editar-rotina-treino.php?idrotina=<?= htmlspecialchars($_GET['idrotina'] ?? '') ?>" class="flex items-center gap-2 px-4 py-2 font-medium rounded-md transition">
-                <img src="image/seta-esquerda.png" class="w-5 h-5" alt="Voltar">
-                    Voltar
-            </a>
 
-        <button type="submit" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold">
-          Salvar Alterações
-        </button>
+      <!-- Botões -->
+      <div class="flex flex-col sm:flex-row justify-between items-center gap-3 mt-6">
+        <a href="editar-rotina-treino.php?idrotina=<?= htmlspecialchars($idRotina) ?>" 
+           class="flex items-center gap-2 px-4 py-2 font-medium rounded-md transition">
+            <img src="image/seta-esquerda.png" class="w-5 h-5" alt="Voltar">
+            Voltar
+        </a>
+
+        <div class="flex flex-col sm:flex-row gap-3">
+          <a href="editar-selecionar-exercicios.php?idtreino=<?= urlencode($idTreino) ?>&idrotina=<?= urlencode($idRotina) ?>"
+             class="px-5 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded-lg font-semibold text-center">
+             + Adicionar Exercício
+          </a>
+
+          <button type="submit" 
+                  class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold">
+            Salvar Alterações
+          </button>
+        </div>
       </div>
     </form>
   </div>

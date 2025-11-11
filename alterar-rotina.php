@@ -39,12 +39,10 @@ if (isset($_POST['acao']) && $_POST['acao'] === 'desativar') {
 }
 
 // Ativar um treino já existente
-// Ativar um treino já existente
 if (isset($_POST['acao']) && $_POST['acao'] === 'ativar' && isset($_POST['treino_id'])) {
-    // Desativa qualquer rotina ativa do usuário
+
     $pdo->prepare("UPDATE rotinas_treino SET ativa = 0 WHERE usuario_id = ?")->execute([$usuario_id]);
 
-    // Ativa a nova rotina e atualiza a data_ativacao para o momento atual
     $pdo->prepare("
         UPDATE rotinas_treino 
         SET ativa = 1, data_ativacao = NOW() 
@@ -55,6 +53,20 @@ if (isset($_POST['acao']) && $_POST['acao'] === 'ativar' && isset($_POST['treino
     header("Location: treino.php");
     exit;
 }
+
+// Excluir rotina específica
+if (isset($_POST['acao']) && $_POST['acao'] === 'excluir' && isset($_POST['treino_id'])) {
+    $treino_id = intval($_POST['treino_id']);
+
+    // Exclui vínculos de treinos e exercícios antes de remover a rotina principal
+    $pdo->prepare("DELETE FROM rotina_treinos WHERE rotina_id = ?")->execute([$treino_id]);
+    $pdo->prepare("DELETE FROM rotinas_treino WHERE idrotina = ? AND usuario_id = ?")->execute([$treino_id, $usuario_id]);
+
+    $_SESSION['msg_sucesso'] = "Rotina excluída com sucesso.";
+    header("Location: alterar-rotina.php");
+    exit;
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -84,11 +96,14 @@ if (isset($_POST['acao']) && $_POST['acao'] === 'ativar' && isset($_POST['treino
 
 <main class="flex-1 p-6">
 
-    <!-- Voltar -->
-    <a href="treino.php" class="flex items-center gap-2 px-4 py-2 font-medium mb-4">
-        <img src="image/seta-esquerda.png" class="w-5 h-5">
-        Voltar
-    </a>
+    <div class="flex justify-between items-center mb-6">
+
+        <a href="treino.php" 
+           class ="flex items-center gap-2 px-4 py-2 font-medium rounded-md transition">
+            <img src="image/seta-esquerda.png" class="w-5 h-5" alt="Voltar">
+            Voltar
+        </a>
+    </div>
 
     <div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-lg">
 
@@ -120,7 +135,7 @@ if (isset($_POST['acao']) && $_POST['acao'] === 'ativar' && isset($_POST['treino
         <h3 class="text-lg font-semibold mb-4 text-gray-800">Outros Treinos</h3>
 
         <?php if ($outrosTreinos): ?>
-            <form method="POST" class="space-y-3">
+            <form method="POST" class="space-y-3" id="form-ativar-treino">
                 <?php foreach ($outrosTreinos as $t): ?>
                     <div class="flex justify-between items-center p-4 border rounded-lg bg-gray-50 hover:bg-gray-100">
                         <div>
@@ -130,6 +145,7 @@ if (isset($_POST['acao']) && $_POST['acao'] === 'ativar' && isset($_POST['treino
                                 Início: <?= date('d/m/Y', strtotime($t['data_inicio'])) ?>
                             </p>
                         </div>
+
                         <div class="flex gap-3 items-center">
                             <!-- Radio -->
                             <input 
@@ -144,6 +160,13 @@ if (isset($_POST['acao']) && $_POST['acao'] === 'ativar' && isset($_POST['treino
                             class="flex items-center justify-center text-white rounded-md p-2 transition duration-200">
                                 <img src="image/botao-editar.png" alt="Editar" class="w-5 h-5">
                             </a>
+
+                            <!-- Botão Excluir (via JS) -->
+                            <button type="button" 
+                                    onclick="excluirRotina(<?= $t['idrotina'] ?>)"
+                                    class="p-2 rounded-md transition">
+                                <img src="image/lixeira.png" alt="Excluir" class="w-5 h-5">
+                            </button>
                         </div>
                     </div>
                 <?php endforeach; ?>
@@ -163,6 +186,23 @@ if (isset($_POST['acao']) && $_POST['acao'] === 'ativar' && isset($_POST['treino
                 Criar Novo Treino
             </a>
         </div>
+
+        <!-- Script para exclusão -->
+        <script>
+        function excluirRotina(id) {
+            if (!confirm("Tem certeza que deseja excluir esta rotina?")) return;
+
+            const formData = new FormData();
+            formData.append('acao', 'excluir');
+            formData.append('treino_id', id);
+
+            fetch('alterar-rotina.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(() => window.location.reload());
+        }
+        </script>
     </div>
 </main>
 

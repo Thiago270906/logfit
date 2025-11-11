@@ -14,6 +14,21 @@ if (!$idUsuario) {
     exit;
 }
 
+// --- Remover treino individual ---
+if (isset($_GET['excluir_treino'])) {
+    $idExcluir = intval($_GET['excluir_treino']);
+
+    if (!empty($_SESSION['treinos_rotina'])) {
+        $_SESSION['treinos_rotina'] = array_filter($_SESSION['treinos_rotina'], function ($t) use ($idExcluir) {
+            $idTreino = is_array($t) ? ($t['idtreino'] ?? null) : $t;
+            return $idTreino != $idExcluir;
+        });
+    }
+
+    header("Location: nova-rotina-treino.php");
+    exit;
+}
+
 // Verifica se há rotina temporária
 $novaRotina = $_SESSION['nova_rotina'] ?? null;
 if (!$novaRotina) {
@@ -29,19 +44,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $pdo->beginTransaction();
 
         // Criar rotina
+        $duracaoSemanas = intval($novaRotina['duracao_semanas']);
         $stmt = $pdo->prepare("
             INSERT INTO rotinas_treino (
                 usuario_id, nome, dias_semana, duracao_semanas, 
                 data_inicio, data_fim, data_ativacao, ativa
             ) VALUES (
-                ?, ?, ?, ?, NOW(), DATE_ADD(NOW(), INTERVAL ? WEEK), NOW(), 1
+                ?, ?, ?, ?, NOW(), DATE_ADD(NOW(), INTERVAL $duracaoSemanas WEEK), NOW(), 1
             )
         ");
         $stmt->execute([
             $idUsuario,
             $novaRotina['nome'],
             $novaRotina['dias_semana'],
-            $novaRotina['duracao_semanas']
+            $duracaoSemanas
         ]);
         $idRotina = $pdo->lastInsertId();
 
@@ -72,14 +88,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Buscar detalhes dos treinos já selecionados
 // Buscar detalhes dos treinos selecionados (sessão)
 $treinos = [];
 
 if (!empty($_SESSION['treinos_rotina'])) {
     $treinos = $_SESSION['treinos_rotina'];
 } elseif (!empty($_POST['treinos'])) {
-    // fallback, caso venham via POST
     $treinosSelecionados = array_map('intval', $_POST['treinos']);
     if (!empty($treinosSelecionados)) {
         $in = str_repeat('?,', count($treinosSelecionados) - 1) . '?';
@@ -141,6 +155,11 @@ if (!empty($_SESSION['treinos_rotina'])) {
                             <span class="text-lg font-semibold text-gray-800"><?= htmlspecialchars($t['nome']) ?></span>
                             <span class="text-sm text-gray-500"><?= htmlspecialchars($t['dia_semana']) ?></span>
                         </div>
+                        <a href="?excluir_treino=<?= $t['idtreino'] ?>" 
+                           class="ml-4 p-2 bg-gray-50 rounded-lg transition"
+                           title="Remover treino">
+                            <img src="image/lixeira.png" alt="Excluir" class="w-5 h-5">
+                        </a>
                     </div>
                 <?php endforeach; ?>
             </div>
@@ -168,8 +187,9 @@ if (!empty($_SESSION['treinos_rotina'])) {
     </div>
 
 </main>
+
 <footer class="bg-gray-900 p-4 text-center text-white">
-    &copy; <?php echo date('Y'); ?> LogFit. Todos os direitos reservados.
+    &copy; <?= date('Y') ?> LogFit. Todos os direitos reservados.
 </footer>
 </body>
 </html>
