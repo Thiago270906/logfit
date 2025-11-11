@@ -53,14 +53,13 @@ try {
 <header class="bg-gray-900 py-2 px-4">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
         <img src="image/logo-logfit.png" alt="logo" class="h-20 max-w-xs object-contain" />
+
         <div class="flex items-center gap-3">
-            <a href="config.php"
-               class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md transition">
-               Configurações
+            <a href="config.php">
+                <img src="image/config.png" alt="config" class="h-10 max-w-xs object-contain">
             </a>
-            <a href="logout.php"
-               class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-md transition">
-               Sair
+            <a href="logout.php">
+                <img src="image/sair.png" alt="sair" class="h-10 max-w-xs object-contain">
             </a>
         </div>
     </div>

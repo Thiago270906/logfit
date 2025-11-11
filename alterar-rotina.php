@@ -69,10 +69,15 @@ if (isset($_POST['acao']) && $_POST['acao'] === 'ativar' && isset($_POST['treino
 
 <header class="bg-gray-900 py-2 px-4">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
-        <img src="image/logo-logfit.png" class="h-20" />
-        <div class="flex gap-3">
-            <a href="config.php" class="px-4 py-2 bg-blue-600 text-white rounded-md">Configurações</a>
-            <a href="logout.php" class="px-4 py-2 bg-red-600 text-white rounded-md">Sair</a>
+        <img src="image/logo-logfit.png" alt="logo" class="h-20 max-w-xs object-contain" />
+
+        <div class="flex items-center gap-3">
+            <a href="config.php">
+                <img src="image/config.png" alt="config" class="h-10 max-w-xs object-contain">
+            </a>
+            <a href="logout.php">
+                <img src="image/sair.png" alt="sair" class="h-10 max-w-xs object-contain">
+            </a>
         </div>
     </div>
 </header>

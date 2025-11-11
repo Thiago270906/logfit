@@ -36,22 +36,20 @@ try {
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
 
-<!-- Header -->
-<header class="bg-gray-900 py-2 px-4">
+    <header class="bg-gray-900 py-2 px-4">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
         <img src="image/logo-logfit.png" alt="logo" class="h-20 max-w-xs object-contain" />
+
         <div class="flex items-center gap-3">
-            <a href="config.php"
-                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md transition-colors">
-                Configurações
+            <a href="config.php">
+                <img src="image/config.png" alt="config" class="h-10 max-w-xs object-contain">
             </a>
-            <a href="logout.php"
-                class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-md transition-colors">
-                Sair
+            <a href="logout.php">
+                <img src="image/sair.png" alt="sair" class="h-10 max-w-xs object-contain">
             </a>
         </div>
     </div>
-</header>
+    </header>
 
 <!-- Conteúdo -->
 <main class="flex-1 p-6">
@@ -75,9 +73,8 @@ try {
 
     <hr class="mb-6 border-gray-400">
 
-    <h2 class="text-2xl font-semibold mb-6">Minhas Dietas</h2>
-
     <?php if (!empty($dietas)): ?>
+        <h2 class="text-2xl font-semibold mb-6">Minhas Dietas</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <?php foreach ($dietas as $dieta): ?>
                 <div class="bg-white shadow p-4 rounded-lg flex flex-col justify-between">

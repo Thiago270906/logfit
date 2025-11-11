@@ -59,27 +59,40 @@ if ($rotina) {
 
 <header class="bg-gray-900 py-2 px-4">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
-        <img src="image/logo-logfit.png" class="h-20" />
-        <div class="flex gap-3">
-            <a href="config.php" class="px-4 py-2 bg-blue-600 text-white rounded-md">Configurações</a>
-            <a href="logout.php" class="px-4 py-2 bg-red-600 text-white rounded-md">Sair</a>
+        <img src="image/logo-logfit.png" alt="logo" class="h-20 max-w-xs object-contain" />
+
+        <div class="flex items-center gap-3">
+            <a href="config.php">
+                <img src="image/config.png" alt="config" class="h-10 max-w-xs object-contain">
+            </a>
+            <a href="logout.php">
+                <img src="image/sair.png" alt="sair" class="h-10 max-w-xs object-contain">
+            </a>
         </div>
     </div>
 </header>
 
 <main class="flex-1 p-6">
 
-    <!-- Voltar -->
-    <a href="index.php" class="flex items-center gap-2 px-4 py-2 font-medium mb-4">
-        <img src="image/seta-esquerda.png" class="w-5 h-5">
-        Voltar
-    </a>
+    <div class="flex justify-between items-center mb-6">
+
+        <a href="index.php" 
+           class ="flex items-center gap-2 px-4 py-2 font-medium rounded-md transition">
+            <img src="image/seta-esquerda.png" class="w-5 h-5" alt="Voltar">
+            Voltar
+        </a>
+
+        <a href="alterar-rotina.php" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg">
+            Selecionar Treino
+        </a>
+    </div>
+
+    <hr class="mb-6 border-gray-400">
 
     <div class="max-w-3xl mx-auto">
 
-        <h2 class="text-2xl font-semibold text-center mb-6">Treino Atual</h2>
-
         <?php if ($rotina): ?>
+            <h2 class="text-2xl font-semibold text-center mb-6">Treino Atual</h2>
             <div class="bg-white shadow-lg p-6 rounded-lg mb-6">
 
                 <h3 class="text-2xl font-bold mb-2 text-center text-gray-800"><?= htmlspecialchars($rotina['nome']) ?></h3>
@@ -134,11 +147,8 @@ if ($rotina) {
             </div>
 
         <?php else: ?>
-            <div class="bg-white shadow-lg p-6 text-center rounded-lg">
-                <p class="text-gray-600 mb-4">Você ainda não possui um treino ativo.</p>
-                <a href="alterar-rotina.php" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg">
-                    Selecionar Treino
-                </a>
+            <div class="text-center text-gray-500 italic py-8">
+                Nenhum Treino selecionado ainda. Clique em <span class="font-semibold">"Selecionar Treino"</span> para vizualizar.
             </div>
         <?php endif; ?>
 
