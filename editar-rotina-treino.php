@@ -24,7 +24,7 @@ if (!$idRotina) {
 $idRotina = (int)$idRotina;
 
 // --- Busca a rotina ---
-$stmt = $pdo->prepare("SELECT * FROM rotinas_treino WHERE idrotina = ? AND usuario_id = ?");
+$stmt = $pdo->prepare("SELECT * FROM rotinas WHERE idrotina = ? AND usuario_id = ?");
 $stmt->execute([$idRotina, $idUsuario]);
 $rotina = $stmt->fetch(PDO::FETCH_ASSOC);
 

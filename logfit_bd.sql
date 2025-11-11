@@ -67,7 +67,7 @@ CREATE TABLE rotina_treinos (
     rotina_id INT UNSIGNED NOT NULL,
     treino_id INT UNSIGNED NOT NULL,
     ordem_dia TINYINT UNSIGNED NOT NULL,
-    FOREIGN KEY (rotina_id) REFERENCES rotinas_treino(idrotina) ON DELETE CASCADE,
+    FOREIGN KEY (rotina_id) REFERENCES rotinas(idrotina) ON DELETE CASCADE,
     FOREIGN KEY (treino_id) REFERENCES treinos(idtreino) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 

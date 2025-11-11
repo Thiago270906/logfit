@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Criar rotina
         $duracaoSemanas = intval($novaRotina['duracao_semanas']);
         $stmt = $pdo->prepare("
-            INSERT INTO rotinas_treino (
+            INSERT INTO rotinas (
                 usuario_id, nome, dias_semana, duracao_semanas, 
                 data_inicio, data_fim, data_ativacao, ativa
             ) VALUES (

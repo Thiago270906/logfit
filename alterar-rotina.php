@@ -13,7 +13,7 @@ $usuario_id = $_SESSION['usuario']['id'];
 // Buscar o treino ativo
 $stmt = $pdo->prepare("
     SELECT idrotina, nome, dias_semana, data_inicio, data_fim 
-    FROM rotinas_treino 
+    FROM rotinas 
     WHERE usuario_id = ? AND ativa = 1 
     LIMIT 1
 ");
@@ -23,7 +23,7 @@ $treinoAtivo = $stmt->fetch(PDO::FETCH_ASSOC);
 // Buscar outros treinos disponíveis
 $stmt = $pdo->prepare("
     SELECT idrotina, nome, dias_semana, data_inicio, data_fim 
-    FROM rotinas_treino 
+    FROM rotinas 
     WHERE usuario_id = ? AND ativa = 0
     ORDER BY data_inicio DESC
 ");
@@ -32,7 +32,7 @@ $outrosTreinos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Desativar treino atual
 if (isset($_POST['acao']) && $_POST['acao'] === 'desativar') {
-    $pdo->prepare("UPDATE rotinas_treino SET ativa = 0 WHERE usuario_id = ?")->execute([$usuario_id]);
+    $pdo->prepare("UPDATE rotinas SET ativa = 0 WHERE usuario_id = ?")->execute([$usuario_id]);
     $_SESSION['msg_sucesso'] = "Treino desativado com sucesso.";
     header("Location: treino.php");
     exit;
@@ -41,10 +41,10 @@ if (isset($_POST['acao']) && $_POST['acao'] === 'desativar') {
 // Ativar um treino já existente
 if (isset($_POST['acao']) && $_POST['acao'] === 'ativar' && isset($_POST['treino_id'])) {
 
-    $pdo->prepare("UPDATE rotinas_treino SET ativa = 0 WHERE usuario_id = ?")->execute([$usuario_id]);
+    $pdo->prepare("UPDATE rotinas SET ativa = 0 WHERE usuario_id = ?")->execute([$usuario_id]);
 
     $pdo->prepare("
-        UPDATE rotinas_treino 
+        UPDATE rotinas 
         SET ativa = 1, data_ativacao = NOW() 
         WHERE idrotina = ? AND usuario_id = ?
     ")->execute([$_POST['treino_id'], $usuario_id]);
@@ -60,7 +60,7 @@ if (isset($_POST['acao']) && $_POST['acao'] === 'excluir' && isset($_POST['trein
 
     // Exclui vínculos de treinos e exercícios antes de remover a rotina principal
     $pdo->prepare("DELETE FROM rotina_treinos WHERE rotina_id = ?")->execute([$treino_id]);
-    $pdo->prepare("DELETE FROM rotinas_treino WHERE idrotina = ? AND usuario_id = ?")->execute([$treino_id, $usuario_id]);
+    $pdo->prepare("DELETE FROM rotinas WHERE idrotina = ? AND usuario_id = ?")->execute([$treino_id, $usuario_id]);
 
     $_SESSION['msg_sucesso'] = "Rotina excluída com sucesso.";
     header("Location: alterar-rotina.php");

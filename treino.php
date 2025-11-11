@@ -13,7 +13,7 @@ $nomeUsuario = $_SESSION['usuario']['nome'] ?? 'Usuário';
 // Buscar Rotina Ativa
 $stmt = $pdo->prepare("
     SELECT idrotina, nome, dias_semana, data_inicio, data_fim, data_ativacao 
-    FROM rotinas_treino 
+    FROM rotinas 
     WHERE usuario_id = ? AND ativa = 1 
     LIMIT 1
 ");

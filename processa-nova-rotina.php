@@ -24,7 +24,7 @@ try {
     $data_fim = date('Y-m-d', strtotime("+$duracao_semanas week", strtotime($data_inicio)));
 
     // Inserir rotina
-    $sql = "INSERT INTO rotinas_treino (usuario_id, nome, dias_semana, duracao_semanas, data_inicio, data_fim, ativa)
+    $sql = "INSERT INTO rotinas (usuario_id, nome, dias_semana, duracao_semanas, data_inicio, data_fim, ativa)
             VALUES (?, ?, ?, ?, ?, ?, 1)";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([

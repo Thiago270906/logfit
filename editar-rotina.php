@@ -19,7 +19,7 @@ if (!isset($_GET['id'])) {
 $idrotina = (int)$_GET['id'];
 
 // Busca dados da rotina
-$stmt = $pdo->prepare("SELECT * FROM rotinas_treino WHERE idrotina = ? AND usuario_id = ?");
+$stmt = $pdo->prepare("SELECT * FROM rotinas WHERE idrotina = ? AND usuario_id = ?");
 $stmt->execute([$idrotina, $usuario_id]);
 $rotina = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data_fim = $_POST['data_fim'] ?? null;
 
     $stmt = $pdo->prepare("
-        UPDATE rotinas_treino
+        UPDATE rotinas
         SET nome = ?, dias_semana = ?, data_inicio = ?, data_fim = ?
         WHERE idrotina = ? AND usuario_id = ?
     ");
