@@ -1,127 +1,112 @@
 -- Criação do Banco de Dados
+DROP DATABASE logfit_db;
 CREATE DATABASE logfit_db;
 USE logfit_db;
 
 -- 1. Tabela de Usuários (Mantida como base)
 CREATE TABLE usuarios (
-    idusuario INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    idusuario INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     senha VARCHAR(255) NOT NULL,
     idade int,
     peso_inicial DECIMAL(5, 2),
-    altura_cm SMALLINT UNSIGNED,
+    altura_cm SMALLINT,
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB;
+);
 
 -- 2. Tabela de Catálogo de Exercícios
 CREATE TABLE exercicios (
-    idexercicio INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    idexercicio INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL UNIQUE,
     grupo_muscular VARCHAR(50)
-) ENGINE=InnoDB;
+);
 
 -- 3. Tabela de Rotina de Treino
 CREATE TABLE rotinas (
-    idrotina INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    usuario_id INT UNSIGNED NOT NULL,
+    idrotina INT AUTO_INCREMENT PRIMARY KEY,
+    idusuario INT NOT NULL,
     nome VARCHAR(100) NOT NULL,
-    dias_semana TINYINT UNSIGNED NOT NULL,
-    duracao_semanas TINYINT UNSIGNED NOT NULL,
     data_inicio DATE NOT NULL,
     data_fim DATE,
     data_ativacao DATETIME,
     ativa TINYINT(1) DEFAULT 1, -- Rotina ativa no momento
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(idusuario) ON DELETE CASCADE
-) ENGINE=InnoDB;
+    FOREIGN KEY (idusuario) REFERENCES usuarios(idusuario) ON DELETE CASCADE
+);
 
 -- 4. Tabela de Dias de Treino dentro da Rotina
 CREATE TABLE treinos (
-    idtreino INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    usuario_id INT UNSIGNED NOT NULL,
+    idtreino INT AUTO_INCREMENT PRIMARY KEY,
+    idusuario INT NOT NULL,
     nome VARCHAR(100) NOT NULL,
     dia_semana ENUM('Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo') NULL,
-    descanso_padrao_seg SMALLINT UNSIGNED DEFAULT 60,
     data_criacao DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(idusuario) ON DELETE CASCADE
-) ENGINE=InnoDB;
+    FOREIGN KEY (idusuario) REFERENCES usuarios(idusuario) ON DELETE CASCADE
+);
 
 
 -- 5. Tabela de Exercícios da Rotina
 CREATE TABLE treino_exercicios (
-    idtreino_ex INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    treino_id INT UNSIGNED NOT NULL,
-    exercicio_id INT UNSIGNED NULL,
-    nome_exercicio VARCHAR(100) NOT NULL,
-    series SMALLINT UNSIGNED,
+    idtreino_ex INT AUTO_INCREMENT PRIMARY KEY,
+    idtreino INT NOT NULL,
+    idexercicio INT NULL,
+    series SMALLINT,
     repeticoes VARCHAR(20),
     carga_kg DECIMAL(6,2),
-    descanso_seg SMALLINT UNSIGNED,
-    FOREIGN KEY (treino_id) REFERENCES treinos(idtreino) ON DELETE CASCADE,
-    FOREIGN KEY (exercicio_id) REFERENCES exercicios(idexercicio) ON DELETE SET NULL
-) ENGINE=InnoDB;
+    descanso_seg SMALLINT,
+    observacao text,
+    FOREIGN KEY (idtreino) REFERENCES treinos(idtreino) ON DELETE CASCADE,
+    FOREIGN KEY (idexercicio) REFERENCES exercicios(idexercicio) ON DELETE SET NULL
+);
 
 -- 6. Tabela de Treinos dentro de uma Rotina
 CREATE TABLE rotina_treinos (
-    idrotina_treino INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    rotina_id INT UNSIGNED NOT NULL,
-    treino_id INT UNSIGNED NOT NULL,
-    ordem_dia TINYINT UNSIGNED NOT NULL,
-    FOREIGN KEY (rotina_id) REFERENCES rotinas(idrotina) ON DELETE CASCADE,
-    FOREIGN KEY (treino_id) REFERENCES treinos(idtreino) ON DELETE CASCADE
-) ENGINE=InnoDB;
+    idrotina_treino INT AUTO_INCREMENT PRIMARY KEY,
+    idrotina INT NOT NULL,
+    idtreino INT NOT NULL,
+    FOREIGN KEY (idrotina) REFERENCES rotinas(idrotina) ON DELETE CASCADE,
+    FOREIGN KEY (idtreino) REFERENCES treinos(idtreino) ON DELETE CASCADE
+);
 
+-- 7. Tabela Refeição
+CREATE TABLE refeicoes (
+	idrefeicao INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,usuarios
+    kcal DECIMAL(7, 2) NOT NULL
+);
 
--- 7. Tabela de Treinos Realizados (Histórico)
-CREATE TABLE treinos_realizados (
-    idtreino_real INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    usuario_id INT UNSIGNED NOT NULL,
-    treino_id INT UNSIGNED NULL,
-    data DATE NOT NULL,
-    observacoes VARCHAR(350),
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(idusuario) ON DELETE CASCADE,
-    FOREIGN KEY (treino_id) REFERENCES treinos(idtreino) ON DELETE SET NULL
-) ENGINE=InnoDB;
-
--- 8. Tabela de Exercícios feitos no Dia
-CREATE TABLE detalhes_treino (
-    iddetalhe INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    treino_real_id INT UNSIGNED NOT NULL,
-    nome_exercicio VARCHAR(100) NOT NULL,
-    series SMALLINT UNSIGNED,
-    repeticoes VARCHAR(20),
-    carga_kg DECIMAL(6,2),
-    descanso_seg SMALLINT UNSIGNED,
-    FOREIGN KEY (treino_real_id) REFERENCES treinos_realizados(idtreino_real) ON DELETE CASCADE
-) ENGINE=InnoDB;
+-- 8. Tabela Opção
+CREATE TABLE opcoes (
+	idopcao INT AUTO_INCREMENT PRIMARY KEY,
+    idrefeicao INT NOT NULL,
+    quantidade DECIMAL NOT NULL,
+    kcal_opcao Decimal(7,2) NOT NULL,
+    tipo ENUM('Café da Manhã','Lanche da Manhã','Almoço','Lanche da Tarde','Pós Treino','Janta','Ceia') NOT NULL,
+    FOREIGN KEY (idrefeicao) REFERENCES refeicoes(idrefeicao) ON DELETE CASCADE
+);
 
 -- 9. Tabela de Dietas
 CREATE TABLE dietas (
-    iddieta INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    usuario_id INT UNSIGNED NOT NULL,
+    iddieta INT AUTO_INCREMENT PRIMARY KEY,
+    idusuario INT NOT NULL,
+    idopcao INT NOT NULL,
     nome_dieta VARCHAR(100) NOT NULL,
-    kcal_total INT UNSIGNED NOT NULL,
-    agua_ml INT UNSIGNED NOT NULL,
-    cafe_manha TEXT,
-    lanche_manha TEXT,
-    almoco TEXT,
-    lanche_tarde TEXT,
-    janta TEXT,
-    ceia TEXT,
+    kcal_total DECIMAL(7,2) NOT NULL,
+    agua_ml INT NOT NULL,
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(idusuario) ON DELETE CASCADE
-) ENGINE=InnoDB;
+    FOREIGN KEY (idusuario) REFERENCES usuarios(idusuario) ON DELETE CASCADE,
+    FOREIGN KEY (idopcao) REFERENCES opcoes(idopcao) ON DELETE CASCADE
+);
 
--- 10. Tabela de Progresso
-CREATE TABLE progresso (
-    idprogresso INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    usuario_id INT UNSIGNED NOT NULL,
-    data DATE NOT NULL,
+-- 11. Tabela de Progresso
+CREATE TABLE acompanhamentos (
+    idacompanhamento INT AUTO_INCREMENT PRIMARY KEY,
+    idusuario INT NOT NULL,
+    data_criacao DATETIME DEFAULT CURRENT_TIMESTAMP,
     peso_kg DECIMAL(5, 2) NOT NULL,
     observacoes TEXT,
-    UNIQUE KEY uk_data_usuario (usuario_id, data),
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(idusuario) ON DELETE CASCADE
-) ENGINE=InnoDB;
+    FOREIGN KEY (idusuario) REFERENCES usuarios(idusuario) ON DELETE CASCADE
+);
 
 INSERT INTO exercicios (nome, grupo_muscular) VALUES
 -- PEITO (8)
