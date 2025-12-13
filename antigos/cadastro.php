@@ -75,6 +75,34 @@ if (empty($_SESSION['csrf_token'])) {
              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500" />
     </div>
 
+<div class="mb-4">
+  </label>
+
+  <div class="flex items-center gap-6">
+    <label class="flex items-center gap-2 cursor-pointer">
+      <input
+        type="radio"
+        name="tipo"
+        id="administrador"
+        value="administrador"
+        class="text-blue-600"
+      />
+      <span class="text-sm text-gray-700">Administrador</span>
+    </label>
+
+    <label class="flex items-center gap-2 cursor-pointer">
+      <input
+        type="radio"
+        name="tipo"
+        id="usuario"
+        value="usuario"
+        class="text-blue-600"
+      />
+      <span class="text-sm text-gray-700">Usuário</span>
+    </label>
+  </div>
+</div>
+
     <div>
       <label for="idade" class="block text-sm font-semibold text-gray-700 mb-1">Idade</label>
       <input type="number" name="idade" id="idade" min="0" max="150"

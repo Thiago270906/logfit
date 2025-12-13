@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             // Insere o usuário
-            $sql = "INSERT INTO usuarios (nome, email, senha, idade, peso_inicial, altura_cm)
+            $sql = "INSERT INTO usuarios (nome, email, senha, tipo, idade, peso_inicial, altura_cm)
                     VALUES (:nome, :email, :senha, :idade, :peso_inicial, :altura_cm)";
             $stmt = $pdo->prepare($sql);
 
