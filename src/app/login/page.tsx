@@ -8,7 +8,7 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         <div className="mb-8 flex justify-center">
           <Image
-            src="/images/logos/logo-estacao-acad.jpg"
+            src="/images/logos/logo-estacao-acad-icon.jpg"
             alt="Estação Acad"
             width={120}
             height={120}
