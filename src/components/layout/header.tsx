@@ -17,20 +17,22 @@ export function Header({ userName }: HeaderProps) {
   return (
     <header
       className={cn(
-        "flex h-16 items-center justify-between border-b-4 px-6",
+        "flex h-16 items-center justify-between border-b-[6px] px-6",
         isSettings
           ? "border-[#2b2b2b] bg-[#404040]"
-          : "border-[#5d2111] bg-primary",
+          : "border-[#9c3a1e] bg-primary",
       )}
     >
       <div className="flex items-center gap-3">
-        <Image
-          src="/images/logos/logo-estacao-acad-icon.jpg"
-          alt="Estação Acad"
-          width={44}
-          height={44}
-          className="rounded-full"
-        />
+        <div className="flex h-[50px] w-[50px] shrink-0 items-center justify-center rounded-full bg-white">
+          <Image
+            src="/images/logos/logo-estacao-acad-icon.jpg"
+            alt="Estação Acad"
+            width={44}
+            height={44}
+            className="h-11 w-11 rounded-full object-cover"
+          />
+        </div>
         <span className="text-lg font-bold text-primary-foreground">
           {isSettings ? "Configurações" : "Estação do Corpo"}
         </span>

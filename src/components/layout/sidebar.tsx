@@ -44,6 +44,11 @@ export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const isSettings = pathname.startsWith("/dashboard/configuracoes");
+  const activeHref = [...navItems]
+    .sort((a, b) => b.href.length - a.href.length)
+    .find(
+      (item) => pathname === item.href || pathname.startsWith(`${item.href}/`),
+    )?.href;
 
   async function handleSignOut() {
     await authClient.signOut();
@@ -81,8 +86,7 @@ export function Sidebar() {
           </>
         ) : (
           navItems.map((item) => {
-            const isActive =
-              pathname === item.href || pathname.startsWith(`${item.href}/`);
+            const isActive = activeHref === item.href;
             const Icon = item.icon;
 
             return (
