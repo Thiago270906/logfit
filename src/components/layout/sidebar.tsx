@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, LogOut, Users } from "lucide-react";
+import { LayoutDashboard, LogOut, Settings, Users } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { authClient } from "@/lib/auth/client";
@@ -47,6 +47,20 @@ export function Sidebar() {
       </nav>
 
       <div className="px-3">
+        <Link
+          href="/dashboard/configuracoes"
+          className={cn(
+            "flex items-center gap-3 rounded-md border-l-2 border-transparent px-3 py-2 text-sm font-medium text-zinc-400 transition-colors hover:bg-white/5 hover:text-white",
+            pathname.startsWith("/dashboard/configuracoes") &&
+              "border-primary bg-white/5 text-white",
+          )}
+        >
+          <Settings className="h-4 w-4" />
+          Configurações
+        </Link>
+
+        <div className="my-2 border-t border-white/10" />
+
         <button
           type="button"
           onClick={handleSignOut}

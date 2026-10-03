@@ -5,8 +5,8 @@ import { getDb } from "../src/lib/db";
 import { user } from "../src/lib/db/schema";
 
 async function main() {
-  const email = process.env.SEED_ADMIN_EMAIL ?? "admin@estacaoacad.com.br";
-  const password = process.env.SEED_ADMIN_PASSWORD ?? "admin123456";
+  const email = process.env.SEED_ADMIN_EMAIL ?? "admin@logfit.com";
+  const password = process.env.SEED_ADMIN_PASSWORD ?? "Admin@2026";
   const name = "Administrador";
 
   await auth.api.signUpEmail({ body: { email, password, name } });
