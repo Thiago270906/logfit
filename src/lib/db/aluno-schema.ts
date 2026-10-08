@@ -14,6 +14,7 @@ export const aluno = pgTable("aluno", {
   dataNascimento: date("data_nascimento"),
   genero: text("genero", { enum: ALUNO_GENEROS }),
   endereco: text("endereco"),
+  numero: text("numero"),
   bairro: text("bairro"),
   cidade: text("cidade"),
   uf: text("uf"),

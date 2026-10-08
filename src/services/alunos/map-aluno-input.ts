@@ -8,6 +8,7 @@ export function mapAlunoInput(data: CreateAlunoInput) {
     dataNascimento: data.dataNascimento ?? null,
     genero: data.genero ?? null,
     endereco: data.endereco ?? null,
+    numero: data.numero ?? null,
     bairro: data.bairro ?? null,
     cidade: data.cidade ?? null,
     uf: data.uf ?? null,

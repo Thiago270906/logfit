@@ -56,6 +56,7 @@ function alunoToDefaultValues(
     dataNascimento: aluno.dataNascimento ?? "",
     genero: aluno.genero ?? undefined,
     endereco: aluno.endereco ?? "",
+    numero: aluno.numero ?? "",
     bairro: aluno.bairro ?? "",
     cidade: aluno.cidade ?? "",
     uf: aluno.uf ?? "",
@@ -184,8 +185,8 @@ export function AlunoFormDialog({ aluno, trigger }: AlunoFormDialogProps) {
                 Informações pessoais
               </h3>
 
-              <div className="flex flex-col gap-4 sm:flex-row">
-                <div className="flex shrink-0 flex-col items-center gap-1.5 self-start">
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col items-center gap-1.5">
                   <div className="flex h-20 w-20 flex-col items-center justify-center gap-1 rounded-full border border-dashed border-border bg-muted/40 text-center">
                     <ImageIcon className="h-5 w-5 text-muted-foreground" />
                   </div>
@@ -194,7 +195,7 @@ export function AlunoFormDialog({ aluno, trigger }: AlunoFormDialogProps) {
                   </span>
                 </div>
 
-                <div className="grid flex-1 grid-cols-1 gap-3 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div className="space-y-2 sm:col-span-2">
                     <Label htmlFor="nome">Nome completo</Label>
                     <Input
@@ -335,16 +336,16 @@ export function AlunoFormDialog({ aluno, trigger }: AlunoFormDialogProps) {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="endereco">Endereço</Label>
+                    <Label htmlFor="endereco">Rua</Label>
                     <Input
                       id="endereco"
-                      placeholder="Rua, número, complemento"
+                      placeholder="Nome da rua"
                       {...register("endereco")}
                     />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-[2fr_2fr_1fr] gap-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-[2fr_2fr_1fr_1fr]">
                   <div className="space-y-2">
                     <Label htmlFor="bairro">Bairro</Label>
                     <Input id="bairro" {...register("bairro")} />
@@ -353,6 +354,11 @@ export function AlunoFormDialog({ aluno, trigger }: AlunoFormDialogProps) {
                   <div className="space-y-2">
                     <Label htmlFor="cidade">Cidade</Label>
                     <Input id="cidade" {...register("cidade")} />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="numero">Número</Label>
+                    <Input id="numero" placeholder="Nº" {...register("numero")} />
                   </div>
 
                   <div className="space-y-2">

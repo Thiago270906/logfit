@@ -25,6 +25,7 @@ export const createAlunoSchema = z.object({
   dataNascimento: optionalText,
   genero: z.enum(ALUNO_GENEROS).optional(),
   endereco: optionalText,
+  numero: optionalText,
   bairro: optionalText,
   cidade: optionalText,
   uf: optionalText,
