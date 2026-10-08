@@ -23,6 +23,7 @@ import {
   createPlanoAction,
   updatePlanoAction,
 } from "@/app/dashboard/planos/actions";
+import { PERIODICIDADES } from "@/constants/periodicidade";
 import type { Plano } from "@/lib/db/plano-schema";
 import {
   createPlanoSchema,
@@ -50,17 +51,11 @@ function planoToDefaultValues(
   };
 }
 
-type PeriodicidadeFieldConfig = {
-  key: "diaria" | "mensal" | "anual";
-  label: string;
-  placeholder: string;
+const PLACEHOLDERS: Record<(typeof PERIODICIDADES)[number]["key"], string> = {
+  diaria: "Valor da diária",
+  mensal: "Valor da mensalidade",
+  anual: "Valor da anuidade",
 };
-
-const PERIODICIDADES: PeriodicidadeFieldConfig[] = [
-  { key: "diaria", label: "Diária", placeholder: "Valor da diária" },
-  { key: "mensal", label: "Mensal", placeholder: "Valor da mensalidade" },
-  { key: "anual", label: "Anual", placeholder: "Valor da anuidade" },
-];
 
 type PlanoFormDialogProps = {
   plano?: Plano;
@@ -173,10 +168,9 @@ export function PlanoFormDialog({ plano, trigger }: PlanoFormDialogProps) {
               </p>
 
               <div className="space-y-4">
-                {PERIODICIDADES.map(({ key, label, placeholder }) => {
-                  const habilitadaField = `${key}Habilitada` as const;
-                  const valorField = `${key}Valor` as const;
+                {PERIODICIDADES.map(({ key, label, habilitadaField, valorField }) => {
                   const habilitada = watch(habilitadaField);
+                  const placeholder = PLACEHOLDERS[key];
 
                   return (
                     <div key={key} className="flex items-start gap-3">
