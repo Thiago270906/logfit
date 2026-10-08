@@ -27,11 +27,13 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { createAlunoAction, updateAlunoAction } from "@/app/dashboard/alunos/actions";
+import { UFS } from "@/constants/uf";
 import { ALUNO_GENEROS, type Aluno } from "@/lib/db/aluno-schema";
 import {
   createAlunoSchema,
   type CreateAlunoFormInput,
 } from "@/lib/validations/aluno";
+import { getEnderecoByCep } from "@/services/cep/get-endereco-by-cep";
 
 const generoLabels: Record<(typeof ALUNO_GENEROS)[number], string> = {
   masculino: "Masculino",
@@ -80,17 +82,42 @@ export function AlunoFormDialog({ aluno, trigger }: AlunoFormDialogProps) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [isBuscandoCep, setIsBuscandoCep] = useState(false);
+  const [cepNaoEncontrado, setCepNaoEncontrado] = useState(false);
 
   const {
     register,
     handleSubmit,
     reset,
     control,
+    setValue,
     formState: { errors },
   } = useForm<CreateAlunoFormInput>({
     resolver: zodResolver(createAlunoSchema),
     defaultValues,
   });
+
+  async function handleCepBlur(event: React.FocusEvent<HTMLInputElement>) {
+    const cep = event.target.value;
+    const digits = cep.replace(/\D/g, "");
+    if (digits.length !== 8) return;
+
+    setIsBuscandoCep(true);
+    setCepNaoEncontrado(false);
+
+    const endereco = await getEnderecoByCep(cep);
+
+    if (endereco) {
+      setValue("endereco", endereco.endereco, { shouldValidate: true });
+      setValue("bairro", endereco.bairro, { shouldValidate: true });
+      setValue("cidade", endereco.cidade, { shouldValidate: true });
+      setValue("uf", endereco.uf, { shouldValidate: true });
+    } else {
+      setCepNaoEncontrado(true);
+    }
+
+    setIsBuscandoCep(false);
+  }
 
   async function onSubmit(data: CreateAlunoFormInput) {
     setIsSubmitting(true);
@@ -241,7 +268,10 @@ export function AlunoFormDialog({ aluno, trigger }: AlunoFormDialogProps) {
                       name="genero"
                       control={control}
                       render={({ field }) => (
-                        <Select value={field.value} onValueChange={field.onChange}>
+                        <Select
+                          value={field.value ?? ""}
+                          onValueChange={field.onChange}
+                        >
                           <SelectTrigger id="genero" className="w-full">
                             <SelectValue placeholder="Selecione" />
                           </SelectTrigger>
@@ -282,34 +312,73 @@ export function AlunoFormDialog({ aluno, trigger }: AlunoFormDialogProps) {
             {/* Endereço */}
             <section className="space-y-3 border-t border-border pt-4">
               <h3 className="text-sm font-medium text-foreground">Endereço</h3>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <div className="space-y-2 sm:col-span-2">
-                  <Label htmlFor="endereco">Endereço</Label>
-                  <Input
-                    id="endereco"
-                    placeholder="Rua, número, complemento"
-                    {...register("endereco")}
-                  />
+              <div className="space-y-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_2fr]">
+                  <div className="space-y-2">
+                    <Label htmlFor="cep">CEP</Label>
+                    <Input
+                      id="cep"
+                      placeholder="00000-000"
+                      maxLength={9}
+                      {...register("cep", { onBlur: handleCepBlur })}
+                    />
+                    {isBuscandoCep && (
+                      <p className="text-xs text-muted-foreground">
+                        Buscando endereço...
+                      </p>
+                    )}
+                    {cepNaoEncontrado && (
+                      <p className="text-xs text-destructive">
+                        CEP não encontrado. Preencha manualmente.
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="endereco">Endereço</Label>
+                    <Input
+                      id="endereco"
+                      placeholder="Rua, número, complemento"
+                      {...register("endereco")}
+                    />
+                  </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="bairro">Bairro</Label>
-                  <Input id="bairro" {...register("bairro")} />
-                </div>
+                <div className="grid grid-cols-[2fr_2fr_1fr] gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="bairro">Bairro</Label>
+                    <Input id="bairro" {...register("bairro")} />
+                  </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="cidade">Cidade</Label>
-                  <Input id="cidade" {...register("cidade")} />
-                </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="cidade">Cidade</Label>
+                    <Input id="cidade" {...register("cidade")} />
+                  </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="uf">UF</Label>
-                  <Input id="uf" placeholder="SP" maxLength={2} {...register("uf")} />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="cep">CEP</Label>
-                  <Input id="cep" placeholder="00000-000" {...register("cep")} />
+                  <div className="space-y-2">
+                    <Label htmlFor="uf">UF</Label>
+                    <Controller
+                      name="uf"
+                      control={control}
+                      render={({ field }) => (
+                        <Select
+                          value={field.value ?? ""}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger id="uf" className="w-full">
+                            <SelectValue placeholder="UF" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {UFS.map((uf) => (
+                              <SelectItem key={uf} value={uf}>
+                                {uf}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                  </div>
                 </div>
               </div>
             </section>
