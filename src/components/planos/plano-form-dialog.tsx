@@ -2,7 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Controller, useForm, type DefaultValues } from "react-hook-form";
+import {
+  Controller,
+  useForm,
+  useWatch,
+  type DefaultValues,
+} from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
 
@@ -78,13 +83,14 @@ export function PlanoFormDialog({ plano, trigger }: PlanoFormDialogProps) {
     handleSubmit,
     reset,
     control,
-    watch,
     setValue,
     formState: { errors },
   } = useForm<CreatePlanoFormInput>({
     resolver: zodResolver(createPlanoSchema),
     defaultValues,
   });
+
+  const periodicidadeValues = useWatch({ control });
 
   async function onSubmit(data: CreatePlanoFormInput) {
     setIsSubmitting(true);
@@ -169,7 +175,7 @@ export function PlanoFormDialog({ plano, trigger }: PlanoFormDialogProps) {
 
               <div className="space-y-4">
                 {PERIODICIDADES.map(({ key, label, habilitadaField, valorField }) => {
-                  const habilitada = watch(habilitadaField);
+                  const habilitada = Boolean(periodicidadeValues[habilitadaField]);
                   const placeholder = PLACEHOLDERS[key];
 
                   return (
