@@ -4,12 +4,6 @@ import { AlunoFormDialog } from "@/components/alunos/aluno-form-dialog";
 import { AlunoRowActions } from "@/components/alunos/aluno-row-actions";
 import { getAlunos } from "@/services/alunos/get-alunos";
 
-const situacaoLabels: Record<string, string> = {
-  ativo: "Ativo",
-  inativo: "Inativo",
-  trancado: "Trancado",
-};
-
 export default async function AlunosPage() {
   const alunos = await getAlunos();
 
@@ -41,11 +35,11 @@ export default async function AlunosPage() {
           <table className="w-full text-left text-sm">
             <thead className="bg-muted/50 text-xs uppercase text-muted-foreground">
               <tr>
-                <th className="px-4 py-3 font-medium">Matrícula</th>
+                <th className="px-4 py-3 font-medium">ID</th>
                 <th className="px-4 py-3 font-medium">Nome</th>
+                <th className="px-4 py-3 font-medium">CPF</th>
                 <th className="px-4 py-3 font-medium">Telefone</th>
-                <th className="px-4 py-3 font-medium">Situação</th>
-                <th className="px-4 py-3 font-medium">Débito</th>
+                <th className="px-4 py-3 font-medium">CEP</th>
                 <th className="px-4 py-3 font-medium text-right">Ações</th>
               </tr>
             </thead>
@@ -59,16 +53,13 @@ export default async function AlunosPage() {
                     {aluno.nome}
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">
+                    {aluno.cpf}
+                  </td>
+                  <td className="px-4 py-3 text-muted-foreground">
                     {aluno.telefone}
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">
-                    {situacaoLabels[aluno.situacao] ?? aluno.situacao}
-                  </td>
-                  <td className="px-4 py-3 text-muted-foreground">
-                    {Number(aluno.debito).toLocaleString("pt-BR", {
-                      style: "currency",
-                      currency: "BRL",
-                    })}
+                    {aluno.cep ?? "-"}
                   </td>
                   <td className="px-4 py-3">
                     <AlunoRowActions aluno={aluno} />
