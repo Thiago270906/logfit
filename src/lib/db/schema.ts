@@ -3,5 +3,7 @@ export * from "./auth-schema";
 
 export * from "./aluno-schema";
 
+export * from "./plano-schema";
+
 // Demais tabelas serão adicionadas aqui conforme os módulos forem implementados
-// (planos, financeiro, treinos, aulas, check-in, etc.).
+// (financeiro, treinos, aulas, check-in, etc.).

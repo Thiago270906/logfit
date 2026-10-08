@@ -10,6 +10,7 @@ import {
   Radio,
   Settings,
   Users,
+  Wallet,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -18,6 +19,7 @@ import { authClient } from "@/lib/auth/client";
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/dashboard/alunos", label: "Alunos", icon: Users },
+  { href: "/dashboard/planos", label: "Planos", icon: Wallet },
 ];
 
 const settingsNavItems = [
