@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { ALUNO_SITUACOES } from "@/lib/db/aluno-schema";
+import { ALUNO_GENEROS, ALUNO_SITUACOES } from "@/lib/db/aluno-schema";
 
 const optionalText = z
   .string()
@@ -22,6 +22,8 @@ export const createAlunoSchema = z.object({
     .int("Idade inválida")
     .positive("Idade inválida")
     .optional(),
+  dataNascimento: optionalText,
+  genero: z.enum(ALUNO_GENEROS).optional(),
   endereco: optionalText,
   bairro: optionalText,
   cidade: optionalText,

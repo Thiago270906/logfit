@@ -1,6 +1,7 @@
-import { integer, numeric, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+import { date, integer, numeric, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 
 export const ALUNO_SITUACOES = ["ativo", "inativo", "trancado"] as const;
+export const ALUNO_GENEROS = ["masculino", "feminino", "outro"] as const;
 
 export const aluno = pgTable("aluno", {
   id: text("id")
@@ -10,6 +11,8 @@ export const aluno = pgTable("aluno", {
   nome: text("nome").notNull(),
   email: text("email"),
   idade: integer("idade"),
+  dataNascimento: date("data_nascimento"),
+  genero: text("genero", { enum: ALUNO_GENEROS }),
   endereco: text("endereco"),
   bairro: text("bairro"),
   cidade: text("cidade"),

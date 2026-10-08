@@ -27,16 +27,16 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { createAlunoAction, updateAlunoAction } from "@/app/dashboard/alunos/actions";
-import { ALUNO_SITUACOES, type Aluno } from "@/lib/db/aluno-schema";
+import { ALUNO_GENEROS, type Aluno } from "@/lib/db/aluno-schema";
 import {
   createAlunoSchema,
   type CreateAlunoFormInput,
 } from "@/lib/validations/aluno";
 
-const situacaoLabels: Record<(typeof ALUNO_SITUACOES)[number], string> = {
-  ativo: "Ativo",
-  inativo: "Inativo",
-  trancado: "Trancado",
+const generoLabels: Record<(typeof ALUNO_GENEROS)[number], string> = {
+  masculino: "Masculino",
+  feminino: "Feminino",
+  outro: "Outro",
 };
 
 const emptyDefaultValues: DefaultValues<CreateAlunoFormInput> = {
@@ -51,6 +51,8 @@ function alunoToDefaultValues(
     nome: aluno.nome,
     email: aluno.email ?? "",
     idade: aluno.idade ?? undefined,
+    dataNascimento: aluno.dataNascimento ?? "",
+    genero: aluno.genero ?? undefined,
     endereco: aluno.endereco ?? "",
     bairro: aluno.bairro ?? "",
     cidade: aluno.cidade ?? "",
@@ -132,7 +134,7 @@ export function AlunoFormDialog({ aluno, trigger }: AlunoFormDialogProps) {
         }
       />
 
-      <DialogContent className="sm:max-w-2xl">
+      <DialogContent className="flex max-h-[85vh] flex-col sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>
             {isEditMode ? "Editar Aluno" : "Cadastro de Aluno"}
@@ -146,144 +148,193 @@ export function AlunoFormDialog({ aluno, trigger }: AlunoFormDialogProps) {
 
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="grid grid-cols-1 gap-4 sm:grid-cols-[1fr_auto]"
+          className="flex min-h-0 flex-1 flex-col"
         >
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="nome">Nome</Label>
-              <Input id="nome" placeholder="Nome completo" {...register("nome")} />
-              {errors.nome && (
-                <p className="text-sm text-destructive">{errors.nome.message}</p>
-              )}
-            </div>
+          <div className="-mx-4 flex-1 space-y-6 overflow-y-auto px-4 py-1">
+            {/* Informações pessoais */}
+            <section className="space-y-4">
+              <h3 className="text-sm font-medium text-foreground">
+                Informações pessoais
+              </h3>
 
-            <div className="space-y-2">
-              <Label htmlFor="email">E-mail</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="aluno@email.com"
-                {...register("email")}
-              />
-              {errors.email && (
-                <p className="text-sm text-destructive">{errors.email.message}</p>
-              )}
-            </div>
+              <div className="flex flex-col gap-4 sm:flex-row">
+                <div className="flex shrink-0 flex-col items-center gap-1.5 self-start">
+                  <div className="flex h-20 w-20 flex-col items-center justify-center gap-1 rounded-full border border-dashed border-border bg-muted/40 text-center">
+                    <ImageIcon className="h-5 w-5 text-muted-foreground" />
+                  </div>
+                  <span className="text-[11px] text-muted-foreground">
+                    Foto em breve
+                  </span>
+                </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="idade">Idade</Label>
-              <Input id="idade" type="number" min={0} {...register("idade")} />
-              {errors.idade && (
-                <p className="text-sm text-destructive">{errors.idade.message}</p>
-              )}
-            </div>
+                <div className="grid flex-1 grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label htmlFor="nome">Nome completo</Label>
+                    <Input
+                      id="nome"
+                      placeholder="Nome completo"
+                      {...register("nome")}
+                    />
+                    {errors.nome && (
+                      <p className="text-sm text-destructive">
+                        {errors.nome.message}
+                      </p>
+                    )}
+                  </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="endereco">Endereço</Label>
-              <Input id="endereco" {...register("endereco")} />
-            </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">E-mail</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="aluno@email.com"
+                      {...register("email")}
+                    />
+                    {errors.email && (
+                      <p className="text-sm text-destructive">
+                        {errors.email.message}
+                      </p>
+                    )}
+                  </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="bairro">Bairro</Label>
-              <Input id="bairro" {...register("bairro")} />
-            </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="telefone">Telefone / Celular</Label>
+                    <Input
+                      id="telefone"
+                      placeholder="(00) 00000-0000"
+                      {...register("telefone")}
+                    />
+                    {errors.telefone && (
+                      <p className="text-sm text-destructive">
+                        {errors.telefone.message}
+                      </p>
+                    )}
+                  </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="cidade">Cidade</Label>
-              <Input id="cidade" {...register("cidade")} />
-            </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="idade">Idade</Label>
+                    <Input
+                      id="idade"
+                      type="number"
+                      min={0}
+                      {...register("idade")}
+                    />
+                    {errors.idade && (
+                      <p className="text-sm text-destructive">
+                        {errors.idade.message}
+                      </p>
+                    )}
+                  </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-2">
-                <Label htmlFor="uf">UF</Label>
-                <Input id="uf" maxLength={2} {...register("uf")} />
+                  <div className="space-y-2">
+                    <Label htmlFor="dataNascimento">Data de nascimento</Label>
+                    <Input
+                      id="dataNascimento"
+                      type="date"
+                      {...register("dataNascimento")}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="genero">Gênero</Label>
+                    <Controller
+                      name="genero"
+                      control={control}
+                      render={({ field }) => (
+                        <Select value={field.value} onValueChange={field.onChange}>
+                          <SelectTrigger id="genero" className="w-full">
+                            <SelectValue placeholder="Selecione" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {Object.entries(generoLabels).map(([value, label]) => (
+                              <SelectItem key={value} value={value}>
+                                {label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="cpf">CPF</Label>
+                    <Input
+                      id="cpf"
+                      placeholder="000.000.000-00"
+                      {...register("cpf")}
+                    />
+                    {errors.cpf && (
+                      <p className="text-sm text-destructive">
+                        {errors.cpf.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="rg">RG</Label>
+                    <Input id="rg" {...register("rg")} />
+                  </div>
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="cep">CEP</Label>
-                <Input id="cep" {...register("cep")} />
+            </section>
+
+            {/* Endereço */}
+            <section className="space-y-3 border-t border-border pt-4">
+              <h3 className="text-sm font-medium text-foreground">Endereço</h3>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div className="space-y-2 sm:col-span-2">
+                  <Label htmlFor="endereco">Endereço</Label>
+                  <Input
+                    id="endereco"
+                    placeholder="Rua, número, complemento"
+                    {...register("endereco")}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="bairro">Bairro</Label>
+                  <Input id="bairro" {...register("bairro")} />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="cidade">Cidade</Label>
+                  <Input id="cidade" {...register("cidade")} />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="uf">UF</Label>
+                  <Input id="uf" placeholder="SP" maxLength={2} {...register("uf")} />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="cep">CEP</Label>
+                  <Input id="cep" placeholder="00000-000" {...register("cep")} />
+                </div>
               </div>
-            </div>
+            </section>
 
-            <div className="space-y-2">
-              <Label htmlFor="telefone">Telefone / Celular</Label>
-              <Input id="telefone" {...register("telefone")} />
-              {errors.telefone && (
-                <p className="text-sm text-destructive">
-                  {errors.telefone.message}
-                </p>
-              )}
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
+            {/* Observações */}
+            <section className="space-y-3 border-t border-border pt-4">
+              <h3 className="text-sm font-medium text-foreground">
+                Observações
+              </h3>
               <div className="space-y-2">
-                <Label htmlFor="cpf">CPF</Label>
-                <Input id="cpf" {...register("cpf")} />
-                {errors.cpf && (
-                  <p className="text-sm text-destructive">{errors.cpf.message}</p>
-                )}
+                <Textarea
+                  id="observacoes"
+                  rows={3}
+                  placeholder="Anotações sobre saúde, restrições, histórico..."
+                  {...register("observacoes")}
+                />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="rg">RG</Label>
-                <Input id="rg" {...register("rg")} />
-              </div>
-            </div>
+            </section>
 
-            <div className="space-y-2">
-              <Label htmlFor="situacao">Situação</Label>
-              <Controller
-                name="situacao"
-                control={control}
-                render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger id="situacao" className="w-full">
-                      <SelectValue placeholder="Situação" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.entries(situacaoLabels).map(([value, label]) => (
-                        <SelectItem key={value} value={value}>
-                          {label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="debito">Débito (R$)</Label>
-              <Input
-                id="debito"
-                type="number"
-                min={0}
-                step="0.01"
-                {...register("debito")}
-              />
-            </div>
-
-            <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="observacoes">Observações</Label>
-              <Textarea id="observacoes" rows={3} {...register("observacoes")} />
-            </div>
+            {formError && (
+              <p className="text-sm text-destructive">{formError}</p>
+            )}
           </div>
 
-          <div className="flex flex-col items-center gap-2">
-            <span className="text-sm font-medium text-foreground sm:hidden">
-              Foto
-            </span>
-            <div className="flex h-36 w-36 flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-border bg-muted/40 text-center">
-              <ImageIcon className="h-6 w-6 text-muted-foreground" />
-              <span className="text-xs text-muted-foreground">
-                Upload em breve
-              </span>
-            </div>
-          </div>
-
-          {formError && (
-            <p className="text-sm text-destructive sm:col-span-2">{formError}</p>
-          )}
-
-          <DialogFooter className="sm:col-span-2">
+          <DialogFooter>
             <Button
               type="button"
               variant="outline"
