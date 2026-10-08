@@ -4,7 +4,6 @@ export function mapAlunoInput(data: CreateAlunoInput) {
   return {
     nome: data.nome,
     email: data.email ?? null,
-    idade: data.idade ?? null,
     dataNascimento: data.dataNascimento ?? null,
     genero: data.genero ?? null,
     endereco: data.endereco ?? null,

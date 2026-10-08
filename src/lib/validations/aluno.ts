@@ -17,11 +17,6 @@ export const createAlunoSchema = z.object({
     .optional()
     .or(z.literal(""))
     .transform((value) => (value ? value : undefined)),
-  idade: z.coerce
-    .number()
-    .int("Idade inválida")
-    .positive("Idade inválida")
-    .optional(),
   dataNascimento: optionalText,
   genero: z.enum(ALUNO_GENEROS).optional(),
   endereco: optionalText,

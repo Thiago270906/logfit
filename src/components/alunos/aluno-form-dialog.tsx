@@ -52,7 +52,6 @@ function alunoToDefaultValues(
   return {
     nome: aluno.nome,
     email: aluno.email ?? "",
-    idade: aluno.idade ?? undefined,
     dataNascimento: aluno.dataNascimento ?? "",
     genero: aluno.genero ?? undefined,
     endereco: aluno.endereco ?? "",
@@ -235,21 +234,6 @@ export function AlunoFormDialog({ aluno, trigger }: AlunoFormDialogProps) {
                     {errors.telefone && (
                       <p className="text-sm text-destructive">
                         {errors.telefone.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="idade">Idade</Label>
-                    <Input
-                      id="idade"
-                      type="number"
-                      min={0}
-                      {...register("idade")}
-                    />
-                    {errors.idade && (
-                      <p className="text-sm text-destructive">
-                        {errors.idade.message}
                       </p>
                     )}
                   </div>
