@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { Header } from "@/components/layout/header";
 import { Sidebar } from "@/components/layout/sidebar";
+import { QueryProvider } from "@/components/providers/query-provider";
 import { auth } from "@/lib/auth/auth";
 
 export default async function DashboardLayout({
@@ -17,12 +18,14 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-white">
-      <Header userName={session.user.name || session.user.email} />
-      <div className="flex flex-1">
-        <Sidebar />
-        <main className="flex-1">{children}</main>
+    <QueryProvider>
+      <div className="flex h-screen flex-col bg-white">
+        <Header userName={session.user.name || session.user.email} />
+        <div className="flex flex-1 overflow-hidden">
+          <Sidebar />
+          <main className="flex-1 overflow-y-auto">{children}</main>
+        </div>
       </div>
-    </div>
+    </QueryProvider>
   );
 }

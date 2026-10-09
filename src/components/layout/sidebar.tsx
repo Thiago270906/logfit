@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   ArrowLeft,
   Building2,
+  ClipboardList,
   LayoutDashboard,
   LogOut,
   Radio,
@@ -20,6 +21,7 @@ const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/dashboard/alunos", label: "Alunos", icon: Users },
   { href: "/dashboard/planos", label: "Planos", icon: Wallet },
+  { href: "/dashboard/matriculas", label: "Matrículas", icon: ClipboardList },
 ];
 
 const settingsNavItems = [
@@ -59,7 +61,7 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="flex w-60 shrink-0 flex-col justify-between bg-[#404040] py-4">
+    <aside className="flex w-60 shrink-0 flex-col justify-between overflow-y-auto bg-[#404040] py-4">
       <nav className="flex flex-col gap-1 px-3">
         {isSettings ? (
           <>
