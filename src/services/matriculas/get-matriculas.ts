@@ -14,6 +14,7 @@ export async function getMatriculas() {
       token: matricula.token,
       assinaturaNome: matricula.assinaturaNome,
       assinadoEm: matricula.assinadoEm,
+      dataExpiracao: matricula.dataExpiracao,
       createdAt: matricula.createdAt,
       alunoNome: aluno.nome,
       planoNome: plano.nome,

@@ -7,5 +7,7 @@ export * from "./plano-schema";
 
 export * from "./matricula-schema";
 
+export * from "./matricula-historico-schema";
+
 // Demais tabelas serão adicionadas aqui conforme os módulos forem implementados
 // (financeiro, treinos, aulas, check-in, etc.).

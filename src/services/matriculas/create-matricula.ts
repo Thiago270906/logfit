@@ -1,5 +1,6 @@
 import { getDb } from "@/lib/db";
 import { matricula } from "@/lib/db/matricula-schema";
+import { matriculaHistorico } from "@/lib/db/matricula-historico-schema";
 import {
   createMatriculaSchema,
   type CreateMatriculaInput,
@@ -21,6 +22,12 @@ export async function createMatricula(input: CreateMatriculaInput) {
       })),
     })
     .returning();
+
+  await getDb().insert(matriculaHistorico).values({
+    matriculaId: created.id,
+    tipo: "criada",
+    descricao: "Matrícula criada, aguardando assinatura do contrato.",
+  });
 
   return created;
 }

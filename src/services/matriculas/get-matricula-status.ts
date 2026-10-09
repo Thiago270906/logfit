@@ -9,6 +9,7 @@ export async function getMatriculaStatus(id: string) {
       status: matricula.status,
       assinaturaNome: matricula.assinaturaNome,
       assinadoEm: matricula.assinadoEm,
+      dataExpiracao: matricula.dataExpiracao,
     })
     .from(matricula)
     .where(eq(matricula.id, id))
