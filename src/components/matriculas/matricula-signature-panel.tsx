@@ -3,10 +3,17 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { QRCodeSVG } from "qrcode.react";
-import { Check, CheckCircle2, Copy, MessageCircle } from "lucide-react";
+import {
+  AlertTriangle,
+  Check,
+  CheckCircle2,
+  Copy,
+  MessageCircle,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { getMatriculaStatusAction } from "@/app/dashboard/matriculas/actions";
+import { getSituacaoMatricula } from "@/services/matriculas/get-situacao-matricula";
 import type { getMatriculaById } from "@/services/matriculas/get-matricula-by-id";
 
 const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
@@ -47,6 +54,7 @@ export function MatriculaSignaturePanel({
       status: matricula.status,
       assinaturaNome: matricula.assinaturaNome,
       assinadoEm: matricula.assinadoEm,
+      dataExpiracao: matricula.dataExpiracao,
     },
     refetchInterval: (query) =>
       query.state.data && !("error" in query.state.data)
@@ -61,18 +69,47 @@ export function MatriculaSignaturePanel({
     data && !("error" in data) ? data.assinaturaNome : matricula.assinaturaNome;
   const assinadoEm =
     data && !("error" in data) ? data.assinadoEm : matricula.assinadoEm;
+  const dataExpiracao =
+    data && !("error" in data) ? data.dataExpiracao : matricula.dataExpiracao;
 
   if (status === "assinada") {
+    const situacao = getSituacaoMatricula(status, dataExpiracao);
+    const expirada = situacao === "expirada";
+
     return (
-      <div className="flex flex-col items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-8 text-center">
-        <CheckCircle2 className="h-10 w-10 text-emerald-600" />
-        <p className="text-base font-semibold text-emerald-900">
-          Documento assinado!
+      <div
+        className={`flex flex-col items-center gap-3 rounded-xl border p-8 text-center ${
+          expirada
+            ? "border-red-200 bg-red-50"
+            : "border-emerald-200 bg-emerald-50"
+        }`}
+      >
+        {expirada ? (
+          <AlertTriangle className="h-10 w-10 text-red-600" />
+        ) : (
+          <CheckCircle2 className="h-10 w-10 text-emerald-600" />
+        )}
+        <p
+          className={`text-base font-semibold ${
+            expirada ? "text-red-900" : "text-emerald-900"
+          }`}
+        >
+          {expirada ? "Matrícula expirada" : "Documento assinado!"}
         </p>
-        <p className="text-sm text-emerald-800">
+        <p
+          className={`text-sm ${expirada ? "text-red-800" : "text-emerald-800"}`}
+        >
           Assinado por {assinaturaNome}
           {assinadoEm ? ` em ${dateFormatter.format(new Date(assinadoEm))}` : ""}
         </p>
+        {dataExpiracao && (
+          <p
+            className={`text-xs ${expirada ? "text-red-700" : "text-emerald-700"}`}
+          >
+            {expirada ? "Venceu em " : "Válida até "}
+            {dateFormatter.format(new Date(dataExpiracao))}
+          </p>
+        )}
       </div>
     );
   }

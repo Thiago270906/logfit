@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
 
+import { MatriculaHistoricoTimeline } from "@/components/matriculas/matricula-historico";
 import { MatriculaSignaturePanel } from "@/components/matriculas/matricula-signature-panel";
 import { PERIODICIDADES } from "@/constants/periodicidade";
 import { getMatriculaById } from "@/services/matriculas/get-matricula-by-id";
+import { getMatriculaHistorico } from "@/services/matriculas/get-matricula-historico";
 
 export default async function MatriculaDetalhePage({
   params,
@@ -16,6 +18,7 @@ export default async function MatriculaDetalhePage({
     notFound();
   }
 
+  const historico = await getMatriculaHistorico(id);
   const link = `${process.env.BETTER_AUTH_URL}/assinar/${matricula.token}`;
 
   return (
@@ -33,8 +36,15 @@ export default async function MatriculaDetalhePage({
         </p>
       </div>
 
-      <div className="mt-8 max-w-md">
+      <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[320px_1fr]">
         <MatriculaSignaturePanel matricula={matricula} link={link} />
+
+        <div className="rounded-xl border border-border p-4">
+          <h2 className="mb-4 text-sm font-medium text-foreground">
+            Histórico
+          </h2>
+          <MatriculaHistoricoTimeline eventos={historico} />
+        </div>
       </div>
     </div>
   );

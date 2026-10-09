@@ -4,20 +4,26 @@ import { ClipboardList } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PERIODICIDADES } from "@/constants/periodicidade";
 import { getMatriculas } from "@/services/matriculas/get-matriculas";
+import {
+  getSituacaoMatricula,
+  type MatriculaSituacao,
+} from "@/services/matriculas/get-situacao-matricula";
 
 const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
   dateStyle: "short",
   timeStyle: "short",
 });
 
-const STATUS_LABEL: Record<string, string> = {
+const SITUACAO_LABEL: Record<MatriculaSituacao, string> = {
   aguardando_assinatura: "Aguardando assinatura",
-  assinada: "Assinada",
+  ativa: "Ativa",
+  expirada: "Expirada",
 };
 
-const STATUS_CLASS: Record<string, string> = {
+const SITUACAO_CLASS: Record<MatriculaSituacao, string> = {
   aguardando_assinatura: "bg-amber-100 text-amber-800",
-  assinada: "bg-emerald-100 text-emerald-800",
+  ativa: "bg-emerald-100 text-emerald-800",
+  expirada: "bg-red-100 text-red-800",
 };
 
 export default async function MatriculasPage() {
@@ -55,35 +61,42 @@ export default async function MatriculasPage() {
         </div>
       ) : (
         <ul className="mt-8 divide-y divide-border rounded-lg border border-border">
-          {matriculas.map((item) => (
-            <li key={item.id}>
-              <Link
-                href={`/dashboard/matriculas/${item.id}`}
-                className="flex items-center justify-between gap-4 px-4 py-3 transition-colors hover:bg-muted/50"
-              >
-                <div>
-                  <p className="text-sm font-medium text-foreground">
-                    {item.alunoNome}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {item.planoNome} ·{" "}
-                    {
-                      PERIODICIDADES.find(
-                        ({ key }) => key === item.periodicidade,
-                      )?.label
-                    }{" "}
-                    · criada em {dateFormatter.format(item.createdAt)}
-                  </p>
-                </div>
+          {matriculas.map((item) => {
+            const situacao = getSituacaoMatricula(
+              item.status,
+              item.dataExpiracao,
+            );
 
-                <span
-                  className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${STATUS_CLASS[item.status]}`}
+            return (
+              <li key={item.id}>
+                <Link
+                  href={`/dashboard/matriculas/${item.id}`}
+                  className="flex items-center justify-between gap-4 px-4 py-3 transition-colors hover:bg-muted/50"
                 >
-                  {STATUS_LABEL[item.status]}
-                </span>
-              </Link>
-            </li>
-          ))}
+                  <div>
+                    <p className="text-sm font-medium text-foreground">
+                      {item.alunoNome}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {item.planoNome} ·{" "}
+                      {
+                        PERIODICIDADES.find(
+                          ({ key }) => key === item.periodicidade,
+                        )?.label
+                      }{" "}
+                      · criada em {dateFormatter.format(item.createdAt)}
+                    </p>
+                  </div>
+
+                  <span
+                    className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${SITUACAO_CLASS[situacao]}`}
+                  >
+                    {SITUACAO_LABEL[situacao]}
+                  </span>
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>
