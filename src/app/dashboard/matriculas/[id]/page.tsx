@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 
 import { MatriculaHistoricoTimeline } from "@/components/matriculas/matricula-historico";
 import { MatriculaSignaturePanel } from "@/components/matriculas/matricula-signature-panel";
@@ -23,6 +25,14 @@ export default async function MatriculaDetalhePage({
 
   return (
     <div className="px-8 py-10">
+      <Link
+        href="/dashboard/matriculas"
+        className="mb-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Voltar
+      </Link>
+
       <div>
         <h1 className="text-2xl font-semibold text-foreground">
           Matrícula — {matricula.alunoNome}
