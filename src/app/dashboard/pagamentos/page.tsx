@@ -56,6 +56,7 @@ export default async function PagamentosPage() {
                 <th className="px-4 py-3 font-medium">Periodicidade</th>
                 <th className="px-4 py-3 font-medium">Valor</th>
                 <th className="px-4 py-3 font-medium">Pagamento</th>
+                <th className="px-4 py-3 font-medium">Data</th>
                 <th className="px-4 py-3 font-medium">Status</th>
               </tr>
             </thead>
@@ -79,19 +80,16 @@ export default async function PagamentosPage() {
                     {currencyFormatter.format(Number(item.valor))}
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">
-                    {item.status === "pago" && item.formaPagamento ? (
-                      <>
-                        {
-                          FORMAS_PAGAMENTO_OPCOES.find(
-                            ({ key }) => key === item.formaPagamento,
-                          )?.label
-                        }{" "}
-                        em{" "}
-                        {item.pagoEm ? dateFormatter.format(item.pagoEm) : ""}
-                      </>
-                    ) : (
-                      "-"
-                    )}
+                    {item.status === "pago" && item.formaPagamento
+                      ? FORMAS_PAGAMENTO_OPCOES.find(
+                          ({ key }) => key === item.formaPagamento,
+                        )?.label
+                      : "-"}
+                  </td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    {item.status === "pago" && item.pagoEm
+                      ? dateFormatter.format(item.pagoEm)
+                      : "-"}
                   </td>
                   <td className="px-4 py-3">
                     <span
