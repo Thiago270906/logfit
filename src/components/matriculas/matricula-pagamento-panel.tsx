@@ -1,7 +1,9 @@
-import { CheckCircle2, Wallet } from "lucide-react";
+import { CheckCircle2, Lock, Wallet } from "lucide-react";
 
 import { ConcluirPagamentoDialog } from "@/components/pagamentos/concluir-pagamento-dialog";
 import { FORMAS_PAGAMENTO_OPCOES } from "@/constants/forma-pagamento";
+import type { PeriodicidadeKey } from "@/constants/periodicidade";
+import type { MATRICULA_STATUSES } from "@/lib/db/matricula-schema";
 import type { getPagamentosByMatricula } from "@/services/pagamentos/get-pagamentos-by-matricula";
 
 const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
@@ -19,11 +21,31 @@ type Pagamentos = Awaited<ReturnType<typeof getPagamentosByMatricula>>;
 export function MatriculaPagamentoPanel({
   pagamentos,
   alunoNome,
+  status,
+  periodicidade,
 }: {
   pagamentos: Pagamentos;
   alunoNome: string;
+  status: (typeof MATRICULA_STATUSES)[number];
+  periodicidade: PeriodicidadeKey;
 }) {
-  if (pagamentos.length === 0) return null;
+  if (status !== "assinada" || pagamentos.length === 0) {
+    return (
+      <div className="flex flex-col items-center gap-3 rounded-xl border border-border bg-muted/40 p-4 text-center">
+        <Lock className="h-10 w-10 text-muted-foreground" />
+        <p className="text-base font-semibold text-foreground">
+          Pagamento bloqueado
+        </p>
+        <p className="text-sm text-muted-foreground">
+          Disponível após{" "}
+          {periodicidade === "diaria"
+            ? "o preenchimento do formulário"
+            : "a assinatura do documento"}
+          .
+        </p>
+      </div>
+    );
+  }
 
   const parcelado = pagamentos.length > 1;
   const proximoPendente = pagamentos.find((item) => item.status === "pendente");

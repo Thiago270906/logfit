@@ -55,6 +55,8 @@ export default async function MatriculaDetalhePage({
           <MatriculaPagamentoPanel
             pagamentos={pagamentos}
             alunoNome={matricula.alunoNome}
+            status={matricula.status}
+            periodicidade={matricula.periodicidade}
           />
         </div>
 
