@@ -9,7 +9,10 @@ import type { Aluno } from "@/lib/db/aluno-schema";
 
 export function AlunoRowActions({ aluno }: { aluno: Aluno }) {
   return (
-    <div className="flex items-center justify-end gap-1">
+    <div
+      className="flex items-center justify-end gap-1"
+      onClick={(event) => event.stopPropagation()}
+    >
       <AlunoFormDialog
         aluno={aluno}
         trigger={

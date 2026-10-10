@@ -2,6 +2,7 @@ import { Users } from "lucide-react";
 
 import { AlunoFormDialog } from "@/components/alunos/aluno-form-dialog";
 import { AlunoRowActions } from "@/components/alunos/aluno-row-actions";
+import { AlunoTableRow } from "@/components/alunos/aluno-table-row";
 import { getAlunos } from "@/services/alunos/get-alunos";
 
 export default async function AlunosPage() {
@@ -45,7 +46,7 @@ export default async function AlunosPage() {
             </thead>
             <tbody className="divide-y divide-border">
               {alunos.map((aluno) => (
-                <tr key={aluno.id}>
+                <AlunoTableRow key={aluno.id} alunoId={aluno.id}>
                   <td className="px-4 py-3 text-muted-foreground">
                     {String(aluno.matricula).padStart(4, "0")}
                   </td>
@@ -64,7 +65,7 @@ export default async function AlunosPage() {
                   <td className="px-4 py-3">
                     <AlunoRowActions aluno={aluno} />
                   </td>
-                </tr>
+                </AlunoTableRow>
               ))}
             </tbody>
           </table>
