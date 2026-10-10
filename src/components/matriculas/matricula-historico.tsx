@@ -1,21 +1,25 @@
-import { CheckCircle2, FilePlus2 } from "lucide-react";
+import { CheckCircle2, FilePlus2, Wallet } from "lucide-react";
 
-import type { MatriculaHistorico } from "@/lib/db/matricula-historico-schema";
+import type {
+  HistoricoEvento,
+  HistoricoEventoTipo,
+} from "@/services/matriculas/get-matricula-historico";
 
 const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
   dateStyle: "short",
   timeStyle: "short",
 });
 
-const TIPO_ICON: Record<string, typeof FilePlus2> = {
+const TIPO_ICON: Record<HistoricoEventoTipo, typeof FilePlus2> = {
   criada: FilePlus2,
   assinada: CheckCircle2,
+  pagamento_confirmado: Wallet,
 };
 
 export function MatriculaHistoricoTimeline({
   eventos,
 }: {
-  eventos: Pick<MatriculaHistorico, "id" | "tipo" | "descricao" | "createdAt">[];
+  eventos: HistoricoEvento[];
 }) {
   if (eventos.length === 0) {
     return (

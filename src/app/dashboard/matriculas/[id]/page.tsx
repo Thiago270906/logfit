@@ -3,10 +3,12 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 
 import { MatriculaHistoricoTimeline } from "@/components/matriculas/matricula-historico";
+import { MatriculaPagamentoPanel } from "@/components/matriculas/matricula-pagamento-panel";
 import { MatriculaSignaturePanel } from "@/components/matriculas/matricula-signature-panel";
 import { PERIODICIDADES } from "@/constants/periodicidade";
 import { getMatriculaById } from "@/services/matriculas/get-matricula-by-id";
 import { getMatriculaHistorico } from "@/services/matriculas/get-matricula-historico";
+import { getPagamentosByMatricula } from "@/services/pagamentos/get-pagamentos-by-matricula";
 
 export default async function MatriculaDetalhePage({
   params,
@@ -21,6 +23,7 @@ export default async function MatriculaDetalhePage({
   }
 
   const historico = await getMatriculaHistorico(id);
+  const pagamentos = await getPagamentosByMatricula(id);
   const link = `${process.env.BETTER_AUTH_URL}/assinar/${matricula.token}`;
 
   return (
@@ -47,7 +50,13 @@ export default async function MatriculaDetalhePage({
       </div>
 
       <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[320px_1fr]">
-        <MatriculaSignaturePanel matricula={matricula} link={link} />
+        <div className="flex flex-col gap-4">
+          <MatriculaSignaturePanel matricula={matricula} link={link} />
+          <MatriculaPagamentoPanel
+            pagamentos={pagamentos}
+            alunoNome={matricula.alunoNome}
+          />
+        </div>
 
         <div className="rounded-xl border border-border p-4">
           <h2 className="mb-4 text-sm font-medium text-foreground">
