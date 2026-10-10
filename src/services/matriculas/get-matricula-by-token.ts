@@ -14,6 +14,8 @@ export async function getMatriculaByToken(token: string) {
       anamnese: matricula.anamnese,
       assinaturaNome: matricula.assinaturaNome,
       assinadoEm: matricula.assinadoEm,
+      dataInicio: matricula.dataInicio,
+      dataExpiracao: matricula.dataExpiracao,
       createdAt: matricula.createdAt,
       aluno,
       plano,

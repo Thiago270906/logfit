@@ -12,6 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -23,7 +24,11 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { createMatriculaAction } from "@/app/dashboard/matriculas/actions";
 import { PERGUNTAS_ANAMNESE } from "@/constants/anamnese";
-import { PERIODICIDADES } from "@/constants/periodicidade";
+import {
+  PERIODICIDADES,
+  sugerirDataVencimento,
+  type PeriodicidadeKey,
+} from "@/constants/periodicidade";
 import type { Aluno } from "@/lib/db/aluno-schema";
 import type { Plano } from "@/lib/db/plano-schema";
 import {
@@ -31,10 +36,16 @@ import {
   type CreateMatriculaFormInput,
 } from "@/lib/validations/matricula";
 
+function hoje() {
+  return new Date().toISOString().slice(0, 10);
+}
+
 const defaultValues: DefaultValues<CreateMatriculaFormInput> = {
   alunoId: "",
   planoId: "",
   periodicidade: "",
+  dataInicio: hoje(),
+  dataExpiracao: "",
   anamnese: PERGUNTAS_ANAMNESE.map((pergunta) => ({
     pergunta,
     resposta: null,
@@ -51,6 +62,8 @@ export function MatriculaForm({ alunos, planos }: MatriculaFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [vencimentoEditadoManualmente, setVencimentoEditadoManualmente] =
+    useState(false);
 
   const {
     register,
@@ -65,6 +78,8 @@ export function MatriculaForm({ alunos, planos }: MatriculaFormProps) {
 
   const anamneseValues = useWatch({ control, name: "anamnese" });
   const planoIdSelecionado = useWatch({ control, name: "planoId" });
+  const periodicidadeSelecionada = useWatch({ control, name: "periodicidade" });
+  const dataInicioSelecionada = useWatch({ control, name: "dataInicio" });
 
   const planoSelecionado = planos.find(
     (plano) => plano.id === planoIdSelecionado,
@@ -74,6 +89,22 @@ export function MatriculaForm({ alunos, planos }: MatriculaFormProps) {
         ({ habilitadaField }) => planoSelecionado[habilitadaField],
       )
     : [];
+
+  function atualizarDataVencimentoSugerida(
+    periodicidade: string,
+    dataInicio: string,
+  ) {
+    if (vencimentoEditadoManualmente) return;
+    if (!periodicidade || !dataInicio) return;
+
+    const sugerida = sugerirDataVencimento(
+      periodicidade as PeriodicidadeKey,
+      new Date(dataInicio),
+    );
+    setValue("dataExpiracao", sugerida.toISOString().slice(0, 10), {
+      shouldValidate: false,
+    });
+  }
 
   async function onSubmit(data: CreateMatriculaFormInput) {
     setIsSubmitting(true);
@@ -176,7 +207,13 @@ export function MatriculaForm({ alunos, planos }: MatriculaFormProps) {
               render={({ field }) => (
                 <Select
                   value={field.value}
-                  onValueChange={field.onChange}
+                  onValueChange={(value) => {
+                    field.onChange(value);
+                    atualizarDataVencimentoSugerida(
+                      value ?? "",
+                      dataInicioSelecionada ?? "",
+                    );
+                  }}
                   disabled={!planoSelecionado}
                 >
                   <SelectTrigger id="periodicidade" className="w-full">
@@ -200,6 +237,48 @@ export function MatriculaForm({ alunos, planos }: MatriculaFormProps) {
             {errors.periodicidade && (
               <p className="text-sm text-destructive">
                 {errors.periodicidade.message}
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="dataInicio">Data de início</Label>
+            <Input
+              id="dataInicio"
+              type="date"
+              {...register("dataInicio", {
+                onChange: (event) =>
+                  atualizarDataVencimentoSugerida(
+                    periodicidadeSelecionada ?? "",
+                    event.target.value,
+                  ),
+              })}
+            />
+            {errors.dataInicio && (
+              <p className="text-sm text-destructive">
+                {errors.dataInicio.message}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="dataExpiracao">Data de vencimento</Label>
+            <Input
+              id="dataExpiracao"
+              type="date"
+              {...register("dataExpiracao", {
+                onChange: () => setVencimentoEditadoManualmente(true),
+              })}
+            />
+            <p className="text-xs text-muted-foreground">
+              Sugerida automaticamente com base no plano e na data de início;
+              pode ser ajustada.
+            </p>
+            {errors.dataExpiracao && (
+              <p className="text-sm text-destructive">
+                {errors.dataExpiracao.message}
               </p>
             )}
           </div>

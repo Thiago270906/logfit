@@ -15,6 +15,8 @@ export async function createMatricula(input: CreateMatriculaInput) {
       alunoId: data.alunoId,
       planoId: data.planoId,
       periodicidade: data.periodicidade,
+      dataInicio: new Date(data.dataInicio),
+      dataExpiracao: new Date(data.dataExpiracao),
       anamnese: data.anamnese.map((item) => ({
         pergunta: item.pergunta,
         resposta: Boolean(item.resposta),

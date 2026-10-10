@@ -8,14 +8,6 @@ import {
   type AssinarMatriculaInput,
 } from "@/lib/validations/matricula";
 
-function calcularDataExpiracao(periodicidade: string, inicio: Date) {
-  const data = new Date(inicio);
-  if (periodicidade === "diaria") data.setDate(data.getDate() + 1);
-  if (periodicidade === "mensal") data.setMonth(data.getMonth() + 1);
-  if (periodicidade === "anual") data.setFullYear(data.getFullYear() + 1);
-  return data;
-}
-
 export async function assinarMatricula(
   token: string,
   input: AssinarMatriculaInput,
@@ -23,7 +15,7 @@ export async function assinarMatricula(
   const data = assinarMatriculaSchema.parse(input);
 
   const [pendente] = await getDb()
-    .select({ id: matricula.id, periodicidade: matricula.periodicidade })
+    .select({ id: matricula.id })
     .from(matricula)
     .where(
       and(
@@ -36,10 +28,6 @@ export async function assinarMatricula(
   if (!pendente) return undefined;
 
   const assinadoEm = new Date();
-  const dataExpiracao = calcularDataExpiracao(
-    pendente.periodicidade,
-    assinadoEm,
-  );
 
   const [updated] = await getDb()
     .update(matricula)
@@ -47,7 +35,6 @@ export async function assinarMatricula(
       status: "assinada",
       assinaturaNome: data.nome,
       assinadoEm,
-      dataExpiracao,
     })
     .where(eq(matricula.id, pendente.id))
     .returning();

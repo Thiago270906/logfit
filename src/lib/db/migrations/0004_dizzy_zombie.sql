@@ -1,0 +1,1 @@
+ALTER TABLE "matricula" ADD COLUMN "data_inicio" timestamp DEFAULT now() NOT NULL;

@@ -39,6 +39,7 @@ export const matricula = pgTable("matricula", {
   anamnese: jsonb("anamnese").$type<AnamneseResposta[]>().notNull(),
   assinaturaNome: text("assinatura_nome"),
   assinadoEm: timestamp("assinado_em"),
+  dataInicio: timestamp("data_inicio").defaultNow().notNull(),
   dataExpiracao: timestamp("data_expiracao"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")

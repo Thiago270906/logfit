@@ -5,15 +5,36 @@ import { AssinaturaForm } from "@/components/matriculas/assinatura-form";
 import { PERIODICIDADES } from "@/constants/periodicidade";
 import { getMatriculaByToken } from "@/services/matriculas/get-matricula-by-token";
 
-const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
+const dateTimeFormatter = new Intl.DateTimeFormat("pt-BR", {
   dateStyle: "short",
   timeStyle: "short",
 });
 
-const currencyFormatter = new Intl.NumberFormat("pt-BR", {
-  style: "currency",
-  currency: "BRL",
+const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
+  dateStyle: "short",
 });
+
+const currencyFormatter = new Intl.NumberFormat("pt-BR", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+function formatarEndereco(aluno: {
+  endereco: string | null;
+  numero: string | null;
+  bairro: string | null;
+  cidade: string | null;
+  uf: string | null;
+  cep: string | null;
+}) {
+  const partes = [
+    [aluno.endereco, aluno.numero].filter(Boolean).join(", "),
+    aluno.bairro,
+    aluno.cidade && aluno.uf ? `${aluno.cidade} – ${aluno.uf}` : aluno.cidade,
+    aluno.cep,
+  ].filter(Boolean);
+  return partes.length > 0 ? partes.join(" — ") : "";
+}
 
 export default async function AssinarPage({
   params,
@@ -32,55 +53,122 @@ export default async function AssinarPage({
     ({ key }) => key === matricula.periodicidade,
   )!;
 
+  const valorContratado = currencyFormatter.format(
+    Number(plano[periodicidadeContratada.valorField]),
+  );
+  const dataInicio = new Date(matricula.dataInicio);
+  const diaVencimento = dataInicio.getDate();
+  const endereco = formatarEndereco(aluno);
+
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
-      <h1 className="text-xl font-semibold text-foreground">
-        Contrato de Matrícula — Estação do Corpo
-      </h1>
-      <p className="mt-1 text-xs text-muted-foreground">
-        Documento simulado para fins de demonstração do sistema.
+      <p className="text-right text-xs text-muted-foreground">
+        WhatsApp (19) 3569-3999
       </p>
+      <h1 className="text-center text-xl font-semibold text-foreground">
+        CONTRATO DE PRESTAÇÃO DE SERVIÇO
+      </h1>
 
-      <section className="mt-6 space-y-1 rounded-xl border border-border p-4 text-sm">
+      <section className="mt-6 space-y-3 text-sm text-muted-foreground">
         <p>
-          <span className="text-muted-foreground">Aluno:</span>{" "}
-          <span className="font-medium text-foreground">{aluno.nome}</span>{" "}
-          <span className="text-muted-foreground">— CPF {aluno.cpf}</span>
+          Pelo presente de prestação de serviço, a Academia Estação do
+          Corpo, estabelecida a Rua Pinhal, nº 529 – Jd. Santo Antônio –
+          Mogi Guaçu – SP, Inscrição Municipal n° 207616, por Juliana
+          Fernandes, denomina contratada e do outro lado o Aluno,
+          denominado contratante.
+        </p>
+
+        <p>
+          Aluno: <span className="text-foreground">{aluno.nome}</span>
+        </p>
+        <p>Responsável: —</p>
+        <p>
+          RG: <span className="text-foreground">{aluno.rg || "—"}</span> CPF:{" "}
+          <span className="text-foreground">{aluno.cpf}</span>
         </p>
         <p>
-          <span className="text-muted-foreground">Plano:</span>{" "}
-          <span className="font-medium text-foreground">{plano.nome}</span>
+          Endereço: <span className="text-foreground">{endereco || "—"}</span>
         </p>
         <p>
-          <span className="text-muted-foreground">
-            {periodicidadeContratada.label}:
+          Celular: <span className="text-foreground">{aluno.telefone}</span>
+        </p>
+        <p>
+          Data de início:{" "}
+          <span className="text-foreground">
+            {dateFormatter.format(dataInicio)}
           </span>{" "}
-          <span className="font-medium text-foreground">
-            {currencyFormatter.format(
-              Number(plano[periodicidadeContratada.valorField]),
-            )}
+          Tipo de contrato:{" "}
+          <span className="text-foreground">
+            {periodicidadeContratada.label}
           </span>
         </p>
-      </section>
 
-      <section className="mt-6 space-y-2 rounded-xl border border-border p-4 text-sm text-muted-foreground">
         <p>
-          Pelo presente instrumento, o ALUNO acima identificado matricula-se
-          na ESTAÇÃO DO CORPO, no plano indicado, comprometendo-se a respeitar
-          as normas internas da academia, os horários de funcionamento e as
-          orientações da equipe de instrutores.
+          <strong>Cláusula 1ª:</strong> O aluno tem direito aos horários e
+          datas estipuladas no ato da matrícula, devendo respeitá-los. O
+          aluno poderá alterar seus horários durante o ano letivo desde que
+          comunique antecipadamente o responsável. O aluno terá direito à
+          reposição de aula, quando o professor estiver impossibilitado de
+          dar aula, sendo substituído a critério da academia. O aluno não
+          terá direito a reposição de aula, quando a falta for sua, sem
+          exceção, e quando seus horários coincidirem com feriados e pontos
+          facultativos.
         </p>
         <p>
-          O ALUNO declara ter respondido ao questionário de saúde abaixo de
-          forma verdadeira e estar ciente de que a prática de atividade
-          física envolve riscos inerentes, isentando a ESTAÇÃO DO CORPO de
-          responsabilidade por condições de saúde não informadas.
+          <strong>Cláusula 2ª:</strong> É de suma responsabilidade o aluno
+          comunicar ao professor qualquer problema de saúde que lhe
+          surpreende durante o período de frequência na academia, além
+          disso, é de muita importância que o aluno traga um atestado
+          médico, comunicando à academia seu estado de saúde.
         </p>
         <p>
-          O cancelamento ou trancamento do plano deve ser solicitado
-          diretamente à administração, respeitando as condições vigentes no
-          momento da matrícula.
+          <strong>Cláusula 3ª:</strong> O aluno que desejar interromper com
+          serviços oferecidos, deverá comunicar o responsável pela academia
+          até o final do mês, ou seja, antes de vencer a próxima
+          mensalidade, caso contrário, ficará responsável pelo pagamento do
+          mês da comunicação. Em caso de abandono, o aluno ficará
+          responsável pelo pagamento do(s) mês(es) atrasado(s) até que haja
+          comunicação. A mensalidade paga não será devolvida em hipótese
+          alguma.
         </p>
+        <p>
+          <strong>Cláusula 4ª:</strong> O valor da mensalidade é de R${" "}
+          {valorContratado} com vencimento todo dia {diaVencimento} de cada
+          mês e o tipo de contrato é {periodicidadeContratada.label}, com 5
+          dias de carência, sendo que se contam sábados, domingos e feriados
+          na carência. A mensalidade poderá ser reajustada de acordo com as
+          normas vigentes no mercado, sendo os alunos responsáveis
+          comunicados com antecedência dos motivos e dos novos valores.
+        </p>
+        <p>
+          <strong>Cláusula 5ª:</strong> O aluno deverá pagar sua mensalidade
+          em dia. Em caso de atraso, após 5 dias de vencimento, a
+          mensalidade terá um acréscimo de 10% sobre o valor total e será
+          cobrado R$ 0,20 por dia de atraso. Se o atraso perdurar por mais
+          de 30 dias as aulas serão suspensas.
+        </p>
+        <p>
+          <strong>Cláusula 6ª:</strong> O presente contrato tem duração
+          indeterminada e poderá ser rescindido ou renovado a qualquer
+          momento. Em caso de rescindi-lo será necessário:
+        </p>
+        <p>
+          O presente aluno ou responsável deverá comparecer até a academia e
+          assinar o termo de desistência.
+        </p>
+        <p>Em caso de inadimplência o aluno será desligado automaticamente.</p>
+        <p>
+          <strong>Cláusula 7ª:</strong> A direção encontra-se a disposição
+          do aluno ou responsável, sempre que surgirem duvidas ou por
+          problemas relativos às atividades físicas existentes neste
+          estabelecimento.
+        </p>
+        <p>
+          E por estarem justos e contratados, assinam o presente instrumento
+          em duas vias de igual teor, o CONTRATANTE e o CONTRATADO, para que
+          se produzam os efeitos legais.
+        </p>
+        <p className="pt-2 text-xs">DIREÇÃO – Juliana F. Lopes</p>
       </section>
 
       <section className="mt-6 space-y-3 rounded-xl border border-border p-4">
@@ -116,7 +204,7 @@ export default async function AssinarPage({
             <p className="text-sm text-emerald-800">
               Assinado por {matricula.assinaturaNome}
               {matricula.assinadoEm
-                ? ` em ${dateFormatter.format(new Date(matricula.assinadoEm))}`
+                ? ` em ${dateTimeFormatter.format(new Date(matricula.assinadoEm))}`
                 : ""}
             </p>
           </div>
