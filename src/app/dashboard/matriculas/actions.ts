@@ -5,8 +5,10 @@ import { revalidatePath } from "next/cache";
 
 import { auth } from "@/lib/auth/auth";
 import { hasRole } from "@/lib/permissions";
+import { cancelarMatricula } from "@/services/matriculas/cancelar-matricula";
 import { createMatricula } from "@/services/matriculas/create-matricula";
 import { getMatriculaStatus } from "@/services/matriculas/get-matricula-status";
+import { MatriculaComumAtivaError } from "@/services/matriculas/tem-matricula-comum-ativa";
 import {
   createMatriculaSchema,
   type CreateMatriculaFormInput,
@@ -30,7 +32,10 @@ export async function createMatriculaAction(input: CreateMatriculaFormInput) {
   let created;
   try {
     created = await createMatricula(parsed.data);
-  } catch {
+  } catch (error) {
+    if (error instanceof MatriculaComumAtivaError) {
+      return { error: error.message };
+    }
     return { error: "Erro ao cadastrar matrícula." };
   }
 
@@ -49,4 +54,25 @@ export async function getMatriculaStatusAction(id: string) {
   }
 
   return { success: true, ...status };
+}
+
+export async function cancelarMatriculaAction(id: string) {
+  if (!(await requireAdmin())) {
+    return { error: "Você não tem permissão para cancelar matrículas." };
+  }
+
+  let cancelada;
+  try {
+    cancelada = await cancelarMatricula(id);
+  } catch {
+    return { error: "Erro ao cancelar matrícula." };
+  }
+
+  if (!cancelada) {
+    return { error: "Matrícula não encontrada." };
+  }
+
+  revalidatePath("/dashboard/matriculas");
+  revalidatePath(`/dashboard/matriculas/${id}`);
+  return { success: true };
 }

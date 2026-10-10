@@ -5,15 +5,24 @@ import {
   createMatriculaSchema,
   type CreateMatriculaInput,
 } from "@/lib/validations/matricula";
+import {
+  MatriculaComumAtivaError,
+  temMatriculaComumAtiva,
+} from "@/services/matriculas/tem-matricula-comum-ativa";
 
 export async function createMatricula(input: CreateMatriculaInput) {
   const data = createMatriculaSchema.parse(input);
+
+  if (await temMatriculaComumAtiva(data.alunoId)) {
+    throw new MatriculaComumAtivaError();
+  }
 
   const [created] = await getDb()
     .insert(matricula)
     .values({
       alunoId: data.alunoId,
       planoId: data.planoId,
+      tipo: "comum",
       periodicidade: data.periodicidade,
       parcelarMensal: data.periodicidade === "anual" ? data.parcelarMensal : true,
       dataInicio: new Date(data.dataInicio),

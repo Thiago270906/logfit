@@ -1,4 +1,4 @@
-import { CheckCircle2, FilePlus2, Wallet } from "lucide-react";
+import { Ban, CheckCircle2, FilePlus2, Wallet } from "lucide-react";
 
 import type {
   HistoricoEvento,
@@ -13,6 +13,7 @@ const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
 const TIPO_ICON: Record<HistoricoEventoTipo, typeof FilePlus2> = {
   criada: FilePlus2,
   assinada: CheckCircle2,
+  cancelada: Ban,
   pagamento_confirmado: Wallet,
 };
 

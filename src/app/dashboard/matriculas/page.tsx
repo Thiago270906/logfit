@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ClipboardList } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { MatriculaRowActions } from "@/components/matriculas/matricula-row-actions";
 import { MatriculaTableRow } from "@/components/matriculas/matricula-table-row";
 import { PERIODICIDADES } from "@/constants/periodicidade";
 import { getMatriculas } from "@/services/matriculas/get-matriculas";
@@ -19,12 +20,14 @@ const SITUACAO_LABEL: Record<MatriculaSituacao, string> = {
   aguardando_assinatura: "Aguardando assinatura",
   ativa: "Ativa",
   expirada: "Expirada",
+  cancelada: "Cancelada",
 };
 
 const SITUACAO_CLASS: Record<MatriculaSituacao, string> = {
   aguardando_assinatura: "bg-amber-100 text-amber-800",
   ativa: "bg-emerald-100 text-emerald-800",
   expirada: "bg-red-100 text-red-800",
+  cancelada: "bg-slate-200 text-slate-700",
 };
 
 export default async function MatriculasPage() {
@@ -70,6 +73,7 @@ export default async function MatriculasPage() {
                 <th className="px-4 py-3 font-medium">Periodicidade</th>
                 <th className="px-4 py-3 font-medium">Criada em</th>
                 <th className="px-4 py-3 font-medium text-right">Situação</th>
+                <th className="px-4 py-3 font-medium text-right">Ações</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -103,6 +107,13 @@ export default async function MatriculasPage() {
                       >
                         {SITUACAO_LABEL[situacao]}
                       </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <MatriculaRowActions
+                        matriculaId={item.id}
+                        alunoNome={item.alunoNome}
+                        status={item.status}
+                      />
                     </td>
                   </MatriculaTableRow>
                 );

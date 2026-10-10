@@ -6,9 +6,14 @@ import { plano } from "@/lib/db/plano-schema";
 export const MATRICULA_STATUSES = [
   "aguardando_assinatura",
   "assinada",
+  "cancelada",
 ] as const;
 
 export const MATRICULA_PERIODICIDADES = ["diaria", "mensal", "anual"] as const;
+
+// "totalpass" só diferencia a origem da matrícula; nenhuma regra específica
+// para esse tipo está implementada ainda.
+export const MATRICULA_TIPOS = ["comum", "totalpass"] as const;
 
 export type AnamneseResposta = {
   pergunta: string;
@@ -26,6 +31,7 @@ export const matricula = pgTable("matricula", {
   planoId: text("plano_id")
     .notNull()
     .references(() => plano.id),
+  tipo: text("tipo", { enum: MATRICULA_TIPOS }).default("comum").notNull(),
   periodicidade: text("periodicidade", {
     enum: MATRICULA_PERIODICIDADES,
   }).notNull(),
@@ -44,6 +50,7 @@ export const matricula = pgTable("matricula", {
   // PNG em base64 (data URL) capturado no painel de assinatura digital.
   assinaturaImagem: text("assinatura_imagem"),
   assinadoEm: timestamp("assinado_em"),
+  canceladaEm: timestamp("cancelada_em"),
   dataInicio: timestamp("data_inicio").defaultNow().notNull(),
   dataExpiracao: timestamp("data_expiracao"),
   createdAt: timestamp("created_at").defaultNow().notNull(),

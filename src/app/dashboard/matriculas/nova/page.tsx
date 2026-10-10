@@ -2,11 +2,14 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
 import { MatriculaForm } from "@/components/matriculas/matricula-form";
-import { getAlunos } from "@/services/alunos/get-alunos";
+import { getAlunosDisponiveisParaMatricula } from "@/services/alunos/get-alunos-disponiveis-para-matricula";
 import { getPlanos } from "@/services/planos/get-planos";
 
 export default async function NovaMatriculaPage() {
-  const [alunos, planos] = await Promise.all([getAlunos(), getPlanos()]);
+  const [alunos, planos] = await Promise.all([
+    getAlunosDisponiveisParaMatricula(),
+    getPlanos(),
+  ]);
 
   return (
     <div className="px-8 py-10">

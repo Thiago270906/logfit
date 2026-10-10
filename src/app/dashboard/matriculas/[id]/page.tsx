@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 
+import { MatriculaCancelarDialog } from "@/components/matriculas/matricula-cancelar-dialog";
 import { MatriculaHistoricoTimeline } from "@/components/matriculas/matricula-historico";
 import { MatriculaPagamentoPanel } from "@/components/matriculas/matricula-pagamento-panel";
 import { MatriculaSignaturePanel } from "@/components/matriculas/matricula-signature-panel";
@@ -36,17 +37,27 @@ export default async function MatriculaDetalhePage({
         Voltar
       </Link>
 
-      <div>
-        <h1 className="text-2xl font-semibold text-foreground">
-          Matrícula — {matricula.alunoNome}
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Plano {matricula.planoNome} ·{" "}
-          {
-            PERIODICIDADES.find(({ key }) => key === matricula.periodicidade)
-              ?.label
-          }
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold text-foreground">
+            Matrícula — {matricula.alunoNome}
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Plano {matricula.planoNome} ·{" "}
+            {
+              PERIODICIDADES.find(
+                ({ key }) => key === matricula.periodicidade,
+              )?.label
+            }
+          </p>
+        </div>
+
+        {matricula.status !== "cancelada" && (
+          <MatriculaCancelarDialog
+            matriculaId={matricula.id}
+            alunoNome={matricula.alunoNome}
+          />
+        )}
       </div>
 
       <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[320px_1fr]">

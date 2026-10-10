@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { QRCodeSVG } from "qrcode.react";
 import {
   AlertTriangle,
+  Ban,
   Check,
   CheckCircle2,
   Copy,
@@ -60,7 +61,8 @@ export function MatriculaSignaturePanel({
     },
     refetchInterval: (query) =>
       query.state.data && !("error" in query.state.data)
-        ? query.state.data.status === "assinada"
+        ? query.state.data.status === "assinada" ||
+          query.state.data.status === "cancelada"
           ? false
           : 3000
         : 3000,
@@ -138,6 +140,20 @@ export function MatriculaSignaturePanel({
           <FileText />
           Ver contrato
         </Button>
+      </div>
+    );
+  }
+
+  if (status === "cancelada") {
+    return (
+      <div className="flex flex-col items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 text-center">
+        <Ban className="h-10 w-10 text-slate-500" />
+        <p className="text-base font-semibold text-slate-800">
+          Matrícula cancelada
+        </p>
+        <p className="text-sm text-slate-600">
+          Esta matrícula foi cancelada e não pode mais ser assinada.
+        </p>
       </div>
     );
   }

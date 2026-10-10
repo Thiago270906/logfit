@@ -53,12 +53,14 @@ const SITUACAO_LABEL: Record<MatriculaSituacao, string> = {
   aguardando_assinatura: "Aguardando assinatura",
   ativa: "Ativa",
   expirada: "Expirada",
+  cancelada: "Cancelada",
 };
 
 const SITUACAO_CLASS: Record<MatriculaSituacao, string> = {
   aguardando_assinatura: "bg-amber-100 text-amber-800",
   ativa: "bg-emerald-100 text-emerald-800",
   expirada: "bg-red-100 text-red-800",
+  cancelada: "bg-slate-200 text-slate-700",
 };
 
 export default async function AlunoDetalhePage({

@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { CheckCircle2 } from "lucide-react";
+import { Ban, CheckCircle2 } from "lucide-react";
 
 import { AssinaturaForm } from "@/components/matriculas/assinatura-form";
 import { PERIODICIDADES } from "@/constants/periodicidade";
@@ -240,6 +240,16 @@ export default async function AssinarPage({
                 className="h-24 rounded-md border border-emerald-200 bg-white p-2"
               />
             )}
+          </div>
+        ) : matricula.status === "cancelada" ? (
+          <div className="flex flex-col items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-8 text-center">
+            <Ban className="h-10 w-10 text-slate-500" />
+            <p className="text-base font-semibold text-slate-800">
+              Esta matrícula foi cancelada
+            </p>
+            <p className="text-sm text-slate-600">
+              Procure a recepção da academia para mais informações.
+            </p>
           </div>
         ) : (
           <div className="rounded-xl border border-border p-4">

@@ -1,6 +1,5 @@
 import { Receipt } from "lucide-react";
 
-import { ConcluirPagamentoDialog } from "@/components/pagamentos/concluir-pagamento-dialog";
 import { FORMAS_PAGAMENTO_OPCOES } from "@/constants/forma-pagamento";
 import { PERIODICIDADES } from "@/constants/periodicidade";
 import { getPagamentos } from "@/services/pagamentos/get-pagamentos";
@@ -58,7 +57,6 @@ export default async function PagamentosPage() {
                 <th className="px-4 py-3 font-medium">Valor</th>
                 <th className="px-4 py-3 font-medium">Pagamento</th>
                 <th className="px-4 py-3 font-medium">Status</th>
-                <th className="px-4 py-3 font-medium text-right">Ações</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -101,15 +99,6 @@ export default async function PagamentosPage() {
                     >
                       {STATUS_LABEL[item.status]}
                     </span>
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    {item.status === "pendente" && (
-                      <ConcluirPagamentoDialog
-                        pagamentoId={item.id}
-                        alunoNome={item.alunoNome}
-                        valor={item.valor}
-                      />
-                    )}
                   </td>
                 </tr>
               ))}
