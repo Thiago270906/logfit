@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { createMatriculaAction } from "@/app/dashboard/matriculas/actions";
 import { PERGUNTAS_ANAMNESE } from "@/constants/anamnese";
@@ -46,6 +47,7 @@ const defaultValues: DefaultValues<CreateMatriculaFormInput> = {
   periodicidade: "",
   dataInicio: hoje(),
   dataExpiracao: "",
+  parcelarMensal: true,
   anamnese: PERGUNTAS_ANAMNESE.map((pergunta) => ({
     pergunta,
     resposta: null,
@@ -283,6 +285,29 @@ export function MatriculaForm({ alunos, planos }: MatriculaFormProps) {
             )}
           </div>
         </div>
+
+        {periodicidadeSelecionada === "anual" && (
+          <div className="flex items-start gap-3 rounded-lg border border-border bg-muted/40 p-3">
+            <Controller
+              name="parcelarMensal"
+              control={control}
+              render={({ field }) => (
+                <Switch
+                  id="parcelarMensal"
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              )}
+            />
+            <div className="space-y-0.5">
+              <Label htmlFor="parcelarMensal">Parcelar mensal</Label>
+              <p className="text-xs text-muted-foreground">
+                Divide o valor anual em 12 parcelas mensais. Se desativado, é
+                gerado um único pagamento com o valor integral.
+              </p>
+            </div>
+          </div>
+        )}
       </section>
 
       <section className="space-y-4 rounded-xl border border-border p-4">

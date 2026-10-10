@@ -38,6 +38,7 @@ export const createMatriculaSchema = z
       .pipe(z.enum(MATRICULA_PERIODICIDADES)),
     dataInicio: z.string().min(1, "Informe a data de início"),
     dataExpiracao: z.string().min(1, "Informe a data de vencimento"),
+    parcelarMensal: z.boolean().default(true),
     anamnese: z.array(anamneseItemSchema),
   })
   .refine((data) => new Date(data.dataExpiracao) >= new Date(data.dataInicio), {

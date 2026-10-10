@@ -1,4 +1,4 @@
-import { jsonb, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, jsonb, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
 import { aluno } from "@/lib/db/aluno-schema";
 import { plano } from "@/lib/db/plano-schema";
@@ -29,6 +29,9 @@ export const matricula = pgTable("matricula", {
   periodicidade: text("periodicidade", {
     enum: MATRICULA_PERIODICIDADES,
   }).notNull(),
+  // Só se aplica à periodicidade anual: divide o valor anual em 12 parcelas
+  // mensais ao invés de gerar um único pagamento integral na assinatura.
+  parcelarMensal: boolean("parcelar_mensal").default(true).notNull(),
   token: text("token")
     .notNull()
     .unique()

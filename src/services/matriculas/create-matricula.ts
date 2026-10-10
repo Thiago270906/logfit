@@ -15,6 +15,7 @@ export async function createMatricula(input: CreateMatriculaInput) {
       alunoId: data.alunoId,
       planoId: data.planoId,
       periodicidade: data.periodicidade,
+      parcelarMensal: data.periodicidade === "anual" ? data.parcelarMensal : true,
       dataInicio: new Date(data.dataInicio),
       dataExpiracao: new Date(data.dataExpiracao),
       anamnese: data.anamnese.map((item) => ({

@@ -25,8 +25,12 @@ export function MatriculaPagamentoPanel({
 }) {
   if (pagamentos.length === 0) return null;
 
-  const pagamento = pagamentos[pagamentos.length - 1];
+  const parcelado = pagamentos.length > 1;
+  const proximoPendente = pagamentos.find((item) => item.status === "pendente");
+  const pagamento = proximoPendente ?? pagamentos[pagamentos.length - 1];
   const pago = pagamento.status === "pago";
+  const numeroParcela = pagamentos.indexOf(pagamento) + 1;
+  const parcelasPagas = pagamentos.filter((item) => item.status === "pago").length;
 
   return (
     <div
@@ -46,6 +50,12 @@ export function MatriculaPagamentoPanel({
       >
         {pago ? "Pagamento confirmado" : "Pagamento pendente"}
       </p>
+      {parcelado && (
+        <p className={`text-xs ${pago ? "text-emerald-700" : "text-amber-700"}`}>
+          Parcela {numeroParcela} de {pagamentos.length} · {parcelasPagas} paga
+          {parcelasPagas === 1 ? "" : "s"}
+        </p>
+      )}
       <p className={`text-sm ${pago ? "text-emerald-800" : "text-amber-800"}`}>
         {currencyFormatter.format(Number(pagamento.valor))}
       </p>

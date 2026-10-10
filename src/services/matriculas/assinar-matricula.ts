@@ -22,6 +22,19 @@ function valorDaPeriodicidade(
   return null;
 }
 
+// Divide o valor total em 12 parcelas de centavos iguais, ajustando a
+// última para absorver o resto da divisão e manter a soma exata.
+function dividirEm12Parcelas(valorTotal: string) {
+  const totalCentavos = Math.round(Number(valorTotal) * 100);
+  const parcelaCentavos = Math.floor(totalCentavos / 12);
+  const resto = totalCentavos - parcelaCentavos * 12;
+
+  return Array.from({ length: 12 }, (_, index) => {
+    const centavos = parcelaCentavos + (index < resto ? 1 : 0);
+    return (centavos / 100).toFixed(2);
+  });
+}
+
 export async function assinarMatricula(
   token: string,
   input: AssinarMatriculaInput,
@@ -32,6 +45,7 @@ export async function assinarMatricula(
     .select({
       id: matricula.id,
       periodicidade: matricula.periodicidade,
+      parcelarMensal: matricula.parcelarMensal,
       diariaValor: plano.diariaValor,
       mensalValor: plano.mensalValor,
       anualValor: plano.anualValor,
@@ -68,10 +82,22 @@ export async function assinarMatricula(
 
   const valor = valorDaPeriodicidade(pendente.periodicidade, pendente);
   if (valor) {
-    await getDb().insert(pagamento).values({
-      matriculaId: pendente.id,
-      valor,
-    });
+    if (pendente.periodicidade === "anual" && pendente.parcelarMensal) {
+      const parcelas = dividirEm12Parcelas(valor);
+      await getDb()
+        .insert(pagamento)
+        .values(
+          parcelas.map((parcela) => ({
+            matriculaId: pendente.id,
+            valor: parcela,
+          })),
+        );
+    } else {
+      await getDb().insert(pagamento).values({
+        matriculaId: pendente.id,
+        valor,
+      });
+    }
   }
 
   return updated;
