@@ -54,6 +54,7 @@ export function MatriculaSignaturePanel({
       success: true as const,
       status: matricula.status,
       assinaturaNome: matricula.assinaturaNome,
+      assinaturaImagem: matricula.assinaturaImagem,
       assinadoEm: matricula.assinadoEm,
       dataExpiracao: matricula.dataExpiracao,
     },
@@ -68,6 +69,10 @@ export function MatriculaSignaturePanel({
   const status = data && !("error" in data) ? data.status : matricula.status;
   const assinaturaNome =
     data && !("error" in data) ? data.assinaturaNome : matricula.assinaturaNome;
+  const assinaturaImagem =
+    data && !("error" in data)
+      ? data.assinaturaImagem
+      : matricula.assinaturaImagem;
   const assinadoEm =
     data && !("error" in data) ? data.assinadoEm : matricula.assinadoEm;
   const dataExpiracao =
@@ -105,6 +110,13 @@ export function MatriculaSignaturePanel({
             ? ` em ${dateFormatter.format(new Date(assinadoEm))}`
             : ""}
         </p>
+        {assinaturaImagem && (
+          <img
+            src={assinaturaImagem}
+            alt={`Assinatura de ${assinaturaNome}`}
+            className="h-20 rounded-md border border-border bg-white p-2"
+          />
+        )}
         {dataExpiracao && (
           <p
             className={`text-xs ${expirada ? "text-red-700" : "text-emerald-700"}`}

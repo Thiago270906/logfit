@@ -233,11 +233,18 @@ export default async function AssinarPage({
                 ? ` em ${dateTimeFormatter.format(new Date(matricula.assinadoEm))}`
                 : ""}
             </p>
+            {matricula.assinaturaImagem && (
+              <img
+                src={matricula.assinaturaImagem}
+                alt={`Assinatura de ${matricula.assinaturaNome}`}
+                className="h-24 rounded-md border border-emerald-200 bg-white p-2"
+              />
+            )}
           </div>
         ) : (
           <div className="rounded-xl border border-border p-4">
             <h2 className="mb-4 text-sm font-medium text-foreground">
-              Assinatura digital
+              Painel de assinatura digital
             </h2>
             <AssinaturaForm token={token} nomeSugerido={aluno.nome} />
           </div>

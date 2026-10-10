@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SignaturePad } from "@/components/matriculas/signature-pad";
 import { assinarMatriculaAction } from "@/app/assinar/[token]/actions";
 import {
   assinarMatriculaSchema,
@@ -30,10 +31,11 @@ export function AssinaturaForm({
     register,
     handleSubmit,
     control,
+    setValue,
     formState: { errors },
   } = useForm<AssinarMatriculaFormInput>({
     resolver: zodResolver(assinarMatriculaSchema),
-    defaultValues: { nome: nomeSugerido, concordo: false },
+    defaultValues: { nome: nomeSugerido, concordo: false, assinaturaImagem: "" },
   });
 
   async function onSubmit(data: AssinarMatriculaFormInput) {
@@ -72,6 +74,22 @@ export function AssinaturaForm({
         <Input id="nome" {...register("nome")} />
         {errors.nome && (
           <p className="text-sm text-destructive">{errors.nome.message}</p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <Label>Assinatura digital</Label>
+        <SignaturePad
+          onChange={(assinaturaPng) =>
+            setValue("assinaturaImagem", assinaturaPng ?? "", {
+              shouldValidate: true,
+            })
+          }
+        />
+        {errors.assinaturaImagem && (
+          <p className="text-sm text-destructive">
+            {errors.assinaturaImagem.message}
+          </p>
         )}
       </div>
 

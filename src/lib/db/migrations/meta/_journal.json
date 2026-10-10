@@ -50,6 +50,13 @@
       "when": 1791632854882,
       "tag": "0006_red_namora",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791634001502,
+      "tag": "0007_workable_mercury",
+      "breakpoints": true
     }
   ]
 }

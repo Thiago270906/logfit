@@ -54,6 +54,9 @@ export type CreateMatriculaInput = z.infer<typeof createMatriculaSchema>;
 
 export const assinarMatriculaSchema = z.object({
   nome: z.string().trim().min(3, "Informe o nome completo"),
+  assinaturaImagem: z
+    .string()
+    .min(1, "Assine no painel digital para continuar"),
   concordo: z.boolean().refine((value) => value === true, {
     error: "É necessário confirmar a declaração para assinar",
   }),

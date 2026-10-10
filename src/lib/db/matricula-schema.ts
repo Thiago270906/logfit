@@ -41,6 +41,8 @@ export const matricula = pgTable("matricula", {
     .notNull(),
   anamnese: jsonb("anamnese").$type<AnamneseResposta[]>().notNull(),
   assinaturaNome: text("assinatura_nome"),
+  // PNG em base64 (data URL) capturado no painel de assinatura digital.
+  assinaturaImagem: text("assinatura_imagem"),
   assinadoEm: timestamp("assinado_em"),
   dataInicio: timestamp("data_inicio").defaultNow().notNull(),
   dataExpiracao: timestamp("data_expiracao"),

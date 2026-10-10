@@ -8,6 +8,7 @@ export async function getMatriculaStatus(id: string) {
     .select({
       status: matricula.status,
       assinaturaNome: matricula.assinaturaNome,
+      assinaturaImagem: matricula.assinaturaImagem,
       assinadoEm: matricula.assinadoEm,
       dataExpiracao: matricula.dataExpiracao,
     })

@@ -69,6 +69,7 @@ export async function assinarMatricula(
     .set({
       status: "assinada",
       assinaturaNome: data.nome,
+      assinaturaImagem: data.assinaturaImagem,
       assinadoEm,
     })
     .where(eq(matricula.id, pendente.id))
