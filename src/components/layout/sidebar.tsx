@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   LogOut,
   Radio,
+  Receipt,
   Settings,
   Users,
   Wallet,
@@ -22,6 +23,7 @@ const navItems = [
   { href: "/dashboard/alunos", label: "Alunos", icon: Users },
   { href: "/dashboard/planos", label: "Planos", icon: Wallet },
   { href: "/dashboard/matriculas", label: "Matrículas", icon: ClipboardList },
+  { href: "/dashboard/pagamentos", label: "Pagamentos", icon: Receipt },
 ];
 
 const settingsNavItems = [

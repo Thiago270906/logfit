@@ -36,6 +36,13 @@
       "when": 1791590379596,
       "tag": "0004_dizzy_zombie",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791593179220,
+      "tag": "0005_magical_penance",
+      "breakpoints": true
     }
   ]
 }
