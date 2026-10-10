@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ClipboardList } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { MatriculaTableRow } from "@/components/matriculas/matricula-table-row";
 import { PERIODICIDADES } from "@/constants/periodicidade";
 import { getMatriculas } from "@/services/matriculas/get-matriculas";
 import {
@@ -60,44 +61,55 @@ export default async function MatriculasPage() {
           </p>
         </div>
       ) : (
-        <ul className="mt-8 divide-y divide-border rounded-lg border border-border">
-          {matriculas.map((item) => {
-            const situacao = getSituacaoMatricula(
-              item.status,
-              item.dataExpiracao,
-            );
+        <div className="mt-8 overflow-hidden rounded-lg border border-border">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-muted/50 text-xs uppercase text-muted-foreground">
+              <tr>
+                <th className="px-4 py-3 font-medium">Aluno</th>
+                <th className="px-4 py-3 font-medium">Plano</th>
+                <th className="px-4 py-3 font-medium">Periodicidade</th>
+                <th className="px-4 py-3 font-medium">Criada em</th>
+                <th className="px-4 py-3 font-medium text-right">Situação</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {matriculas.map((item) => {
+                const situacao = getSituacaoMatricula(
+                  item.status,
+                  item.dataExpiracao,
+                );
 
-            return (
-              <li key={item.id}>
-                <Link
-                  href={`/dashboard/matriculas/${item.id}`}
-                  className="flex items-center justify-between gap-4 px-4 py-3 transition-colors hover:bg-muted/50"
-                >
-                  <div>
-                    <p className="text-sm font-medium text-foreground">
+                return (
+                  <MatriculaTableRow key={item.id} matriculaId={item.id}>
+                    <td className="px-4 py-3 font-medium text-foreground">
                       {item.alunoNome}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {item.planoNome} ·{" "}
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground">
+                      {item.planoNome}
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground">
                       {
                         PERIODICIDADES.find(
                           ({ key }) => key === item.periodicidade,
                         )?.label
-                      }{" "}
-                      · criada em {dateFormatter.format(item.createdAt)}
-                    </p>
-                  </div>
-
-                  <span
-                    className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${SITUACAO_CLASS[situacao]}`}
-                  >
-                    {SITUACAO_LABEL[situacao]}
-                  </span>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+                      }
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground">
+                      {dateFormatter.format(item.createdAt)}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <span
+                        className={`inline-block rounded-full px-2.5 py-1 text-xs font-medium ${SITUACAO_CLASS[situacao]}`}
+                      >
+                        {SITUACAO_LABEL[situacao]}
+                      </span>
+                    </td>
+                  </MatriculaTableRow>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

@@ -48,58 +48,74 @@ export default async function PagamentosPage() {
           </p>
         </div>
       ) : (
-        <ul className="mt-8 divide-y divide-border rounded-lg border border-border">
-          {pagamentos.map((item) => (
-            <li
-              key={item.id}
-              className="flex items-center justify-between gap-4 px-4 py-3"
-            >
-              <div>
-                <p className="text-sm font-medium text-foreground">
-                  {item.alunoNome}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {item.planoNome} ·{" "}
-                  {
-                    PERIODICIDADES.find(
-                      ({ key }) => key === item.periodicidade,
-                    )?.label
-                  }{" "}
-                  · {currencyFormatter.format(Number(item.valor))}
-                  {item.status === "pago" && item.formaPagamento && (
-                    <>
-                      {" "}
-                      ·{" "}
-                      {
-                        FORMAS_PAGAMENTO_OPCOES.find(
-                          ({ key }) => key === item.formaPagamento,
-                        )?.label
-                      }{" "}
-                      em{" "}
-                      {item.pagoEm ? dateFormatter.format(item.pagoEm) : ""}
-                    </>
-                  )}
-                </p>
-              </div>
-
-              <div className="flex shrink-0 items-center gap-3">
-                <span
-                  className={`rounded-full px-2.5 py-1 text-xs font-medium ${STATUS_CLASS[item.status]}`}
-                >
-                  {STATUS_LABEL[item.status]}
-                </span>
-
-                {item.status === "pendente" && (
-                  <ConcluirPagamentoDialog
-                    pagamentoId={item.id}
-                    alunoNome={item.alunoNome}
-                    valor={item.valor}
-                  />
-                )}
-              </div>
-            </li>
-          ))}
-        </ul>
+        <div className="mt-8 overflow-hidden rounded-lg border border-border">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-muted/50 text-xs uppercase text-muted-foreground">
+              <tr>
+                <th className="px-4 py-3 font-medium">Aluno</th>
+                <th className="px-4 py-3 font-medium">Plano</th>
+                <th className="px-4 py-3 font-medium">Periodicidade</th>
+                <th className="px-4 py-3 font-medium">Valor</th>
+                <th className="px-4 py-3 font-medium">Pagamento</th>
+                <th className="px-4 py-3 font-medium">Status</th>
+                <th className="px-4 py-3 font-medium text-right">Ações</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {pagamentos.map((item) => (
+                <tr key={item.id} className="transition-colors hover:bg-muted/50">
+                  <td className="px-4 py-3 font-medium text-foreground">
+                    {item.alunoNome}
+                  </td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    {item.planoNome}
+                  </td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    {
+                      PERIODICIDADES.find(
+                        ({ key }) => key === item.periodicidade,
+                      )?.label
+                    }
+                  </td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    {currencyFormatter.format(Number(item.valor))}
+                  </td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    {item.status === "pago" && item.formaPagamento ? (
+                      <>
+                        {
+                          FORMAS_PAGAMENTO_OPCOES.find(
+                            ({ key }) => key === item.formaPagamento,
+                          )?.label
+                        }{" "}
+                        em{" "}
+                        {item.pagoEm ? dateFormatter.format(item.pagoEm) : ""}
+                      </>
+                    ) : (
+                      "-"
+                    )}
+                  </td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`inline-block rounded-full px-2.5 py-1 text-xs font-medium ${STATUS_CLASS[item.status]}`}
+                    >
+                      {STATUS_LABEL[item.status]}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    {item.status === "pendente" && (
+                      <ConcluirPagamentoDialog
+                        pagamentoId={item.id}
+                        alunoNome={item.alunoNome}
+                        valor={item.valor}
+                      />
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );
