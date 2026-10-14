@@ -147,11 +147,17 @@ export function MatriculaForm({ alunos, planos }: MatriculaFormProps) {
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
-                    {alunos.map((aluno) => (
-                      <SelectItem key={aluno.id} value={aluno.id}>
-                        {aluno.nome} — {aluno.cpf}
-                      </SelectItem>
-                    ))}
+                    {alunos.length === 0 ? (
+                      <p className="px-2 py-1.5 text-sm text-muted-foreground">
+                        Não há alunos sem matrícula
+                      </p>
+                    ) : (
+                      alunos.map((aluno) => (
+                        <SelectItem key={aluno.id} value={aluno.id}>
+                          {aluno.nome} — {aluno.cpf}
+                        </SelectItem>
+                      ))
+                    )}
                   </SelectContent>
                 </Select>
               )}
