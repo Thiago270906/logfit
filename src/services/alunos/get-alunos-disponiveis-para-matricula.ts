@@ -4,8 +4,8 @@ import { getDb } from "@/lib/db";
 import { aluno } from "@/lib/db/aluno-schema";
 import { matricula } from "@/lib/db/matricula-schema";
 
-// Alunos com uma matrícula comum ativa precisam cancelá-la antes de
-// aparecer novamente como opção para uma nova matrícula.
+// Um aluno só pode ter uma matrícula por vez (de qualquer tipo); ele
+// precisa cancelá-la antes de aparecer novamente como opção para uma nova.
 export async function getAlunosDisponiveisParaMatricula() {
   const db = getDb();
 
@@ -20,11 +20,15 @@ export async function getAlunosDisponiveisParaMatricula() {
           .where(
             and(
               eq(matricula.alunoId, aluno.id),
-              eq(matricula.tipo, "comum"),
-              eq(matricula.status, "assinada"),
               or(
-                isNull(matricula.dataExpiracao),
-                gte(matricula.dataExpiracao, new Date()),
+                eq(matricula.status, "aguardando_assinatura"),
+                and(
+                  eq(matricula.status, "assinada"),
+                  or(
+                    isNull(matricula.dataExpiracao),
+                    gte(matricula.dataExpiracao, new Date()),
+                  ),
+                ),
               ),
             ),
           ),

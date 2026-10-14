@@ -6,15 +6,15 @@ import {
   type CreateMatriculaInput,
 } from "@/lib/validations/matricula";
 import {
-  MatriculaComumAtivaError,
-  temMatriculaComumAtiva,
-} from "@/services/matriculas/tem-matricula-comum-ativa";
+  MatriculaAtivaError,
+  temMatriculaAtiva,
+} from "@/services/matriculas/tem-matricula-ativa";
 
 export async function createMatricula(input: CreateMatriculaInput) {
   const data = createMatriculaSchema.parse(input);
 
-  if (await temMatriculaComumAtiva(data.alunoId)) {
-    throw new MatriculaComumAtivaError();
+  if (await temMatriculaAtiva(data.alunoId)) {
+    throw new MatriculaAtivaError();
   }
 
   const [created] = await getDb()

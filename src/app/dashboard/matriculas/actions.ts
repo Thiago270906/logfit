@@ -8,7 +8,7 @@ import { hasRole } from "@/lib/permissions";
 import { cancelarMatricula } from "@/services/matriculas/cancelar-matricula";
 import { createMatricula } from "@/services/matriculas/create-matricula";
 import { getMatriculaStatus } from "@/services/matriculas/get-matricula-status";
-import { MatriculaComumAtivaError } from "@/services/matriculas/tem-matricula-comum-ativa";
+import { MatriculaAtivaError } from "@/services/matriculas/tem-matricula-ativa";
 import {
   createMatriculaSchema,
   type CreateMatriculaFormInput,
@@ -33,7 +33,7 @@ export async function createMatriculaAction(input: CreateMatriculaFormInput) {
   try {
     created = await createMatricula(parsed.data);
   } catch (error) {
-    if (error instanceof MatriculaComumAtivaError) {
+    if (error instanceof MatriculaAtivaError) {
       return { error: error.message };
     }
     return { error: "Erro ao cadastrar matrícula." };
