@@ -11,6 +11,10 @@ const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
   timeStyle: "short",
 });
 
+const vencimentoFormatter = new Intl.DateTimeFormat("pt-BR", {
+  dateStyle: "short",
+});
+
 const currencyFormatter = new Intl.NumberFormat("pt-BR", {
   style: "currency",
   currency: "BRL",
@@ -47,12 +51,28 @@ export function MatriculaPagamentoPanel({
     );
   }
 
-  const parcelado = pagamentos.length > 1;
-  const proximoPendente = pagamentos.find((item) => item.status === "pendente");
-  const pagamento = proximoPendente ?? pagamentos[pagamentos.length - 1];
+  const agora = new Date();
+  const pendentesOrdenados = pagamentos
+    .filter((item) => item.status === "pendente")
+    .sort((a, b) => a.numeroParcela - b.numeroParcela);
+
+  // A próxima parcela/competência já existe como pendente assim que a
+  // anterior é paga (mensal) ou desde a assinatura (anual), mas a matrícula
+  // só deve aparecer como "pendente" de fato depois que ela vencer — até lá,
+  // continua valendo o último pagamento feito. Vale igual para mensal e anual.
+  const proximoPendente = pendentesOrdenados.find(
+    (item) => new Date(item.vencimento).getTime() <= agora.getTime(),
+  );
+
+  const ultimoPago = pagamentos
+    .filter((item) => item.status === "pago")
+    .sort((a, b) => b.numeroParcela - a.numeroParcela)[0];
+
+  const pagamento = proximoPendente ?? ultimoPago ?? pendentesOrdenados[0];
   const pago = pagamento.status === "pago";
-  const numeroParcela = pagamentos.indexOf(pagamento) + 1;
+  const numeroParcela = pagamento.numeroParcela;
   const parcelasPagas = pagamentos.filter((item) => item.status === "pago").length;
+  const parcelado = periodicidade === "anual" && pagamentos.length > 1;
 
   return (
     <div
@@ -80,6 +100,9 @@ export function MatriculaPagamentoPanel({
       )}
       <p className={`text-sm ${pago ? "text-emerald-800" : "text-amber-800"}`}>
         {currencyFormatter.format(Number(pagamento.valor))}
+      </p>
+      <p className={`text-xs ${pago ? "text-emerald-700" : "text-amber-700"}`}>
+        Vencimento: {vencimentoFormatter.format(new Date(pagamento.vencimento))}
       </p>
 
       {pago ? (

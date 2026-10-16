@@ -5,7 +5,10 @@ import { revalidatePath } from "next/cache";
 
 import { auth } from "@/lib/auth/auth";
 import { hasRole } from "@/lib/permissions";
-import { concluirPagamento } from "@/services/pagamentos/concluir-pagamento";
+import {
+  concluirPagamento,
+  ParcelaAnteriorPendenteError,
+} from "@/services/pagamentos/concluir-pagamento";
 import {
   concluirPagamentoSchema,
   type ConcluirPagamentoFormInput,
@@ -32,7 +35,10 @@ export async function concluirPagamentoAction(
   let updated;
   try {
     updated = await concluirPagamento(id, parsed.data);
-  } catch {
+  } catch (error) {
+    if (error instanceof ParcelaAnteriorPendenteError) {
+      return { error: error.message };
+    }
     return { error: "Erro ao concluir pagamento." };
   }
 

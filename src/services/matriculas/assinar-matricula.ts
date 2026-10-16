@@ -22,6 +22,12 @@ function valorDaPeriodicidade(
   return null;
 }
 
+function addMeses(data: Date, meses: number) {
+  const resultado = new Date(data);
+  resultado.setMonth(resultado.getMonth() + meses);
+  return resultado;
+}
+
 // Divide o valor total em 12 parcelas de centavos iguais, ajustando a
 // última para absorver o resto da divisão e manter a soma exata.
 function dividirEm12Parcelas(valorTotal: string) {
@@ -46,6 +52,7 @@ export async function assinarMatricula(
       id: matricula.id,
       periodicidade: matricula.periodicidade,
       parcelarMensal: matricula.parcelarMensal,
+      dataInicio: matricula.dataInicio,
       diariaValor: plano.diariaValor,
       mensalValor: plano.mensalValor,
       anualValor: plano.anualValor,
@@ -88,15 +95,19 @@ export async function assinarMatricula(
       await getDb()
         .insert(pagamento)
         .values(
-          parcelas.map((parcela) => ({
+          parcelas.map((parcela, index) => ({
             matriculaId: pendente.id,
             valor: parcela,
+            vencimento: addMeses(pendente.dataInicio, index),
+            numeroParcela: index + 1,
           })),
         );
     } else {
       await getDb().insert(pagamento).values({
         matriculaId: pendente.id,
         valor,
+        vencimento: pendente.dataInicio,
+        numeroParcela: 1,
       });
     }
   }

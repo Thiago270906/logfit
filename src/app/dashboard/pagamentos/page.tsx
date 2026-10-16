@@ -1,12 +1,18 @@
 import { Receipt } from "lucide-react";
 
+import { PeriodoFilter } from "@/components/pagamentos/periodo-filter";
 import { FORMAS_PAGAMENTO_OPCOES } from "@/constants/forma-pagamento";
 import { PERIODICIDADES } from "@/constants/periodicidade";
+import { resolverFiltroPagamentos } from "@/lib/pagamentos/periodo";
 import { getPagamentos } from "@/services/pagamentos/get-pagamentos";
 
 const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
   dateStyle: "short",
   timeStyle: "short",
+});
+
+const vencimentoFormatter = new Intl.DateTimeFormat("pt-BR", {
+  dateStyle: "short",
 });
 
 const currencyFormatter = new Intl.NumberFormat("pt-BR", {
@@ -24,16 +30,30 @@ const STATUS_CLASS: Record<string, string> = {
   pago: "bg-emerald-100 text-emerald-800",
 };
 
-export default async function PagamentosPage() {
-  const pagamentos = await getPagamentos();
+export default async function PagamentosPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ modo?: string; mes?: string; de?: string; ate?: string }>;
+}) {
+  const params = await searchParams;
+  const filtro = resolverFiltroPagamentos(params);
+  const pagamentos = await getPagamentos({ inicio: filtro.inicio, fim: filtro.fim });
 
   return (
     <div className="px-8 py-10">
-      <div>
-        <h1 className="text-2xl font-semibold text-foreground">Pagamentos</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Pagamentos gerados a partir das matrículas assinadas
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold text-foreground">Pagamentos</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Pagamentos gerados a partir das matrículas assinadas
+          </p>
+        </div>
+        <PeriodoFilter
+          modo={filtro.modo}
+          mes={filtro.mes}
+          de={filtro.de}
+          ate={filtro.ate}
+        />
       </div>
 
       {pagamentos.length === 0 ? (
@@ -54,6 +74,8 @@ export default async function PagamentosPage() {
                 <th className="px-4 py-3 font-medium">Aluno</th>
                 <th className="px-4 py-3 font-medium">Plano</th>
                 <th className="px-4 py-3 font-medium">Periodicidade</th>
+                <th className="px-4 py-3 font-medium">Parcela</th>
+                <th className="px-4 py-3 font-medium">Vencimento</th>
                 <th className="px-4 py-3 font-medium">Valor</th>
                 <th className="px-4 py-3 font-medium">Pagamento</th>
                 <th className="px-4 py-3 font-medium">Data</th>
@@ -75,6 +97,12 @@ export default async function PagamentosPage() {
                         ({ key }) => key === item.periodicidade,
                       )?.label
                     }
+                  </td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    {item.numeroParcela}
+                  </td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    {vencimentoFormatter.format(item.vencimento)}
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">
                     {currencyFormatter.format(Number(item.valor))}
