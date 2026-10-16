@@ -1,22 +1,49 @@
 "use client";
 
-import { Ban } from "lucide-react";
+import { Ban, RotateCcw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { MatriculaCancelarDialog } from "@/components/matriculas/matricula-cancelar-dialog";
+import { MatriculaReabrirDialog } from "@/components/matriculas/matricula-reabrir-dialog";
 import type { MATRICULA_STATUSES } from "@/lib/db/matricula-schema";
+import { podeReabrirMatricula } from "@/services/matriculas/reabrir-matricula";
 
 export function MatriculaRowActions({
   matriculaId,
   alunoNome,
   status,
+  canceladaEm,
 }: {
   matriculaId: string;
   alunoNome: string;
   status: (typeof MATRICULA_STATUSES)[number];
+  canceladaEm: Date | string | null;
 }) {
   if (status === "cancelada") {
-    return null;
+    if (!podeReabrirMatricula(status, canceladaEm)) {
+      return null;
+    }
+
+    return (
+      <div
+        className="flex items-center justify-end"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <MatriculaReabrirDialog
+          matriculaId={matriculaId}
+          alunoNome={alunoNome}
+          trigger={
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              aria-label="Reabrir matrícula"
+            >
+              <RotateCcw />
+            </Button>
+          }
+        />
+      </div>
+    );
   }
 
   return (

@@ -9,6 +9,7 @@ export const MATRICULA_HISTORICO_TIPOS = [
   "criada",
   "assinada",
   "cancelada",
+  "reaberta",
 ] as const;
 
 export const matriculaHistorico = pgTable("matricula_historico", {

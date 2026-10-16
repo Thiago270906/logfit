@@ -8,6 +8,7 @@ import { hasRole } from "@/lib/permissions";
 import { cancelarMatricula } from "@/services/matriculas/cancelar-matricula";
 import { createMatricula } from "@/services/matriculas/create-matricula";
 import { getMatriculaStatus } from "@/services/matriculas/get-matricula-status";
+import { reabrirMatricula } from "@/services/matriculas/reabrir-matricula";
 import { MatriculaAtivaError } from "@/services/matriculas/tem-matricula-ativa";
 import {
   createMatriculaSchema,
@@ -69,6 +70,30 @@ export async function cancelarMatriculaAction(id: string) {
   }
 
   if (!cancelada) {
+    return { error: "Matrícula não encontrada." };
+  }
+
+  revalidatePath("/dashboard/matriculas");
+  revalidatePath(`/dashboard/matriculas/${id}`);
+  return { success: true };
+}
+
+export async function reabrirMatriculaAction(id: string) {
+  if (!(await requireAdmin())) {
+    return { error: "Você não tem permissão para reabrir matrículas." };
+  }
+
+  let reaberta;
+  try {
+    reaberta = await reabrirMatricula(id);
+  } catch (error) {
+    if (error instanceof Error) {
+      return { error: error.message };
+    }
+    return { error: "Erro ao reabrir matrícula." };
+  }
+
+  if (!reaberta) {
     return { error: "Matrícula não encontrada." };
   }
 

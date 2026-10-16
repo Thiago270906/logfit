@@ -1,4 +1,4 @@
-import { Ban, CheckCircle2, FilePlus2, Wallet } from "lucide-react";
+import { Ban, CheckCircle2, FilePlus2, RotateCcw, Wallet } from "lucide-react";
 
 import type {
   HistoricoEvento,
@@ -14,6 +14,7 @@ const TIPO_ICON: Record<HistoricoEventoTipo, typeof FilePlus2> = {
   criada: FilePlus2,
   assinada: CheckCircle2,
   cancelada: Ban,
+  reaberta: RotateCcw,
   pagamento_confirmado: Wallet,
 };
 

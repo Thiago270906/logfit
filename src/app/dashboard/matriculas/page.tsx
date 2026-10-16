@@ -113,6 +113,7 @@ export default async function MatriculasPage() {
                         matriculaId={item.id}
                         alunoNome={item.alunoNome}
                         status={item.status}
+                        canceladaEm={item.canceladaEm}
                       />
                     </td>
                   </MatriculaTableRow>

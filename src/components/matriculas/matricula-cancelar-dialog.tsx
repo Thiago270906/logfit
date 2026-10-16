@@ -72,7 +72,8 @@ export function MatriculaCancelarDialog({
           <AlertDialogDescription>
             Tem certeza que deseja cancelar a matrícula de {alunoNome}? O
             aluno voltará a aparecer na lista de seleção para uma nova
-            matrícula. Essa ação não pode ser desfeita.
+            matrícula. Você terá 10 dias para reabrir esta matrícula, caso
+            tenha sido um engano.
           </AlertDialogDescription>
         </AlertDialogHeader>
 

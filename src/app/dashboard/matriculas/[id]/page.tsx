@@ -5,10 +5,12 @@ import { ArrowLeft } from "lucide-react";
 import { MatriculaCancelarDialog } from "@/components/matriculas/matricula-cancelar-dialog";
 import { MatriculaHistoricoTimeline } from "@/components/matriculas/matricula-historico";
 import { MatriculaPagamentoPanel } from "@/components/matriculas/matricula-pagamento-panel";
+import { MatriculaReabrirDialog } from "@/components/matriculas/matricula-reabrir-dialog";
 import { MatriculaSignaturePanel } from "@/components/matriculas/matricula-signature-panel";
 import { PERIODICIDADES } from "@/constants/periodicidade";
 import { getMatriculaById } from "@/services/matriculas/get-matricula-by-id";
 import { getMatriculaHistorico } from "@/services/matriculas/get-matricula-historico";
+import { podeReabrirMatricula } from "@/services/matriculas/reabrir-matricula";
 import { getPagamentosByMatricula } from "@/services/pagamentos/get-pagamentos-by-matricula";
 
 export default async function MatriculaDetalhePage({
@@ -54,6 +56,13 @@ export default async function MatriculaDetalhePage({
 
         {matricula.status !== "cancelada" && (
           <MatriculaCancelarDialog
+            matriculaId={matricula.id}
+            alunoNome={matricula.alunoNome}
+          />
+        )}
+
+        {podeReabrirMatricula(matricula.status, matricula.canceladaEm) && (
+          <MatriculaReabrirDialog
             matriculaId={matricula.id}
             alunoNome={matricula.alunoNome}
           />
