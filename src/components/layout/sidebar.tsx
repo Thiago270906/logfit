@@ -113,7 +113,7 @@ export function Sidebar() {
         {!isSettings && (
           <>
             <Link
-              href="/dashboard/configuracoes"
+              href="/dashboard/configuracoes/academia"
               className={navLinkClass(false)}
             >
               <Settings className="h-4 w-4" />
