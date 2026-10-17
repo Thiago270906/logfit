@@ -38,6 +38,10 @@ export const matricula = pgTable("matricula", {
   // Só se aplica à periodicidade anual: divide o valor anual em 12 parcelas
   // mensais ao invés de gerar um único pagamento integral na assinatura.
   parcelarMensal: boolean("parcelar_mensal").default(true).notNull(),
+  // Controla se, ao vencer (dataExpiracao atingida), o sistema gera o próximo
+  // ciclo/pagamento automaticamente ou exige confirmação manual do admin.
+  // Não se aplica à periodicidade "diaria" (nunca entra no fluxo de renovação).
+  renovacaoAutomatica: boolean("renovacao_automatica").default(true).notNull(),
   token: text("token")
     .notNull()
     .unique()

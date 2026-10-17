@@ -3,6 +3,7 @@ import { and, desc, eq } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { matricula } from "@/lib/db/matricula-schema";
 import { pagamento } from "@/lib/db/pagamento-schema";
+import { renovarMatriculasAutomaticas } from "@/services/matriculas/renovar-matricula";
 
 function addMeses(data: Date, meses: number) {
   const resultado = new Date(data);
@@ -67,6 +68,12 @@ async function gerarProximasCompetencias(matriculaRow: {
 }
 
 export async function gerarMensalidadesPendentes(matriculaId?: string) {
+  // Estende dataExpiracao e gera o pagamento do próximo ciclo para
+  // matrículas (mensais e anuais) com renovação automática que já venceram.
+  // Precisa rodar antes do select abaixo: só assim o teto de dataExpiracao
+  // já vem atualizado para o loop de competências mensais que segue.
+  await renovarMatriculasAutomaticas(matriculaId);
+
   const db = getDb();
   const agora = new Date();
 

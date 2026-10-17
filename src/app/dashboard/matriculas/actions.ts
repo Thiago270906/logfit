@@ -9,6 +9,14 @@ import { cancelarMatricula } from "@/services/matriculas/cancelar-matricula";
 import { createMatricula } from "@/services/matriculas/create-matricula";
 import { getMatriculaStatus } from "@/services/matriculas/get-matricula-status";
 import { reabrirMatricula } from "@/services/matriculas/reabrir-matricula";
+import {
+  atualizarRenovacaoAutomatica,
+  confirmarRematricula,
+  MatriculaAindaNaoVencidaError,
+  MatriculaNaoElegivelParaRenovacaoError,
+  PeriodicidadeNaoRenovavelError,
+  RenovacaoJaAutomaticaError,
+} from "@/services/matriculas/renovar-matricula";
 import { MatriculaAtivaError } from "@/services/matriculas/tem-matricula-ativa";
 import {
   createMatriculaSchema,
@@ -94,6 +102,61 @@ export async function reabrirMatriculaAction(id: string) {
   }
 
   if (!reaberta) {
+    return { error: "Matrícula não encontrada." };
+  }
+
+  revalidatePath("/dashboard/matriculas");
+  revalidatePath(`/dashboard/matriculas/${id}`);
+  return { success: true };
+}
+
+export async function toggleRenovacaoAutomaticaAction(
+  id: string,
+  renovacaoAutomatica: boolean,
+) {
+  if (!(await requireAdmin())) {
+    return { error: "Você não tem permissão para alterar esta matrícula." };
+  }
+
+  let atualizada;
+  try {
+    atualizada = await atualizarRenovacaoAutomatica(id, renovacaoAutomatica);
+  } catch (error) {
+    if (error instanceof PeriodicidadeNaoRenovavelError) {
+      return { error: error.message };
+    }
+    return { error: "Erro ao atualizar rematrícula automática." };
+  }
+
+  if (!atualizada) {
+    return { error: "Matrícula não encontrada." };
+  }
+
+  revalidatePath("/dashboard/matriculas");
+  revalidatePath(`/dashboard/matriculas/${id}`);
+  return { success: true, renovacaoAutomatica: atualizada.renovacaoAutomatica };
+}
+
+export async function confirmarRematriculaAction(id: string) {
+  if (!(await requireAdmin())) {
+    return { error: "Você não tem permissão para confirmar rematrículas." };
+  }
+
+  let resultado;
+  try {
+    resultado = await confirmarRematricula(id);
+  } catch (error) {
+    if (
+      error instanceof MatriculaNaoElegivelParaRenovacaoError ||
+      error instanceof MatriculaAindaNaoVencidaError ||
+      error instanceof RenovacaoJaAutomaticaError
+    ) {
+      return { error: error.message };
+    }
+    return { error: "Erro ao confirmar rematrícula." };
+  }
+
+  if (!resultado) {
     return { error: "Matrícula não encontrada." };
   }
 

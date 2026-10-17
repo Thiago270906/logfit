@@ -11,6 +11,7 @@ export async function getMatriculaById(id: string) {
       id: matricula.id,
       status: matricula.status,
       periodicidade: matricula.periodicidade,
+      renovacaoAutomatica: matricula.renovacaoAutomatica,
       token: matricula.token,
       assinaturaNome: matricula.assinaturaNome,
       assinaturaImagem: matricula.assinaturaImagem,

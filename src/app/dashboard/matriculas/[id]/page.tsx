@@ -3,14 +3,17 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 
 import { MatriculaCancelarDialog } from "@/components/matriculas/matricula-cancelar-dialog";
+import { MatriculaConfirmarRematriculaDialog } from "@/components/matriculas/matricula-confirmar-rematricula-dialog";
 import { MatriculaHistoricoTimeline } from "@/components/matriculas/matricula-historico";
 import { MatriculaPagamentoPanel } from "@/components/matriculas/matricula-pagamento-panel";
 import { MatriculaReabrirDialog } from "@/components/matriculas/matricula-reabrir-dialog";
+import { MatriculaRenovacaoAutomaticaToggle } from "@/components/matriculas/matricula-renovacao-automatica-toggle";
 import { MatriculaSignaturePanel } from "@/components/matriculas/matricula-signature-panel";
 import { PERIODICIDADES } from "@/constants/periodicidade";
 import { getMatriculaById } from "@/services/matriculas/get-matricula-by-id";
 import { getMatriculaHistorico } from "@/services/matriculas/get-matricula-historico";
 import { podeReabrirMatricula } from "@/services/matriculas/reabrir-matricula";
+import { precisaConfirmarRematricula } from "@/services/matriculas/renovar-matricula";
 import { getPagamentosByMatricula } from "@/services/pagamentos/get-pagamentos-by-matricula";
 
 export default async function MatriculaDetalhePage({
@@ -54,19 +57,36 @@ export default async function MatriculaDetalhePage({
           </p>
         </div>
 
-        {matricula.status !== "cancelada" && (
-          <MatriculaCancelarDialog
-            matriculaId={matricula.id}
-            alunoNome={matricula.alunoNome}
-          />
-        )}
+        <div className="flex items-center gap-2">
+          {matricula.periodicidade !== "diaria" &&
+            matricula.status !== "cancelada" && (
+              <MatriculaRenovacaoAutomaticaToggle
+                matriculaId={matricula.id}
+                renovacaoAutomatica={matricula.renovacaoAutomatica}
+              />
+            )}
 
-        {podeReabrirMatricula(matricula.status, matricula.canceladaEm) && (
-          <MatriculaReabrirDialog
-            matriculaId={matricula.id}
-            alunoNome={matricula.alunoNome}
-          />
-        )}
+          {precisaConfirmarRematricula(matricula) && (
+            <MatriculaConfirmarRematriculaDialog
+              matriculaId={matricula.id}
+              alunoNome={matricula.alunoNome}
+            />
+          )}
+
+          {matricula.status !== "cancelada" && (
+            <MatriculaCancelarDialog
+              matriculaId={matricula.id}
+              alunoNome={matricula.alunoNome}
+            />
+          )}
+
+          {podeReabrirMatricula(matricula.status, matricula.canceladaEm) && (
+            <MatriculaReabrirDialog
+              matriculaId={matricula.id}
+              alunoNome={matricula.alunoNome}
+            />
+          )}
+        </div>
       </div>
 
       <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[320px_1fr]">
