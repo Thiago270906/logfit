@@ -92,6 +92,20 @@
       "when": 1792708495233,
       "tag": "0012_drop_academia",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1792711837974,
+      "tag": "0013_plano_adiciona_periodicidade_valor",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1792711850592,
+      "tag": "0014_plano_remove_colunas_antigas",
+      "breakpoints": true
     }
   ]
 }

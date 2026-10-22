@@ -9,7 +9,10 @@ import { MatriculaPagamentoPanel } from "@/components/matriculas/matricula-pagam
 import { MatriculaReabrirDialog } from "@/components/matriculas/matricula-reabrir-dialog";
 import { MatriculaRenovacaoAutomaticaToggle } from "@/components/matriculas/matricula-renovacao-automatica-toggle";
 import { MatriculaSignaturePanel } from "@/components/matriculas/matricula-signature-panel";
-import { PERIODICIDADES } from "@/constants/periodicidade";
+import {
+  PERIODICIDADES,
+  PERIODICIDADES_COM_RENOVACAO_AUTOMATICA,
+} from "@/constants/periodicidade";
 import { getMatriculaById } from "@/services/matriculas/get-matricula-by-id";
 import { getMatriculaHistorico } from "@/services/matriculas/get-matricula-historico";
 import { podeReabrirMatricula } from "@/services/matriculas/reabrir-matricula";
@@ -58,7 +61,9 @@ export default async function MatriculaDetalhePage({
         </div>
 
         <div className="flex items-center gap-2">
-          {matricula.periodicidade !== "diaria" &&
+          {PERIODICIDADES_COM_RENOVACAO_AUTOMATICA.includes(
+            matricula.periodicidade,
+          ) &&
             matricula.status !== "cancelada" && (
               <MatriculaRenovacaoAutomaticaToggle
                 matriculaId={matricula.id}

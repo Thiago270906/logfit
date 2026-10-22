@@ -5,6 +5,11 @@ import { matricula } from "@/lib/db/matricula-schema";
 import { matriculaHistorico } from "@/lib/db/matricula-historico-schema";
 import { pagamento } from "@/lib/db/pagamento-schema";
 import { plano } from "@/lib/db/plano-schema";
+import {
+  mesesDaPeriodicidade,
+  PERIODICIDADES_COM_RENOVACAO_AUTOMATICA,
+  type PeriodicidadeKey,
+} from "@/constants/periodicidade";
 import { getSituacaoMatricula } from "@/services/matriculas/get-situacao-matricula";
 
 export class MatriculaNaoElegivelParaRenovacaoError extends Error {
@@ -34,7 +39,9 @@ export class RenovacaoJaAutomaticaError extends Error {
 
 export class PeriodicidadeNaoRenovavelError extends Error {
   constructor() {
-    super("Matrículas diárias não participam do fluxo de rematrícula.");
+    super(
+      "Esta periodicidade não participa da rematrícula automática; confirme manualmente quando vencer.",
+    );
     this.name = "PeriodicidadeNaoRenovavelError";
   }
 }
@@ -45,31 +52,14 @@ function addMeses(data: Date, meses: number) {
   return resultado;
 }
 
-function addAnos(data: Date, anos: number) {
-  const resultado = new Date(data);
-  resultado.setFullYear(resultado.getFullYear() + anos);
-  return resultado;
-}
-
-// Valor cobrado nesta renovação: preço ATUAL do plano (mesma lógica de
-// assinar-matricula.ts) — ao contrário da continuação mensal dentro do
-// mesmo ciclo, a renovação busca o preço vigente, não um valor congelado.
-function valorDaPeriodicidade(
-  periodicidade: string,
-  planoRow: { diariaValor: string | null; mensalValor: string | null; anualValor: string | null },
-) {
-  if (periodicidade === "diaria") return planoRow.diariaValor;
-  if (periodicidade === "mensal") return planoRow.mensalValor;
-  if (periodicidade === "anual") return planoRow.anualValor;
-  return null;
-}
-
-function dividirEm12Parcelas(valorTotal: string) {
+// Divide o valor total em N parcelas de centavos iguais, ajustando a
+// última para absorver o resto da divisão e manter a soma exata.
+function dividirEmParcelas(valorTotal: string, quantidade: number) {
   const totalCentavos = Math.round(Number(valorTotal) * 100);
-  const parcelaCentavos = Math.floor(totalCentavos / 12);
-  const resto = totalCentavos - parcelaCentavos * 12;
+  const parcelaCentavos = Math.floor(totalCentavos / quantidade);
+  const resto = totalCentavos - parcelaCentavos * quantidade;
 
-  return Array.from({ length: 12 }, (_, index) => {
+  return Array.from({ length: quantidade }, (_, index) => {
     const centavos = parcelaCentavos + (index < resto ? 1 : 0);
     return (centavos / 100).toFixed(2);
   });
@@ -78,14 +68,15 @@ function dividirEm12Parcelas(valorTotal: string) {
 type MatriculaParaRenovacao = {
   id: string;
   status: string;
-  periodicidade: string;
+  periodicidade: PeriodicidadeKey;
   parcelarMensal: boolean;
   dataInicio: Date;
   dataExpiracao: Date | null;
   renovacaoAutomatica: boolean;
-  diariaValor: string | null;
-  mensalValor: string | null;
-  anualValor: string | null;
+  // Preço ATUAL do plano (mesma lógica de assinar-matricula.ts) — ao
+  // contrário da continuação mensal dentro do mesmo ciclo, a renovação
+  // busca o preço vigente, não um valor congelado.
+  valor: string;
 };
 
 async function buscarParaRenovacao(
@@ -100,9 +91,7 @@ async function buscarParaRenovacao(
       dataInicio: matricula.dataInicio,
       dataExpiracao: matricula.dataExpiracao,
       renovacaoAutomatica: matricula.renovacaoAutomatica,
-      diariaValor: plano.diariaValor,
-      mensalValor: plano.mensalValor,
-      anualValor: plano.anualValor,
+      valor: plano.valor,
     })
     .from(matricula)
     .innerJoin(plano, eq(matricula.planoId, plano.id))
@@ -112,8 +101,8 @@ async function buscarParaRenovacao(
   return row;
 }
 
-// Executa um único ciclo de renovação: estende dataExpiracao em +1 mês
-// (mensal) ou +1 ano (anual) e gera o(s) pagamento(s) correspondentes. O
+// Executa um único ciclo de renovação: estende dataExpiracao pelo número de
+// meses da periodicidade e gera o(s) pagamento(s) correspondentes. O
 // vencimento de qualquer parcela — inclusive a primeira do novo ciclo — é
 // sempre calculado a partir de dataInicio + numeroParcela, nunca a partir de
 // dataExpiracao: isso evita colidir com a parcela que o mecanismo de
@@ -123,10 +112,8 @@ async function executarUmCiclo(row: MatriculaParaRenovacao) {
   const db = getDb();
   if (!row.dataExpiracao) throw new MatriculaNaoElegivelParaRenovacaoError();
 
-  const novaDataExpiracao =
-    row.periodicidade === "anual"
-      ? addAnos(row.dataExpiracao, 1)
-      : addMeses(row.dataExpiracao, 1);
+  const meses = mesesDaPeriodicidade(row.periodicidade) ?? 1;
+  const novaDataExpiracao = addMeses(row.dataExpiracao, meses);
 
   const [ultima] = await db
     .select({ numeroParcela: pagamento.numeroParcela })
@@ -136,10 +123,9 @@ async function executarUmCiclo(row: MatriculaParaRenovacao) {
     .limit(1);
   const proximoNumeroBase = (ultima?.numeroParcela ?? 0) + 1;
 
-  const valor = valorDaPeriodicidade(row.periodicidade, row);
-  if (valor) {
-    if (row.periodicidade === "anual" && row.parcelarMensal) {
-      const parcelas = dividirEm12Parcelas(valor);
+  if (row.valor) {
+    if (meses > 1 && row.parcelarMensal) {
+      const parcelas = dividirEmParcelas(row.valor, meses);
       await db.insert(pagamento).values(
         parcelas.map((parcela, index) => ({
           matriculaId: row.id,
@@ -151,7 +137,7 @@ async function executarUmCiclo(row: MatriculaParaRenovacao) {
     } else {
       await db.insert(pagamento).values({
         matriculaId: row.id,
-        valor,
+        valor: row.valor,
         vencimento: addMeses(row.dataInicio, proximoNumeroBase - 1),
         numeroParcela: proximoNumeroBase,
       });
@@ -217,7 +203,9 @@ export async function confirmarRematricula(id: string) {
 }
 
 // Chamada pelo lazy trigger (modo automático) a partir de
-// gerar-mensalidades-pendentes.ts. Cobre mensal e anual; diária nunca entra.
+// gerar-mensalidades-pendentes.ts. Cobre mensal e anual; as demais
+// periodicidades (diária e as novas bimestral/trimestral/quadrimestral/
+// semestral) sempre passam pela confirmação manual do admin.
 export async function renovarMatriculasAutomaticas(matriculaId?: string) {
   const db = getDb();
   const agora = new Date();
@@ -225,7 +213,7 @@ export async function renovarMatriculasAutomaticas(matriculaId?: string) {
   const condicoes = [
     eq(matricula.status, "assinada"),
     eq(matricula.renovacaoAutomatica, true),
-    inArray(matricula.periodicidade, ["mensal", "anual"]),
+    inArray(matricula.periodicidade, PERIODICIDADES_COM_RENOVACAO_AUTOMATICA),
     lt(matricula.dataExpiracao, agora),
   ];
   if (matriculaId) condicoes.push(eq(matricula.id, matriculaId));
@@ -240,7 +228,9 @@ export async function renovarMatriculasAutomaticas(matriculaId?: string) {
   }
 }
 
-// Toggle usado pelo switch da UI. Só existe para periodicidade != "diaria".
+// Toggle usado pelo switch da UI. Só existe para periodicidades elegíveis à
+// renovação automática (mensal/anual) — as demais ficam sempre em modo
+// manual (ver PERIODICIDADES_COM_RENOVACAO_AUTOMATICA).
 export async function atualizarRenovacaoAutomatica(
   id: string,
   renovacaoAutomatica: boolean,
@@ -253,7 +243,7 @@ export async function atualizarRenovacaoAutomatica(
     .limit(1);
 
   if (!atual) return null;
-  if (atual.periodicidade === "diaria") {
+  if (!PERIODICIDADES_COM_RENOVACAO_AUTOMATICA.includes(atual.periodicidade)) {
     throw new PeriodicidadeNaoRenovavelError();
   }
 

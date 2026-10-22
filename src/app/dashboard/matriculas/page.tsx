@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ClipboardList } from "lucide-react";
+import { ClipboardList, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { MatriculaRowActions } from "@/components/matriculas/matricula-row-actions";
@@ -30,8 +30,14 @@ const SITUACAO_CLASS: Record<MatriculaSituacao, string> = {
   cancelada: "bg-slate-200 text-slate-700",
 };
 
-export default async function MatriculasPage() {
-  const matriculas = await getMatriculas();
+export default async function MatriculasPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ planoId?: string }>;
+}) {
+  const { planoId } = await searchParams;
+  const matriculas = await getMatriculas(planoId ? { planoId } : undefined);
+  const planoNomeFiltro = matriculas[0]?.planoNome;
 
   return (
     <div className="px-8 py-10">
@@ -53,11 +59,31 @@ export default async function MatriculasPage() {
         </Button>
       </div>
 
+      {planoId && (
+        <div className="mt-4 flex items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2 text-sm text-muted-foreground">
+          Filtrando por plano
+          {planoNomeFiltro && (
+            <span className="font-medium text-foreground">
+              {planoNomeFiltro}
+            </span>
+          )}
+          <Link
+            href="/dashboard/matriculas"
+            className="ml-auto inline-flex items-center gap-1 text-xs text-primary hover:underline"
+          >
+            <X className="h-3 w-3" />
+            Limpar filtro
+          </Link>
+        </div>
+      )}
+
       {matriculas.length === 0 ? (
         <div className="mt-8 flex flex-col items-center justify-center rounded-lg border border-dashed border-border py-16 text-center">
           <ClipboardList className="h-8 w-8 text-muted-foreground" />
           <p className="mt-3 text-sm font-medium text-foreground">
-            Nenhuma matrícula cadastrada ainda
+            {planoId
+              ? "Nenhuma matrícula vinculada a este plano"
+              : "Nenhuma matrícula cadastrada ainda"}
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
             Clique em &quot;Nova Matrícula&quot; para cadastrar a primeira.

@@ -1,16 +1,14 @@
-import { boolean, numeric, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { numeric, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+
+import { PERIODICIDADE_KEYS } from "@/constants/periodicidade";
 
 export const plano = pgTable("plano", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
   nome: text("nome").notNull(),
-  diariaHabilitada: boolean("diaria_habilitada").default(false).notNull(),
-  diariaValor: numeric("diaria_valor", { precision: 10, scale: 2 }),
-  mensalHabilitada: boolean("mensal_habilitada").default(false).notNull(),
-  mensalValor: numeric("mensal_valor", { precision: 10, scale: 2 }),
-  anualHabilitada: boolean("anual_habilitada").default(false).notNull(),
-  anualValor: numeric("anual_valor", { precision: 10, scale: 2 }),
+  periodicidade: text("periodicidade", { enum: PERIODICIDADE_KEYS }).notNull(),
+  valor: numeric("valor", { precision: 10, scale: 2 }).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()

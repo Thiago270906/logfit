@@ -5,22 +5,11 @@ import { matricula } from "@/lib/db/matricula-schema";
 import { matriculaHistorico } from "@/lib/db/matricula-historico-schema";
 import { pagamento } from "@/lib/db/pagamento-schema";
 import { plano } from "@/lib/db/plano-schema";
+import { mesesDaPeriodicidade } from "@/constants/periodicidade";
 import {
   assinarMatriculaSchema,
   type AssinarMatriculaInput,
 } from "@/lib/validations/matricula";
-
-// Valor cobrado nessa matrícula: snapshot do valor do plano vigente no
-// momento da assinatura, já que o plano pode ter seu preço alterado depois.
-function valorDaPeriodicidade(
-  periodicidade: string,
-  planoRow: { diariaValor: string | null; mensalValor: string | null; anualValor: string | null },
-) {
-  if (periodicidade === "diaria") return planoRow.diariaValor;
-  if (periodicidade === "mensal") return planoRow.mensalValor;
-  if (periodicidade === "anual") return planoRow.anualValor;
-  return null;
-}
 
 function addMeses(data: Date, meses: number) {
   const resultado = new Date(data);
@@ -28,14 +17,14 @@ function addMeses(data: Date, meses: number) {
   return resultado;
 }
 
-// Divide o valor total em 12 parcelas de centavos iguais, ajustando a
+// Divide o valor total em N parcelas de centavos iguais, ajustando a
 // última para absorver o resto da divisão e manter a soma exata.
-function dividirEm12Parcelas(valorTotal: string) {
+function dividirEmParcelas(valorTotal: string, quantidade: number) {
   const totalCentavos = Math.round(Number(valorTotal) * 100);
-  const parcelaCentavos = Math.floor(totalCentavos / 12);
-  const resto = totalCentavos - parcelaCentavos * 12;
+  const parcelaCentavos = Math.floor(totalCentavos / quantidade);
+  const resto = totalCentavos - parcelaCentavos * quantidade;
 
-  return Array.from({ length: 12 }, (_, index) => {
+  return Array.from({ length: quantidade }, (_, index) => {
     const centavos = parcelaCentavos + (index < resto ? 1 : 0);
     return (centavos / 100).toFixed(2);
   });
@@ -53,9 +42,9 @@ export async function assinarMatricula(
       periodicidade: matricula.periodicidade,
       parcelarMensal: matricula.parcelarMensal,
       dataInicio: matricula.dataInicio,
-      diariaValor: plano.diariaValor,
-      mensalValor: plano.mensalValor,
-      anualValor: plano.anualValor,
+      // Valor cobrado nessa matrícula: snapshot do valor do plano vigente no
+      // momento da assinatura, já que o plano pode ter seu preço alterado depois.
+      valor: plano.valor,
     })
     .from(matricula)
     .innerJoin(plano, eq(matricula.planoId, plano.id))
@@ -88,10 +77,10 @@ export async function assinarMatricula(
     descricao: `Contrato assinado digitalmente por ${data.nome}.`,
   });
 
-  const valor = valorDaPeriodicidade(pendente.periodicidade, pendente);
-  if (valor) {
-    if (pendente.periodicidade === "anual" && pendente.parcelarMensal) {
-      const parcelas = dividirEm12Parcelas(valor);
+  const meses = mesesDaPeriodicidade(pendente.periodicidade) ?? 1;
+  if (pendente.valor) {
+    if (meses > 1 && pendente.parcelarMensal) {
+      const parcelas = dividirEmParcelas(pendente.valor, meses);
       await getDb()
         .insert(pagamento)
         .values(
@@ -105,7 +94,7 @@ export async function assinarMatricula(
     } else {
       await getDb().insert(pagamento).values({
         matriculaId: pendente.id,
-        valor,
+        valor: pendente.valor,
         vencimento: pendente.dataInicio,
         numeroParcela: 1,
       });

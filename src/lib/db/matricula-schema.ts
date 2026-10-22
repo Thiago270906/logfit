@@ -2,6 +2,7 @@ import { boolean, jsonb, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
 import { aluno } from "@/lib/db/aluno-schema";
 import { plano } from "@/lib/db/plano-schema";
+import { PERIODICIDADE_KEYS } from "@/constants/periodicidade";
 
 export const MATRICULA_STATUSES = [
   "aguardando_assinatura",
@@ -9,7 +10,9 @@ export const MATRICULA_STATUSES = [
   "cancelada",
 ] as const;
 
-export const MATRICULA_PERIODICIDADES = ["diaria", "mensal", "anual"] as const;
+// Sempre o mesmo conjunto de periodicidades do plano: a matrícula herda a
+// periodicidade do plano escolhido, nunca escolhe uma diferente.
+export const MATRICULA_PERIODICIDADES = PERIODICIDADE_KEYS;
 
 // "totalpass" só diferencia a origem da matrícula; nenhuma regra específica
 // para esse tipo está implementada ainda.

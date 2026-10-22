@@ -1,7 +1,5 @@
 import { z } from "zod";
 
-import { MATRICULA_PERIODICIDADES } from "@/lib/db/matricula-schema";
-
 const anamneseItemSchema = z
   .object({
     pergunta: z.string(),
@@ -32,10 +30,6 @@ export const createMatriculaSchema = z
   .object({
     alunoId: z.string().trim().min(1, "Selecione o aluno"),
     planoId: z.string().trim().min(1, "Selecione o plano"),
-    periodicidade: z
-      .string()
-      .min(1, "Selecione a periodicidade")
-      .pipe(z.enum(MATRICULA_PERIODICIDADES)),
     dataInicio: z.string().min(1, "Informe a data de início"),
     dataExpiracao: z.string().min(1, "Informe a data de vencimento"),
     parcelarMensal: z.boolean().default(true),

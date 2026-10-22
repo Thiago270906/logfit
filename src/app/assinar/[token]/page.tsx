@@ -53,9 +53,7 @@ export default async function AssinarPage({
     ({ key }) => key === matricula.periodicidade,
   )!;
 
-  const valorContratado = currencyFormatter.format(
-    Number(plano[periodicidadeContratada.valorField]),
-  );
+  const valorContratado = currencyFormatter.format(Number(plano.valor));
   const dataInicio = new Date(matricula.dataInicio);
   const diaVencimento = dataInicio.getDate();
   const endereco = formatarEndereco(aluno);

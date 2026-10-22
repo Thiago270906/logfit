@@ -26,9 +26,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { createMatriculaAction } from "@/app/dashboard/matriculas/actions";
 import { PERGUNTAS_ANAMNESE } from "@/constants/anamnese";
 import {
+  mesesDaPeriodicidade,
   PERIODICIDADES,
   sugerirDataVencimento,
-  type PeriodicidadeKey,
 } from "@/constants/periodicidade";
 import type { Aluno } from "@/lib/db/aluno-schema";
 import type { Plano } from "@/lib/db/plano-schema";
@@ -44,7 +44,6 @@ function hoje() {
 const defaultValues: DefaultValues<CreateMatriculaFormInput> = {
   alunoId: "",
   planoId: "",
-  periodicidade: "",
   dataInicio: hoje(),
   dataExpiracao: "",
   parcelarMensal: true,
@@ -80,27 +79,28 @@ export function MatriculaForm({ alunos, planos }: MatriculaFormProps) {
 
   const anamneseValues = useWatch({ control, name: "anamnese" });
   const planoIdSelecionado = useWatch({ control, name: "planoId" });
-  const periodicidadeSelecionada = useWatch({ control, name: "periodicidade" });
   const dataInicioSelecionada = useWatch({ control, name: "dataInicio" });
 
   const planoSelecionado = planos.find(
     (plano) => plano.id === planoIdSelecionado,
   );
-  const periodicidadesDisponiveis = planoSelecionado
-    ? PERIODICIDADES.filter(
-        ({ habilitadaField }) => planoSelecionado[habilitadaField],
-      )
-    : [];
+  const periodicidadeLabel = planoSelecionado
+    ? PERIODICIDADES.find(({ key }) => key === planoSelecionado.periodicidade)
+        ?.label
+    : undefined;
+  const mesesDoPlano = planoSelecionado
+    ? mesesDaPeriodicidade(planoSelecionado.periodicidade)
+    : null;
 
   function atualizarDataVencimentoSugerida(
-    periodicidade: string,
+    plano: Plano | undefined,
     dataInicio: string,
   ) {
     if (vencimentoEditadoManualmente) return;
-    if (!periodicidade || !dataInicio) return;
+    if (!plano || !dataInicio) return;
 
     const sugerida = sugerirDataVencimento(
-      periodicidade as PeriodicidadeKey,
+      plano.periodicidade,
       new Date(dataInicio),
     );
     setValue("dataExpiracao", sugerida.toISOString().slice(0, 10), {
@@ -179,7 +179,10 @@ export function MatriculaForm({ alunos, planos }: MatriculaFormProps) {
                   value={field.value}
                   onValueChange={(value) => {
                     field.onChange(value);
-                    setValue("periodicidade", "", { shouldValidate: false });
+                    atualizarDataVencimentoSugerida(
+                      planos.find((plano) => plano.id === value),
+                      dataInicioSelecionada ?? "",
+                    );
                   }}
                 >
                   <SelectTrigger id="planoId" className="w-full">
@@ -208,45 +211,10 @@ export function MatriculaForm({ alunos, planos }: MatriculaFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="periodicidade">Periodicidade</Label>
-            <Controller
-              name="periodicidade"
-              control={control}
-              render={({ field }) => (
-                <Select
-                  value={field.value}
-                  onValueChange={(value) => {
-                    field.onChange(value);
-                    atualizarDataVencimentoSugerida(
-                      value ?? "",
-                      dataInicioSelecionada ?? "",
-                    );
-                  }}
-                  disabled={!planoSelecionado}
-                >
-                  <SelectTrigger id="periodicidade" className="w-full">
-                    <SelectValue placeholder="Periodicidade">
-                      {(value: string | null) =>
-                        PERIODICIDADES.find(({ key }) => key === value)
-                          ?.label ?? "Periodicidade"
-                      }
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {periodicidadesDisponiveis.map(({ key, label }) => (
-                      <SelectItem key={key} value={key}>
-                        {label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-            />
-            {errors.periodicidade && (
-              <p className="text-sm text-destructive">
-                {errors.periodicidade.message}
-              </p>
-            )}
+            <Label>Periodicidade</Label>
+            <p className="flex h-9 items-center text-sm text-muted-foreground">
+              {periodicidadeLabel ?? "Selecione um plano"}
+            </p>
           </div>
         </div>
 
@@ -259,7 +227,7 @@ export function MatriculaForm({ alunos, planos }: MatriculaFormProps) {
               {...register("dataInicio", {
                 onChange: (event) =>
                   atualizarDataVencimentoSugerida(
-                    periodicidadeSelecionada ?? "",
+                    planoSelecionado,
                     event.target.value,
                   ),
               })}
@@ -292,7 +260,7 @@ export function MatriculaForm({ alunos, planos }: MatriculaFormProps) {
           </div>
         </div>
 
-        {periodicidadeSelecionada === "anual" && (
+        {mesesDoPlano !== null && mesesDoPlano > 1 && (
           <div className="flex items-start gap-3 rounded-lg border border-border bg-muted/40 p-3">
             <Controller
               name="parcelarMensal"
@@ -308,8 +276,8 @@ export function MatriculaForm({ alunos, planos }: MatriculaFormProps) {
             <div className="space-y-0.5">
               <Label htmlFor="parcelarMensal">Parcelar mensal</Label>
               <p className="text-xs text-muted-foreground">
-                Divide o valor anual em 12 parcelas mensais. Se desativado, é
-                gerado um único pagamento com o valor integral.
+                Divide o valor em {mesesDoPlano} parcelas mensais. Se
+                desativado, é gerado um único pagamento com o valor integral.
               </p>
             </div>
           </div>

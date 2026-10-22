@@ -72,7 +72,10 @@ export function MatriculaPagamentoPanel({
   const pago = pagamento.status === "pago";
   const numeroParcela = pagamento.numeroParcela;
   const parcelasPagas = pagamentos.filter((item) => item.status === "pago").length;
-  const parcelado = periodicidade === "anual" && pagamentos.length > 1;
+  const parcelado =
+    periodicidade !== "diaria" &&
+    periodicidade !== "mensal" &&
+    pagamentos.length > 1;
 
   return (
     <div

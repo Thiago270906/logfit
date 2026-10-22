@@ -2,12 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Controller,
-  useForm,
-  useWatch,
-  type DefaultValues,
-} from "react-hook-form";
+import { Controller, useForm, type DefaultValues } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
 
@@ -23,7 +18,13 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   createPlanoAction,
   updatePlanoAction,
@@ -37,30 +38,15 @@ import {
 
 const emptyDefaultValues: DefaultValues<CreatePlanoFormInput> = {
   nome: "",
-  diariaHabilitada: false,
-  mensalHabilitada: false,
-  anualHabilitada: false,
 };
 
-function planoToDefaultValues(
-  plano: Plano,
-): DefaultValues<CreatePlanoFormInput> {
+function planoToDefaultValues(plano: Plano): DefaultValues<CreatePlanoFormInput> {
   return {
     nome: plano.nome,
-    diariaHabilitada: plano.diariaHabilitada,
-    diariaValor: plano.diariaValor ? Number(plano.diariaValor) : undefined,
-    mensalHabilitada: plano.mensalHabilitada,
-    mensalValor: plano.mensalValor ? Number(plano.mensalValor) : undefined,
-    anualHabilitada: plano.anualHabilitada,
-    anualValor: plano.anualValor ? Number(plano.anualValor) : undefined,
+    periodicidade: plano.periodicidade,
+    valor: Number(plano.valor),
   };
 }
-
-const PLACEHOLDERS: Record<(typeof PERIODICIDADES)[number]["key"], string> = {
-  diaria: "Valor da diária",
-  mensal: "Valor da mensalidade",
-  anual: "Valor da anuidade",
-};
 
 type PlanoFormDialogProps = {
   plano?: Plano;
@@ -83,14 +69,11 @@ export function PlanoFormDialog({ plano, trigger }: PlanoFormDialogProps) {
     handleSubmit,
     reset,
     control,
-    setValue,
     formState: { errors },
   } = useForm<CreatePlanoFormInput>({
     resolver: zodResolver(createPlanoSchema),
     defaultValues,
   });
-
-  const periodicidadeValues = useWatch({ control });
 
   async function onSubmit(data: CreatePlanoFormInput) {
     setIsSubmitting(true);
@@ -134,7 +117,7 @@ export function PlanoFormDialog({ plano, trigger }: PlanoFormDialogProps) {
         }
       />
 
-      <DialogContent className="flex max-h-[85vh] flex-col sm:max-w-lg">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>
             {isEditMode ? "Editar Plano" : "Cadastro de Plano"}
@@ -146,90 +129,64 @@ export function PlanoFormDialog({ plano, trigger }: PlanoFormDialogProps) {
           </DialogDescription>
         </DialogHeader>
 
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="flex min-h-0 flex-1 flex-col"
-        >
-          <div className="-mx-4 flex-1 space-y-6 overflow-y-auto px-4 py-1">
-            <div className="space-y-2">
-              <Label htmlFor="nome">Nome do plano</Label>
-              <Input
-                id="nome"
-                placeholder="Ex: Plano Ouro"
-                {...register("nome")}
-              />
-              {errors.nome && (
-                <p className="text-sm text-destructive">
-                  {errors.nome.message}
-                </p>
-              )}
-            </div>
-
-            <section className="space-y-3 border-t border-border pt-4">
-              <h3 className="text-sm font-medium text-foreground">
-                Periodicidade
-              </h3>
-              <p className="text-xs text-muted-foreground">
-                Ative ao menos uma opção e informe o valor correspondente.
-              </p>
-
-              <div className="space-y-4">
-                {PERIODICIDADES.map(({ key, label, habilitadaField, valorField }) => {
-                  const habilitada = Boolean(periodicidadeValues[habilitadaField]);
-                  const placeholder = PLACEHOLDERS[key];
-
-                  return (
-                    <div key={key} className="flex items-start gap-3">
-                      <Controller
-                        name={habilitadaField}
-                        control={control}
-                        render={({ field }) => (
-                          <Switch
-                            id={habilitadaField}
-                            checked={field.value}
-                            onCheckedChange={(checked) => {
-                              field.onChange(checked);
-                              if (!checked) {
-                                setValue(valorField, undefined, {
-                                  shouldValidate: true,
-                                });
-                              }
-                            }}
-                          />
-                        )}
-                      />
-                      <div className="flex-1 space-y-1.5">
-                        <Label htmlFor={habilitadaField}>{label}</Label>
-                        <Input
-                          type="number"
-                          step="0.01"
-                          min="0"
-                          placeholder={placeholder}
-                          disabled={!habilitada}
-                          {...register(valorField)}
-                        />
-                        {errors[valorField] && (
-                          <p className="text-sm text-destructive">
-                            {errors[valorField]?.message as string}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {errors.diariaHabilitada && (
-                <p className="text-sm text-destructive">
-                  {errors.diariaHabilitada.message}
-                </p>
-              )}
-            </section>
-
-            {formError && (
-              <p className="text-sm text-destructive">{formError}</p>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="nome">Título</Label>
+            <Input
+              id="nome"
+              placeholder="Ex: Plano Ouro"
+              {...register("nome")}
+            />
+            {errors.nome && (
+              <p className="text-sm text-destructive">{errors.nome.message}</p>
             )}
           </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="periodicidade">Periodicidade</Label>
+            <Controller
+              name="periodicidade"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger id="periodicidade" className="w-full">
+                    <SelectValue placeholder="Selecione" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PERIODICIDADES.map(({ key, label }) => (
+                      <SelectItem key={key} value={key}>
+                        {label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {errors.periodicidade && (
+              <p className="text-sm text-destructive">
+                {errors.periodicidade.message}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="valor">Valor</Label>
+            <Input
+              id="valor"
+              type="number"
+              step="0.01"
+              min="0"
+              placeholder="0,00"
+              {...register("valor")}
+            />
+            {errors.valor && (
+              <p className="text-sm text-destructive">
+                {errors.valor.message}
+              </p>
+            )}
+          </div>
+
+          {formError && <p className="text-sm text-destructive">{formError}</p>}
 
           <DialogFooter>
             <Button
