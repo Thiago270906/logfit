@@ -4,13 +4,13 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   ArrowLeft,
-  Building2,
   ClipboardList,
   LayoutDashboard,
   LogOut,
   Radio,
   Receipt,
   Settings,
+  UserCog,
   Users,
   Wallet,
 } from "lucide-react";
@@ -28,9 +28,9 @@ const navItems = [
 
 const settingsNavItems = [
   {
-    href: "/dashboard/configuracoes/academia",
-    label: "Academia",
-    icon: Building2,
+    href: "/dashboard/configuracoes/usuarios",
+    label: "Usuários",
+    icon: UserCog,
   },
   {
     href: "/dashboard/configuracoes/sensores",
@@ -113,7 +113,7 @@ export function Sidebar() {
         {!isSettings && (
           <>
             <Link
-              href="/dashboard/configuracoes/academia"
+              href="/dashboard/configuracoes/usuarios"
               className={navLinkClass(false)}
             >
               <Settings className="h-4 w-4" />

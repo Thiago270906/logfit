@@ -17,6 +17,8 @@ export const user = pgTable("user", {
   ),
 });
 
+export type Usuario = typeof user.$inferSelect;
+
 export const session = pgTable(
   "session",
   {

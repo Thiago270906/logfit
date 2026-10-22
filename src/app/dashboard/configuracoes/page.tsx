@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default function ConfiguracoesPage() {
-  redirect("/dashboard/configuracoes/academia");
+  redirect("/dashboard/configuracoes/usuarios");
 }
