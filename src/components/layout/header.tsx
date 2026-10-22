@@ -1,28 +1,13 @@
-"use client";
-
 import Image from "next/image";
-import { usePathname } from "next/navigation";
 import { User } from "lucide-react";
-
-import { cn } from "@/lib/utils";
 
 type HeaderProps = {
   userName: string;
 };
 
 export function Header({ userName }: HeaderProps) {
-  const pathname = usePathname();
-  const isSettings = pathname.startsWith("/dashboard/configuracoes");
-
   return (
-    <header
-      className={cn(
-        "flex h-16 items-center justify-between border-b-[6px] px-6",
-        isSettings
-          ? "border-[#2b2b2b] bg-[#404040]"
-          : "border-[#9c3a1e] bg-primary",
-      )}
-    >
+    <header className="flex h-16 items-center justify-between border-b-[6px] border-[#9c3a1e] bg-primary px-6">
       <div className="flex items-center gap-3">
         <div className="flex h-[50px] w-[50px] shrink-0 items-center justify-center rounded-full bg-white">
           <Image
@@ -34,7 +19,7 @@ export function Header({ userName }: HeaderProps) {
           />
         </div>
         <span className="text-lg font-bold text-primary-foreground">
-          {isSettings ? "Configurações" : "Estação do Corpo"}
+          Estação do Corpo
         </span>
       </div>
 

@@ -14,7 +14,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { deleteUsuarioAction } from "@/app/dashboard/configuracoes/usuarios/actions";
+import { deleteUsuarioAction } from "@/app/dashboard/usuarios/actions";
 import type { Usuario } from "@/lib/db/auth-schema";
 
 export function UsuarioDeleteDialog({ usuario }: { usuario: Usuario }) {

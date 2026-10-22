@@ -3,13 +3,11 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  ArrowLeft,
   ClipboardList,
   LayoutDashboard,
   LogOut,
   Radio,
   Receipt,
-  Settings,
   UserCog,
   Users,
   Wallet,
@@ -18,26 +16,21 @@ import {
 import { cn } from "@/lib/utils";
 import { authClient } from "@/lib/auth/client";
 
-const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/dashboard/alunos", label: "Alunos", icon: Users },
-  { href: "/dashboard/planos", label: "Planos", icon: Wallet },
-  { href: "/dashboard/matriculas", label: "Matrículas", icon: ClipboardList },
-  { href: "/dashboard/pagamentos", label: "Pagamentos", icon: Receipt },
+const navGroups = [
+  [{ href: "/dashboard", label: "Dashboard", icon: LayoutDashboard }],
+  [
+    { href: "/dashboard/alunos", label: "Alunos", icon: Users },
+    { href: "/dashboard/matriculas", label: "Matrículas", icon: ClipboardList },
+    { href: "/dashboard/pagamentos", label: "Pagamentos", icon: Receipt },
+  ],
+  [
+    { href: "/dashboard/usuarios", label: "Usuários", icon: UserCog },
+    { href: "/dashboard/planos", label: "Planos", icon: Wallet },
+    { href: "/dashboard/sensores", label: "Sensores", icon: Radio },
+  ],
 ];
 
-const settingsNavItems = [
-  {
-    href: "/dashboard/configuracoes/usuarios",
-    label: "Usuários",
-    icon: UserCog,
-  },
-  {
-    href: "/dashboard/configuracoes/sensores",
-    label: "Sensores",
-    icon: Radio,
-  },
-];
+const navItems = navGroups.flat();
 
 function navLinkClass(isActive: boolean) {
   return cn(
@@ -49,7 +42,6 @@ function navLinkClass(isActive: boolean) {
 export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const isSettings = pathname.startsWith("/dashboard/configuracoes");
   const activeHref = [...navItems]
     .sort((a, b) => b.href.length - a.href.length)
     .find(
@@ -65,17 +57,12 @@ export function Sidebar() {
   return (
     <aside className="flex w-60 shrink-0 flex-col justify-between overflow-y-auto bg-[#404040] py-4">
       <nav className="flex flex-col gap-1 px-3">
-        {isSettings ? (
-          <>
-            <Link href="/dashboard" className={navLinkClass(false)}>
-              <ArrowLeft className="h-4 w-4" />
-              Voltar
-            </Link>
+        {navGroups.map((group, index) => (
+          <div key={index} className="flex flex-col gap-1">
+            {index > 0 && <div className="my-2 border-t border-white/10" />}
 
-            <div className="my-2 border-t border-white/10" />
-
-            {settingsNavItems.map((item) => {
-              const isActive = pathname.startsWith(item.href);
+            {group.map((item) => {
+              const isActive = activeHref === item.href;
               const Icon = item.icon;
 
               return (
@@ -89,41 +76,11 @@ export function Sidebar() {
                 </Link>
               );
             })}
-          </>
-        ) : (
-          navItems.map((item) => {
-            const isActive = activeHref === item.href;
-            const Icon = item.icon;
-
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={navLinkClass(isActive)}
-              >
-                <Icon className="h-4 w-4" />
-                {item.label}
-              </Link>
-            );
-          })
-        )}
+          </div>
+        ))}
       </nav>
 
       <div className="px-3">
-        {!isSettings && (
-          <>
-            <Link
-              href="/dashboard/configuracoes/usuarios"
-              className={navLinkClass(false)}
-            >
-              <Settings className="h-4 w-4" />
-              Configurações
-            </Link>
-
-            <div className="my-2 border-t border-white/10" />
-          </>
-        )}
-
         <button
           type="button"
           onClick={handleSignOut}

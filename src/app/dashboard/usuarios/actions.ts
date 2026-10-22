@@ -53,7 +53,7 @@ export async function createUsuarioAction(input: CreateUsuarioFormInput) {
     return { error: "Erro ao cadastrar usuário." };
   }
 
-  revalidatePath("/dashboard/configuracoes/usuarios");
+  revalidatePath("/dashboard/usuarios");
   return { success: true };
 }
 
@@ -77,7 +77,7 @@ export async function updateUsuarioAction(
     return { error: "Erro ao atualizar usuário." };
   }
 
-  revalidatePath("/dashboard/configuracoes/usuarios");
+  revalidatePath("/dashboard/usuarios");
   return { success: true };
 }
 
@@ -97,6 +97,6 @@ export async function deleteUsuarioAction(id: string) {
     return { error: "Erro ao excluir usuário." };
   }
 
-  revalidatePath("/dashboard/configuracoes/usuarios");
+  revalidatePath("/dashboard/usuarios");
   return { success: true };
 }
