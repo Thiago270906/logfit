@@ -85,6 +85,13 @@
       "when": 1792237320509,
       "tag": "0011_fluffy_risque",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1792708495233,
+      "tag": "0012_drop_academia",
+      "breakpoints": true
     }
   ]
 }
