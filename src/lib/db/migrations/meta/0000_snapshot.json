@@ -1,5 +1,5 @@
 {
-  "id": "47d84d53-19c3-4266-8bb3-f0e83b6489c6",
+  "id": "20b2c4cf-370e-47b3-a291-d0e0b3a9830b",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -533,42 +533,143 @@
           "primaryKey": false,
           "notNull": true
         },
-        "diaria_habilitada": {
-          "name": "diaria_habilitada",
+        "periodicidade": {
+          "name": "periodicidade",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "valor": {
+          "name": "valor",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.matricula": {
+      "name": "matricula",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "aluno_id": {
+          "name": "aluno_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "plano_id": {
+          "name": "plano_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tipo": {
+          "name": "tipo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'comum'"
+        },
+        "periodicidade": {
+          "name": "periodicidade",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parcelar_mensal": {
+          "name": "parcelar_mensal",
           "type": "boolean",
           "primaryKey": false,
           "notNull": true,
-          "default": false
+          "default": true
         },
-        "diaria_valor": {
-          "name": "diaria_valor",
-          "type": "numeric(10, 2)",
+        "renovacao_automatica": {
+          "name": "renovacao_automatica",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "token": {
+          "name": "token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'aguardando_assinatura'"
+        },
+        "anamnese": {
+          "name": "anamnese",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "assinatura_nome": {
+          "name": "assinatura_nome",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "mensal_habilitada": {
-          "name": "mensal_habilitada",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": false
-        },
-        "mensal_valor": {
-          "name": "mensal_valor",
-          "type": "numeric(10, 2)",
+        "assinatura_imagem": {
+          "name": "assinatura_imagem",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "anual_habilitada": {
-          "name": "anual_habilitada",
-          "type": "boolean",
+        "assinado_em": {
+          "name": "assinado_em",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cancelada_em": {
+          "name": "cancelada_em",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "data_inicio": {
+          "name": "data_inicio",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
-          "default": false
+          "default": "now()"
         },
-        "anual_valor": {
-          "name": "anual_valor",
-          "type": "numeric(10, 2)",
+        "data_expiracao": {
+          "name": "data_expiracao",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": false
         },
@@ -588,7 +689,212 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "matricula_aluno_id_aluno_id_fk": {
+          "name": "matricula_aluno_id_aluno_id_fk",
+          "tableFrom": "matricula",
+          "tableTo": "aluno",
+          "columnsFrom": [
+            "aluno_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "matricula_plano_id_plano_id_fk": {
+          "name": "matricula_plano_id_plano_id_fk",
+          "tableFrom": "matricula",
+          "tableTo": "plano",
+          "columnsFrom": [
+            "plano_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "matricula_token_unique": {
+          "name": "matricula_token_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "token"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.matricula_historico": {
+      "name": "matricula_historico",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "matricula_id": {
+          "name": "matricula_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tipo": {
+          "name": "tipo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "descricao": {
+          "name": "descricao",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "matricula_historico_matricula_id_matricula_id_fk": {
+          "name": "matricula_historico_matricula_id_matricula_id_fk",
+          "tableFrom": "matricula_historico",
+          "tableTo": "matricula",
+          "columnsFrom": [
+            "matricula_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.pagamento": {
+      "name": "pagamento",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "matricula_id": {
+          "name": "matricula_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "valor": {
+          "name": "valor",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pendente'"
+        },
+        "forma_pagamento": {
+          "name": "forma_pagamento",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vencimento": {
+          "name": "vencimento",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "numero_parcela": {
+          "name": "numero_parcela",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pago_em": {
+          "name": "pago_em",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "pagamento_matricula_parcela_idx": {
+          "name": "pagamento_matricula_parcela_idx",
+          "columns": [
+            {
+              "expression": "matricula_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "numero_parcela",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "pagamento_matricula_id_matricula_id_fk": {
+          "name": "pagamento_matricula_id_matricula_id_fk",
+          "tableFrom": "pagamento",
+          "tableTo": "matricula",
+          "columnsFrom": [
+            "matricula_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},

@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { createMatriculaAction } from "@/app/dashboard/matriculas/actions";
+import { createMatriculaAction } from "@/app/(dashboard)/matriculas/actions";
 import { PERGUNTAS_ANAMNESE } from "@/constants/anamnese";
 import {
   mesesDaPeriodicidade,
@@ -120,7 +120,7 @@ export function MatriculaForm({ alunos, planos }: MatriculaFormProps) {
       return;
     }
 
-    router.push(`/dashboard/matriculas/${result.id}`);
+    router.push(`/matriculas/${result.id}`);
   }
 
   return (

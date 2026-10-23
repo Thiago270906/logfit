@@ -14,7 +14,7 @@ export function MatriculaTableRow({
   return (
     <tr
       className="cursor-pointer transition-colors hover:bg-muted/50"
-      onClick={() => router.push(`/dashboard/matriculas/${matriculaId}`)}
+      onClick={() => router.push(`/matriculas/${matriculaId}`)}
     >
       {children}
     </tr>

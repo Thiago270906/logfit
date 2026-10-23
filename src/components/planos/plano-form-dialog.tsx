@@ -28,7 +28,7 @@ import {
 import {
   createPlanoAction,
   updatePlanoAction,
-} from "@/app/dashboard/planos/actions";
+} from "@/app/(dashboard)/planos/actions";
 import { PERIODICIDADES } from "@/constants/periodicidade";
 import type { Plano } from "@/lib/db/plano-schema";
 import {

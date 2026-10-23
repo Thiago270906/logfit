@@ -14,7 +14,7 @@ export function AlunoTableRow({
   return (
     <tr
       className="cursor-pointer transition-colors hover:bg-muted/50"
-      onClick={() => router.push(`/dashboard/alunos/${alunoId}`)}
+      onClick={() => router.push(`/alunos/${alunoId}`)}
     >
       {children}
     </tr>

@@ -3,7 +3,7 @@ import { Ban, CheckCircle2 } from "lucide-react";
 
 import { AssinaturaForm } from "@/components/matriculas/assinatura-form";
 import { PERIODICIDADES } from "@/constants/periodicidade";
-import { getMatriculaByToken } from "@/services/matriculas/get-matricula-by-token";
+import { getMatriculaByToken } from "@/services/matriculas";
 
 const dateTimeFormatter = new Intl.DateTimeFormat("pt-BR", {
   dateStyle: "short",

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
-import { assinarMatricula } from "@/services/matriculas/assinar-matricula";
+import { assinarMatricula } from "@/services/matriculas";
 import {
   assinarMatriculaSchema,
   type AssinarMatriculaFormInput,

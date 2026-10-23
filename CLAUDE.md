@@ -48,14 +48,18 @@ Qualquer mudança de stack/arquitetura exige explicar motivo técnico e impacto 
 
 ```text
 src/
-├── app/            # rotas nativas do App Router (sem pasta "routes" separada)
+├── app/
+│   ├── (dashboard)/ # área autenticada, route group — NÃO entra na URL
+│   │   └── <rota>/  # ex: alunos/ vira "/alunos", não "/dashboard/alunos"
+│   ├── login/
+│   └── assinar/[token]/ # páginas públicas, fora do route group
 ├── components/
 │   ├── ui/         # shadcn/ui
 │   ├── layout/
 │   └── <contexto>/ # componentes específicos (ex: alunos/, treinos/, aulas/)
 ├── hooks/          # hooks React (use-auth.ts, use-mobile.ts, etc.)
 ├── services/
-│   └── <entidade>/ # regras de negócio (create-*, update-*, delete-*, get-*)
+│   └── <entidade>.ts # regras de negócio da entidade num único arquivo (get/create/update/delete); seções comentadas quando crescer (ex: matriculas.ts)
 ├── lib/
 │   ├── db/         # Drizzle client + schema + migrations
 │   ├── auth/       # Better Auth config

@@ -1,1 +1,0 @@
-ALTER TABLE "matricula" ADD COLUMN "assinatura_imagem" text;

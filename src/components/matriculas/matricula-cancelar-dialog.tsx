@@ -14,7 +14,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { cancelarMatriculaAction } from "@/app/dashboard/matriculas/actions";
+import { cancelarMatriculaAction } from "@/app/(dashboard)/matriculas/actions";
 
 export function MatriculaCancelarDialog({
   matriculaId,

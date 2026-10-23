@@ -1,1 +1,0 @@
-ALTER TABLE "matricula" ADD COLUMN "periodicidade" text NOT NULL;

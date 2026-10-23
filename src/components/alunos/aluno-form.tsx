@@ -17,14 +17,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { createAlunoAction, updateAlunoAction } from "@/app/dashboard/alunos/actions";
+import { createAlunoAction, updateAlunoAction } from "@/app/(dashboard)/alunos/actions";
 import { UFS } from "@/constants/uf";
 import { ALUNO_GENEROS, type Aluno } from "@/lib/db/aluno-schema";
 import {
   createAlunoSchema,
   type CreateAlunoFormInput,
 } from "@/lib/validations/aluno";
-import { getEnderecoByCep } from "@/services/cep/get-endereco-by-cep";
+import { getEnderecoByCep } from "@/services/cep";
 
 const generoLabels: Record<(typeof ALUNO_GENEROS)[number], string> = {
   masculino: "Masculino",

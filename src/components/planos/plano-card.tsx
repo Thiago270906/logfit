@@ -8,7 +8,7 @@ import {
   PERIODICIDADES,
   sufixoCobranca,
 } from "@/constants/periodicidade";
-import type { getPlanos } from "@/services/planos/get-planos";
+import type { getPlanos } from "@/services/planos";
 
 const currencyFormatter = new Intl.NumberFormat("pt-BR", {
   style: "currency",
@@ -94,7 +94,7 @@ export function PlanoCard({ plano }: { plano: Plano }) {
             className="flex-1"
             nativeButton={false}
             render={
-              <Link href={`/dashboard/matriculas?planoId=${plano.id}`} />
+              <Link href={`/matriculas?planoId=${plano.id}`} />
             }
           >
             Ver matrículas

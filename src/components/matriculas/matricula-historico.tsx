@@ -3,7 +3,7 @@ import { Ban, CheckCircle2, FilePlus2, RefreshCcw, RotateCcw, Wallet } from "luc
 import type {
   HistoricoEvento,
   HistoricoEventoTipo,
-} from "@/services/matriculas/get-matricula-historico";
+} from "@/services/matriculas";
 
 const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
   dateStyle: "short",

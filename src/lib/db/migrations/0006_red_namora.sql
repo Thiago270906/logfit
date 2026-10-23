@@ -1,1 +1,0 @@
-ALTER TABLE "matricula" ADD COLUMN "parcelar_mensal" boolean DEFAULT true NOT NULL;

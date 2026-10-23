@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { Switch } from "@/components/ui/switch";
-import { toggleRenovacaoAutomaticaAction } from "@/app/dashboard/matriculas/actions";
+import { toggleRenovacaoAutomaticaAction } from "@/app/(dashboard)/matriculas/actions";
 
 export function MatriculaRenovacaoAutomaticaToggle({
   matriculaId,

@@ -14,7 +14,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { confirmarRematriculaAction } from "@/app/dashboard/matriculas/actions";
+import { confirmarRematriculaAction } from "@/app/(dashboard)/matriculas/actions";
 
 export function MatriculaConfirmarRematriculaDialog({
   matriculaId,

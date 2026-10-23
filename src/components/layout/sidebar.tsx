@@ -17,16 +17,16 @@ import { cn } from "@/lib/utils";
 import { authClient } from "@/lib/auth/client";
 
 const navGroups = [
-  [{ href: "/dashboard", label: "Dashboard", icon: LayoutDashboard }],
+  [{ href: "/", label: "Dashboard", icon: LayoutDashboard }],
   [
-    { href: "/dashboard/alunos", label: "Alunos", icon: Users },
-    { href: "/dashboard/matriculas", label: "Matrículas", icon: ClipboardList },
-    { href: "/dashboard/pagamentos", label: "Pagamentos", icon: Receipt },
+    { href: "/alunos", label: "Alunos", icon: Users },
+    { href: "/matriculas", label: "Matrículas", icon: ClipboardList },
+    { href: "/pagamentos", label: "Pagamentos", icon: Receipt },
   ],
   [
-    { href: "/dashboard/usuarios", label: "Usuários", icon: UserCog },
-    { href: "/dashboard/planos", label: "Planos", icon: Wallet },
-    { href: "/dashboard/sensores", label: "Sensores", icon: Radio },
+    { href: "/usuarios", label: "Usuários", icon: UserCog },
+    { href: "/planos", label: "Planos", icon: Wallet },
+    { href: "/sensores", label: "Sensores", icon: Radio },
   ],
 ];
 

@@ -14,7 +14,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { deleteAlunoAction } from "@/app/dashboard/alunos/actions";
+import { deleteAlunoAction } from "@/app/(dashboard)/alunos/actions";
 import type { Aluno } from "@/lib/db/aluno-schema";
 
 export function AlunoDeleteDialog({ aluno }: { aluno: Aluno }) {

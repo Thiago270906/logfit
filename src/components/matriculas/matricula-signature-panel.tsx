@@ -14,9 +14,11 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { getMatriculaStatusAction } from "@/app/dashboard/matriculas/actions";
-import { getSituacaoMatricula } from "@/services/matriculas/get-situacao-matricula";
-import type { getMatriculaById } from "@/services/matriculas/get-matricula-by-id";
+import { getMatriculaStatusAction } from "@/app/(dashboard)/matriculas/actions";
+import {
+  getSituacaoMatricula,
+  type getMatriculaById,
+} from "@/services/matriculas";
 
 const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
   dateStyle: "short",

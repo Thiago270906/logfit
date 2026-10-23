@@ -1,1 +1,0 @@
-ALTER TABLE "matricula" ADD COLUMN "renovacao_automatica" boolean DEFAULT true NOT NULL;

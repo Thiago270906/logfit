@@ -14,7 +14,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { deletePlanoAction } from "@/app/dashboard/planos/actions";
+import { deletePlanoAction } from "@/app/(dashboard)/planos/actions";
 import type { Plano } from "@/lib/db/plano-schema";
 
 export function PlanoDeleteDialog({ plano }: { plano: Plano }) {

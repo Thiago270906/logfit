@@ -14,7 +14,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { reabrirMatriculaAction } from "@/app/dashboard/matriculas/actions";
+import { reabrirMatriculaAction } from "@/app/(dashboard)/matriculas/actions";
 
 export function MatriculaReabrirDialog({
   matriculaId,

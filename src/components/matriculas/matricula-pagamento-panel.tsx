@@ -4,7 +4,7 @@ import { ConcluirPagamentoDialog } from "@/components/pagamentos/concluir-pagame
 import { FORMAS_PAGAMENTO_OPCOES } from "@/constants/forma-pagamento";
 import type { PeriodicidadeKey } from "@/constants/periodicidade";
 import type { MATRICULA_STATUSES } from "@/lib/db/matricula-schema";
-import type { getPagamentosByMatricula } from "@/services/pagamentos/get-pagamentos-by-matricula";
+import type { getPagamentosByMatricula } from "@/services/pagamentos";
 
 const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
   dateStyle: "short",

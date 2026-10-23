@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { concluirPagamentoAction } from "@/app/dashboard/pagamentos/actions";
+import { concluirPagamentoAction } from "@/app/(dashboard)/pagamentos/actions";
 import { FORMAS_PAGAMENTO_OPCOES } from "@/constants/forma-pagamento";
 import {
   concluirPagamentoSchema,

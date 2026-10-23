@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { MatriculaCancelarDialog } from "@/components/matriculas/matricula-cancelar-dialog";
 import { MatriculaReabrirDialog } from "@/components/matriculas/matricula-reabrir-dialog";
 import type { MATRICULA_STATUSES } from "@/lib/db/matricula-schema";
-import { podeReabrirMatricula } from "@/services/matriculas/reabrir-matricula";
+import { podeReabrirMatricula } from "@/services/matriculas";
 
 export function MatriculaRowActions({
   matriculaId,

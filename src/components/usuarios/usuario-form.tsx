@@ -18,7 +18,7 @@ import {
 import {
   createUsuarioAction,
   updateUsuarioAction,
-} from "@/app/dashboard/usuarios/actions";
+} from "@/app/(dashboard)/usuarios/actions";
 import { FUNCIONARIO_ROLE_LABELS, FUNCIONARIO_ROLES } from "@/constants/roles";
 import type { Usuario } from "@/lib/db/auth-schema";
 import {
