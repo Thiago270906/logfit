@@ -16,7 +16,11 @@ async function requireAdmin() {
   return hasRole(session?.user, ["admin"]);
 }
 
-export async function createAlunoAction(input: CreateAlunoFormInput) {
+export async function createAlunoAction(
+  input: CreateAlunoFormInput,
+): Promise<
+  { error: string } | { success: true; id: string; nome: string }
+> {
   if (!(await requireAdmin())) {
     return { error: "Você não tem permissão para cadastrar alunos." };
   }
@@ -26,8 +30,9 @@ export async function createAlunoAction(input: CreateAlunoFormInput) {
     return { error: parsed.error.issues[0]?.message ?? "Dados inválidos." };
   }
 
+  let created;
   try {
-    await createAluno(parsed.data);
+    created = await createAluno(parsed.data);
   } catch (error) {
     if (error instanceof Error && error.message.includes("unique")) {
       return { error: "Já existe um aluno cadastrado com esse CPF." };
@@ -36,7 +41,7 @@ export async function createAlunoAction(input: CreateAlunoFormInput) {
   }
 
   revalidatePath("/alunos");
-  return { success: true };
+  return { success: true, id: created.id, nome: created.nome };
 }
 
 export async function updateAlunoAction(

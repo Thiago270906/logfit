@@ -5,8 +5,13 @@ import { MatriculaForm } from "@/components/matriculas/matricula-form";
 import { getAlunosDisponiveisParaMatricula } from "@/services/alunos";
 import { getPlanos } from "@/services/planos";
 
-export default async function NovaMatriculaPage() {
-  const [alunos, planos] = await Promise.all([
+export default async function NovaMatriculaPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ alunoId?: string }>;
+}) {
+  const [{ alunoId }, alunos, planos] = await Promise.all([
+    searchParams,
     getAlunosDisponiveisParaMatricula(),
     getPlanos(),
   ]);
@@ -31,7 +36,11 @@ export default async function NovaMatriculaPage() {
         </p>
 
         <div className="mt-8">
-          <MatriculaForm alunos={alunos} planos={planos} />
+          <MatriculaForm
+            alunos={alunos}
+            planos={planos}
+            alunoIdInicial={alunoId}
+          />
         </div>
       </div>
     </div>

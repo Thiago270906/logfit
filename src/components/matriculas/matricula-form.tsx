@@ -66,9 +66,14 @@ const defaultValues: DefaultValues<CreateMatriculaFormInput> = {
 type MatriculaFormProps = {
   alunos: Aluno[];
   planos: Plano[];
+  alunoIdInicial?: string;
 };
 
-export function MatriculaForm({ alunos, planos }: MatriculaFormProps) {
+export function MatriculaForm({
+  alunos,
+  planos,
+  alunoIdInicial,
+}: MatriculaFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -83,7 +88,10 @@ export function MatriculaForm({ alunos, planos }: MatriculaFormProps) {
     formState: { errors },
   } = useForm<CreateMatriculaFormInput>({
     resolver: zodResolver(createMatriculaSchema),
-    defaultValues,
+    defaultValues: {
+      ...defaultValues,
+      alunoId: alunoIdInicial ?? defaultValues.alunoId,
+    },
   });
 
   const anamneseValues = useWatch({ control, name: "anamnese" });

@@ -63,7 +63,7 @@ function alunoToDefaultValues(
 type AlunoFormProps = {
   aluno?: Aluno;
   onCancel?: () => void;
-  onSaved?: () => void;
+  onSaved?: (alunoCriado?: { id: string; nome: string }) => void;
 };
 
 export function AlunoForm({ aluno, onCancel, onSaved }: AlunoFormProps) {
@@ -114,20 +114,31 @@ export function AlunoForm({ aluno, onCancel, onSaved }: AlunoFormProps) {
     setIsSubmitting(true);
     setFormError(null);
 
-    const result = isEditMode
-      ? await updateAlunoAction(aluno!.id, data)
-      : await createAlunoAction(data);
+    if (isEditMode) {
+      const result = await updateAlunoAction(aluno!.id, data);
+      if (result?.error) {
+        setFormError(result.error);
+        setIsSubmitting(false);
+        return;
+      }
 
-    if (result?.error) {
+      setIsSubmitting(false);
+      router.refresh();
+      onSaved?.();
+      return;
+    }
+
+    const result = await createAlunoAction(data);
+    if ("error" in result) {
       setFormError(result.error);
       setIsSubmitting(false);
       return;
     }
 
     setIsSubmitting(false);
-    if (!isEditMode) reset(emptyDefaultValues);
+    reset(emptyDefaultValues);
     router.refresh();
-    onSaved?.();
+    onSaved?.({ id: result.id, nome: result.nome });
   }
 
   return (
