@@ -8,6 +8,13 @@
       "when": 1792714040622,
       "tag": "0000_ancient_gabe_jones",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793313175382,
+      "tag": "0001_young_komodo",
+      "breakpoints": true
     }
   ]
 }

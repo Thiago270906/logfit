@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { PERIODICIDADE_KEYS } from "@/constants/periodicidade";
+
 const anamneseItemSchema = z
   .object({
     pergunta: z.string(),
@@ -33,6 +35,14 @@ export const createMatriculaSchema = z
     dataInicio: z.string().min(1, "Informe a data de início"),
     dataExpiracao: z.string().min(1, "Informe a data de vencimento"),
     parcelarMensal: z.boolean().default(true),
+    // Personalização do contrato: sobrescreve periodicidade/valor do plano
+    // só para esta matrícula. null = usa os dados do plano normalmente.
+    periodicidadePersonalizada: z.enum(PERIODICIDADE_KEYS).nullable().default(null),
+    valorPersonalizado: z
+      .number()
+      .positive("Informe um valor válido")
+      .nullable()
+      .default(null),
     anamnese: z.array(anamneseItemSchema),
   })
   .refine((data) => new Date(data.dataExpiracao) >= new Date(data.dataInicio), {

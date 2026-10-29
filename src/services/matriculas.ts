@@ -366,7 +366,10 @@ export async function createMatricula(input: CreateMatriculaInput) {
     throw new Error("Plano não encontrado.");
   }
 
-  const periodicidade = planoSelecionado.periodicidade;
+  // Personalização do contrato: se o admin definiu periodicidade/valor
+  // específicos para esta matrícula, eles prevalecem sobre os do plano.
+  const periodicidade =
+    data.periodicidadePersonalizada ?? planoSelecionado.periodicidade;
   const renovacaoAutomatica =
     PERIODICIDADES_COM_RENOVACAO_AUTOMATICA.includes(periodicidade);
   const meses = mesesDaPeriodicidade(periodicidade) ?? 1;
@@ -378,6 +381,10 @@ export async function createMatricula(input: CreateMatriculaInput) {
       planoId: data.planoId,
       tipo: "comum",
       periodicidade,
+      valorPersonalizado:
+        data.valorPersonalizado != null
+          ? data.valorPersonalizado.toFixed(2)
+          : null,
       parcelarMensal: meses > 1 ? data.parcelarMensal : true,
       renovacaoAutomatica,
       dataInicio: new Date(data.dataInicio),
@@ -414,6 +421,8 @@ export async function assinarMatricula(
       // Valor cobrado nessa matrícula: snapshot do valor do plano vigente no
       // momento da assinatura, já que o plano pode ter seu preço alterado depois.
       valor: plano.valor,
+      // Sobrescreve o valor do plano quando o contrato foi personalizado.
+      valorPersonalizado: matricula.valorPersonalizado,
     })
     .from(matricula)
     .innerJoin(plano, eq(matricula.planoId, plano.id))
@@ -426,6 +435,8 @@ export async function assinarMatricula(
     .limit(1);
 
   if (!pendente) return undefined;
+
+  const valorCobrado = pendente.valorPersonalizado ?? pendente.valor;
 
   const assinadoEm = new Date();
 
@@ -447,9 +458,9 @@ export async function assinarMatricula(
   });
 
   const meses = mesesDaPeriodicidade(pendente.periodicidade) ?? 1;
-  if (pendente.valor) {
+  if (valorCobrado) {
     if (meses > 1 && pendente.parcelarMensal) {
-      const parcelas = dividirEmParcelas(pendente.valor, meses);
+      const parcelas = dividirEmParcelas(valorCobrado, meses);
       await getDb()
         .insert(pagamento)
         .values(
@@ -463,7 +474,7 @@ export async function assinarMatricula(
     } else {
       await getDb().insert(pagamento).values({
         matriculaId: pendente.id,
-        valor: pendente.valor,
+        valor: valorCobrado,
         vencimento: pendente.dataInicio,
         numeroParcela: 1,
       });
@@ -577,7 +588,8 @@ type MatriculaParaRenovacao = {
   renovacaoAutomatica: boolean;
   // Preço ATUAL do plano (mesma lógica de assinarMatricula) — ao contrário
   // da continuação mensal dentro do mesmo ciclo, a renovação busca o preço
-  // vigente, não um valor congelado.
+  // vigente, não um valor congelado. Já resolvido contra valorPersonalizado
+  // em buscarParaRenovacao: se o contrato foi personalizado, é esse valor.
   valor: string;
 };
 
@@ -594,13 +606,18 @@ async function buscarParaRenovacao(
       dataExpiracao: matricula.dataExpiracao,
       renovacaoAutomatica: matricula.renovacaoAutomatica,
       valor: plano.valor,
+      valorPersonalizado: matricula.valorPersonalizado,
     })
     .from(matricula)
     .innerJoin(plano, eq(matricula.planoId, plano.id))
     .where(eq(matricula.id, id))
     .limit(1);
 
-  return row;
+  if (!row) return undefined;
+
+  // Contrato personalizado continua cobrando o valor fixado nele, não o
+  // preço vigente do plano, mesmo em renovações futuras.
+  return { ...row, valor: row.valorPersonalizado ?? row.valor };
 }
 
 // Executa um único ciclo de renovação: estende dataExpiracao pelo número de

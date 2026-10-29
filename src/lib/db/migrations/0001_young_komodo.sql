@@ -1,0 +1,1 @@
+ALTER TABLE "matricula" ADD COLUMN "valor_personalizado" numeric(10, 2);

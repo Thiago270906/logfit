@@ -1,4 +1,11 @@
-import { boolean, jsonb, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  jsonb,
+  numeric,
+  pgTable,
+  text,
+  timestamp,
+} from "drizzle-orm/pg-core";
 
 import { aluno } from "@/lib/db/aluno-schema";
 import { plano } from "@/lib/db/plano-schema";
@@ -38,6 +45,12 @@ export const matricula = pgTable("matricula", {
   periodicidade: text("periodicidade", {
     enum: MATRICULA_PERIODICIDADES,
   }).notNull(),
+  // Sobrescreve o valor do plano só para esta matrícula (personalização do
+  // contrato). Quando null, o valor cobrado é sempre o do plano vigente.
+  valorPersonalizado: numeric("valor_personalizado", {
+    precision: 10,
+    scale: 2,
+  }),
   // Só se aplica à periodicidade anual: divide o valor anual em 12 parcelas
   // mensais ao invés de gerar um único pagamento integral na assinatura.
   parcelarMensal: boolean("parcelar_mensal").default(true).notNull(),

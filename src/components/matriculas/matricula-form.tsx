@@ -24,11 +24,13 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { createMatriculaAction } from "@/app/(dashboard)/matriculas/actions";
+import { PersonalizarPlanoDialog } from "@/components/matriculas/personalizar-plano-dialog";
 import { PERGUNTAS_ANAMNESE } from "@/constants/anamnese";
 import {
   mesesDaPeriodicidade,
   PERIODICIDADES,
   sugerirDataVencimento,
+  type PeriodicidadeKey,
 } from "@/constants/periodicidade";
 import type { Aluno } from "@/lib/db/aluno-schema";
 import type { Plano } from "@/lib/db/plano-schema";
@@ -36,6 +38,11 @@ import {
   createMatriculaSchema,
   type CreateMatriculaFormInput,
 } from "@/lib/validations/matricula";
+
+const currencyFormatter = new Intl.NumberFormat("pt-BR", {
+  style: "currency",
+  currency: "BRL",
+});
 
 function hoje() {
   return new Date().toISOString().slice(0, 10);
@@ -47,6 +54,8 @@ const defaultValues: DefaultValues<CreateMatriculaFormInput> = {
   dataInicio: hoje(),
   dataExpiracao: "",
   parcelarMensal: true,
+  periodicidadePersonalizada: null,
+  valorPersonalizado: null,
   anamnese: PERGUNTAS_ANAMNESE.map((pergunta) => ({
     pergunta,
     resposta: null,
@@ -80,29 +89,44 @@ export function MatriculaForm({ alunos, planos }: MatriculaFormProps) {
   const anamneseValues = useWatch({ control, name: "anamnese" });
   const planoIdSelecionado = useWatch({ control, name: "planoId" });
   const dataInicioSelecionada = useWatch({ control, name: "dataInicio" });
+  const periodicidadePersonalizada = useWatch({
+    control,
+    name: "periodicidadePersonalizada",
+  });
+  const valorPersonalizado = useWatch({
+    control,
+    name: "valorPersonalizado",
+  });
 
   const planoSelecionado = planos.find(
     (plano) => plano.id === planoIdSelecionado,
   );
-  const periodicidadeLabel = planoSelecionado
-    ? PERIODICIDADES.find(({ key }) => key === planoSelecionado.periodicidade)
-        ?.label
+
+  // Personalização do contrato sobrescreve periodicidade/valor do plano só
+  // para esta matrícula; sem ela, usa os dados do plano normalmente.
+  const personalizado =
+    periodicidadePersonalizada != null || valorPersonalizado != null;
+  const periodicidadeEfetiva: PeriodicidadeKey | undefined =
+    periodicidadePersonalizada ?? planoSelecionado?.periodicidade;
+  const valorEfetivo =
+    valorPersonalizado ??
+    (planoSelecionado ? Number(planoSelecionado.valor) : undefined);
+
+  const periodicidadeLabel = periodicidadeEfetiva
+    ? PERIODICIDADES.find(({ key }) => key === periodicidadeEfetiva)?.label
     : undefined;
-  const mesesDoPlano = planoSelecionado
-    ? mesesDaPeriodicidade(planoSelecionado.periodicidade)
+  const mesesDoPlano = periodicidadeEfetiva
+    ? mesesDaPeriodicidade(periodicidadeEfetiva)
     : null;
 
   function atualizarDataVencimentoSugerida(
-    plano: Plano | undefined,
+    periodicidade: PeriodicidadeKey | undefined,
     dataInicio: string,
   ) {
     if (vencimentoEditadoManualmente) return;
-    if (!plano || !dataInicio) return;
+    if (!periodicidade || !dataInicio) return;
 
-    const sugerida = sugerirDataVencimento(
-      plano.periodicidade,
-      new Date(dataInicio),
-    );
+    const sugerida = sugerirDataVencimento(periodicidade, new Date(dataInicio));
     setValue("dataExpiracao", sugerida.toISOString().slice(0, 10), {
       shouldValidate: false,
     });
@@ -130,7 +154,7 @@ export function MatriculaForm({ alunos, planos }: MatriculaFormProps) {
           Aluno e plano
         </h2>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="alunoId">Aluno</Label>
             <Controller
@@ -179,8 +203,13 @@ export function MatriculaForm({ alunos, planos }: MatriculaFormProps) {
                   value={field.value}
                   onValueChange={(value) => {
                     field.onChange(value);
+                    // Trocar o plano descarta qualquer personalização
+                    // anterior, já que ela foi definida em cima do plano antigo.
+                    setValue("periodicidadePersonalizada", null);
+                    setValue("valorPersonalizado", null);
                     atualizarDataVencimentoSugerida(
-                      planos.find((plano) => plano.id === value),
+                      planos.find((plano) => plano.id === value)
+                        ?.periodicidade,
                       dataInicioSelecionada ?? "",
                     );
                   }}
@@ -209,13 +238,48 @@ export function MatriculaForm({ alunos, planos }: MatriculaFormProps) {
               </p>
             )}
           </div>
+        </div>
 
-          <div className="space-y-2">
-            <Label>Periodicidade</Label>
-            <p className="flex h-9 items-center text-sm text-muted-foreground">
-              {periodicidadeLabel ?? "Selecione um plano"}
-            </p>
+        <div className="flex flex-wrap items-end gap-3">
+          <div className="min-w-[220px] flex-1 space-y-2">
+            <Label>Periodicidade e valor</Label>
+            <div className="flex h-9 items-center justify-between gap-2 rounded-lg border border-border bg-muted/40 px-3">
+              <span className="text-sm text-foreground">
+                {planoSelecionado && periodicidadeLabel && valorEfetivo != null
+                  ? `${periodicidadeLabel} — ${currencyFormatter.format(valorEfetivo)}`
+                  : "Selecione um plano"}
+              </span>
+              {personalizado && (
+                <span className="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                  Personalizado
+                </span>
+              )}
+            </div>
           </div>
+
+          {planoSelecionado && periodicidadeEfetiva && valorEfetivo != null && (
+            <PersonalizarPlanoDialog
+              personalizado={personalizado}
+              periodicidadeAtual={periodicidadeEfetiva}
+              valorAtual={valorEfetivo}
+              onSalvar={(periodicidade, valor) => {
+                setValue("periodicidadePersonalizada", periodicidade);
+                setValue("valorPersonalizado", valor);
+                atualizarDataVencimentoSugerida(
+                  periodicidade,
+                  dataInicioSelecionada ?? "",
+                );
+              }}
+              onRemover={() => {
+                setValue("periodicidadePersonalizada", null);
+                setValue("valorPersonalizado", null);
+                atualizarDataVencimentoSugerida(
+                  planoSelecionado.periodicidade,
+                  dataInicioSelecionada ?? "",
+                );
+              }}
+            />
+          )}
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -227,7 +291,7 @@ export function MatriculaForm({ alunos, planos }: MatriculaFormProps) {
               {...register("dataInicio", {
                 onChange: (event) =>
                   atualizarDataVencimentoSugerida(
-                    planoSelecionado,
+                    periodicidadeEfetiva,
                     event.target.value,
                   ),
               })}
